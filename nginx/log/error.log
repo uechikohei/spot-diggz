@@ -1,0 +1,1 @@
+2020/03/12 07:31:55 [emerg] 6#6: host not found in upstream "app:3000" in /etc/nginx/conf.d/nginx.conf:5

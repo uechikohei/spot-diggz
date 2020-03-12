@@ -1,20 +1,19 @@
-version: '3'
+version: "3"
 
 services:
-
   webpacker:
     build:
       context: .
       dockerfile: Dockerfile.dev
     env_file:
-      - '.env.docker'
+      - ".env.docker"
     command: ./bin/webpack-dev-server
     volumes:
       - .:/app
       # up時、node_modulesエラー解消
       - /app/node_modules
     ports:
-      - '3035:3035'
+      - "3035:3035"
 
   app:
     build:
@@ -46,7 +45,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      -  mysql_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
 
   nginx:
     build:
@@ -55,7 +54,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./docker/nginx/log:/var/log/nginx
+      - ./nginx/log:/var/log/nginx
       - public-data:/todoapp/public
     depends_on:
       - app

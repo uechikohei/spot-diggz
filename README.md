@@ -13,7 +13,7 @@
 * nginx,puma
 * Rspec
 未定　* Google map api
-未定　*　terraform 
+未定　*　terraform
 未定　*　circle ci
 予定　*　aws(vpc,ec2,rds,s3,route53,acm,alb)
 
