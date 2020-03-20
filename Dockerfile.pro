@@ -1,8 +1,9 @@
-#デプロイ用、ARG＿RAILS_ENVを追加
+
 FROM ruby:2.6.5-stretch
 ENV LANG C.UTF-8
 
-ENV RAILS_ENV=development
+ENV RAILS_ENV=production
+ENV NODE_ENV=production
 ENV APP_ROOT /app
 
 WORKDIR $APP_ROOT
@@ -24,6 +25,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY Gemfile $APP_ROOT
 COPY Gemfile.lock $APP_ROOT
 RUN bundle install
+RUN yarn install --check-files
 RUN bundle exec rails assets:precompile
 
 COPY . $APP_ROOT

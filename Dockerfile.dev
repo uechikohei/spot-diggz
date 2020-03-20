@@ -2,8 +2,8 @@ FROM ruby:2.6.5-stretch
 ENV LANG C.UTF-8
 
 ENV RAILS_ENV=development
+ENV NODE_ENV=development
 ENV APP_ROOT /app
-
 WORKDIR $APP_ROOT
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
