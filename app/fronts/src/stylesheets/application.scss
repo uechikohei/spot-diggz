@@ -1,2 +1,3 @@
-@import "~bootstrap/scss/bootstrap";
 @import "./custom";
+//bootstrapのインポートより前に置くこと。customは！
+@import "~bootstrap/scss/bootstrap";
