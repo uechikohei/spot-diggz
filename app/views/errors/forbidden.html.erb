@@ -1,0 +1,21 @@
+<div class="container-lg">
+    <br>
+    <div class="card text-center">
+    <h2 class="card-header primary">エラーメッセージ</h2>
+    <div class="card-body dark">
+        <h1 class="card-title">403 Forbidden</h1>
+        <p class="card-text">
+        <%=  # @execptionには、例外オブジェクト
+            case @exception
+            when ApplicationController::IpAddressRejected
+            # requestメソッドで、保存されている接続先IPを反映している。
+                "あなたのIPアドレス（#{request.ip})からは利用できません。"
+            else
+                "指定されたページを閲覧する権限がありません。"
+            end
+        %>
+        </p>
+    </div>
+    </div>
+    <br>
+</div>
