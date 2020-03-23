@@ -7,9 +7,10 @@ services:
       context: .
       dockerfile: Dockerfile.pro
     environment:
-      - NODE_ENV=production
-      - RAILS_ENV=production
-      - RAILS_MASTER_KEY=c1659ef76b816b4d2013768799ffd2b8
+    # .envファイルの環境変数を呼び出す。
+      - NODE_ENV=$NODE_ENV
+      - RAILS_ENV=$RAILS_ENV
+      - RAILS_MASTER_KEY=$RAILS_MASTER_KEY
     ports:
       - "3000:3000"
     tty: true
@@ -27,12 +28,12 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      NODE_ENV: production
-      RAILS_ENV: production
-      MYSQL_HOST: 127.0.0.1
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: myapp_production
-      MYSQL_USERNAME: root
+      NODE_ENV: $NODE_ENV
+      RAILS_ENV: $RAILS_ENV
+      MYSQL_HOST: $MYSQL_HOST
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      MYSQL_USERNAME: $MYSQL_USERNAME
     security_opt:
       - seccomp:unconfined
     ports:
@@ -45,8 +46,8 @@ services:
       context: ./nginx
       dockerfile: Dockerfile.nginx
     environment:
-      - NODE_ENV=production
-      - RAILS_ENV=production
+      - NODE_ENV=$NODE_ENV
+      - RAILS_ENV=$RAILS_ENV
     ports:
       - 80:80
     volumes:
