@@ -6,8 +6,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    env_file:
-      - ".env.docker"
+    environment:
+      - RAILS_ENV=development
     command: ./bin/webpack-dev-server
     volumes:
       - .:/app
@@ -24,6 +24,8 @@ services:
       - "3000:3000"
     tty: true
     stdin_open: true
+    environment:
+      - RAILS_ENV=development
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
     volumes:
       - .:/app
@@ -40,8 +42,9 @@ services:
     environment:
       MYSQL_HOST: 127.0.0.1
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: myapp_production
+      MYSQL_DATABASE: myapp_development
       MYSQL_USERNAME: root
+      RAILS_ENV: development
     security_opt:
       - seccomp:unconfined
     ports:
