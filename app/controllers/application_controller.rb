@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
-        # エラークラスを定義する
+
+    # エラークラスを定義する
     class Forbidden < ActionController::ActionControllerError; end
     class IpAddressRejected < ActionController::ActionControllerError; end
 

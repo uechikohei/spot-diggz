@@ -4,6 +4,7 @@
     <title><%= document_title %></title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <meta name="viewport" content="width=1024" />
 
     <%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
@@ -14,6 +15,8 @@
   <body>
     <div id="wrapper">
       <%= render "shared/header" %>
+          <p class="notice"><%= notice %></p>
+          <p class="alert"><%= alert %></p>
         <div id="container">
           <%= yield %>
         </div>

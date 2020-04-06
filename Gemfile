@@ -8,7 +8,7 @@ gem 'mysql2', '>= 0.4.4'
 gem 'puma', '~> 4.1'
 gem 'sass-rails', '>= 6'
 gem 'bootsnap', '>= 1.4.2', require: false
-gem 'webpacker', '~> 4.0', github: 'rails/webpacker'
+gem 'webpacker', '~> 4.0'
 gem 'turbolinks', '~> 5'
 gem 'jbuilder', '~> 2.7'
 gem "bcrypt"
@@ -17,6 +17,10 @@ gem "kaminari"
 gem "date_validator"
 gem "valid_email2"
 gem "nokogiri"
+# ユーザー認証
+gem 'devise', '~> 4.7', '>= 4.7.1'
+# 外部API
+gem 'stock_quote', '~> 3.0'
 
 group :test do
   gem "capybara", ">= 2.15"
@@ -26,7 +30,8 @@ group :test do
 end
 
 group :development, :test do
-  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'pry-rails', '~> 0.3.9'
+  gem 'pry-byebug', '~> 3.9'
 end
 
 group :development do

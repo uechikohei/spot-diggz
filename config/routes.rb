@@ -1,3 +1,6 @@
 Rails.application.routes.draw do
-    root "top#index"
+  devise_for :users
+  root "home#index"
+  get "home/about"
+  post "/" => 'home#index'
 end

@@ -20,9 +20,9 @@ module App
   class Application < Rails::Application
     config.load_defaults 6.0
     config.time_zone = "Tokyo"
-    config.i18n.load_path +=
 
-    Dir[Rails.root.join("config","locales","**","*.{rb,yml}").to_s]
+    #　#　以下の記述を追記する(設定必須)
+    config.i18n.load_path += Dir[Rails.root.join("config","locales","**","*.{rb,yml}").to_s]
     config.i18n.default_locale = :ja
     config.generators.system_tests = nil
     config.generators do |g|
@@ -35,4 +35,5 @@ module App
     end
   end
 end
+
 
