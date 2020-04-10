@@ -52,5 +52,5 @@ Rails.application.configure do
     user_name: mail_address,
     password: password,
     authentication: "plain"
-}
+  }
 end

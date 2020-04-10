@@ -1,43 +1,80 @@
-<h2>Edit <%= resource_name.to_s.humanize %></h2>
+<div class=“row”>
+    <div class="col-md-6 offset-md-3">
+      <div class="jumbotron">
+      <h2 class="card-title text-center">編集 <%= resource_name.to_s.humanize %></h2>
+      <hr class="my-4"><br><br>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
+        <div class="form-group row justify-content-center">
+          <label for=“inputEmail3” class="col-sm-4 col-form-label"><%= f.label :email %><br></label>
+          <div class="col-sm-5">
+            <%= f.email_field :email, autofocus: true, autocomplete: "email",
+              id: "inputEmail3", class: "form-control", placeholder:"Email" %>
+          </div>
+        </div>
 
-  <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-    <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
-  <% end %>
+        <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+          <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+        <% end %>
 
-  <div class="field">
-    <%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-    <% if @minimum_password_length %>
-      <br />
-      <em><%= @minimum_password_length %> characters minimum</em>
-    <% end %>
-  </div>
+        <div class="form-group row justify-content-center">
+          <label for="inputPassword3" class="col-sm-4 col-form-label">
+            <i>新しい</i><%= f.label :password %>
+            <% if @minimum_password_length %><br>
+              <em>( <%= @minimum_password_length %> 文字以上 )</em>
+            <% end %>
+          </label>
+          <div class="col-sm-5"><br>
+            <%= f.password_field :password, autocomplete: "new-password",
+              class: "form-control", placeholder: "New Password"%>
+          </div>
+        </div>
 
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
 
-  <div class="field">
-    <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
-    <%= f.password_field :current_password, autocomplete: "current-password" %>
-  </div>
+        <div class="form-group row justify-content-center">
+          <label for="inputPassword3" class="col-sm-4 col-form-label">
+            <i>新しい</i><%= f.label :password %> <br> <i>( 確認用 )</i>
+          </label>
+          <div class="col-sm-5"><br>
+          <%= f.password_field :password_confirmation, autocomplete: "new-password",
+            class: "form-control", placeholder: "New Password"%>
+          </div>
+        </div>
 
-  <div class="actions">
-    <%= f.submit "Update" %>
-  </div>
-<% end %>
+        <div class="form-group row justify-content-center">
+          <label for="inputPassword3" class="col-sm-4 col-form-label"><br>
+            <%= f.label :current_password %>
+          </label>
+          <div class="col-sm-5"><br>
+            <%= f.password_field :current_password, autocomplete: "current-password",
+              class: "form-control", placeholder: "Password" %>
+          </div>
+        </div>
 
-<h3>Cancel my account</h3>
+        <br><br>
+        <div class="form-group row justify-content-center">
+          <br><%= f.submit "更新する", class: 'btn btn-primary' %><br><br>
+        </div>
 
-<p>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete %></p>
+      <% end %>
+      </div>
+    </div>
 
-<%= link_to "Back", :back %>
+    <div class="col-md-6 offset-md-3">
+      <div class="jumbotron">
+      <div class="text-center">
+        <h2>アカウント消去</h2><hr class="my-4">
+
+        <p>
+          <%= button_to "消去する", registration_path(resource_name),
+            data: { confirm: "本当に、消去してもよろしいですか？" }, method: :delete,
+            class: 'btn btn-primary' %>
+        </p>
+
+      </div>
+      </div>
+      <%= link_to "Back", :back %> <br><br>
+    </div>
+</div>

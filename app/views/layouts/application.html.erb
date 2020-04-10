@@ -15,9 +15,8 @@
   <body>
     <div id="wrapper">
       <%= render "shared/header" %>
-          <p class="notice"><%= notice %></p>
-          <p class="alert"><%= alert %></p>
-        <div id="container">
+      <div id="container">
+      <%= render "shared/flash" %>
           <%= yield %>
         </div>
       <%= render "shared/footer" %>

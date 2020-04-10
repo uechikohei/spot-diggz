@@ -17,10 +17,13 @@ gem "kaminari"
 gem "date_validator"
 gem "valid_email2"
 gem "nokogiri"
+gem 'rubocop', '~> 0.81.0'
 # ユーザー認証
 gem 'devise', '~> 4.7', '>= 4.7.1'
 # 外部API
 gem 'stock_quote', '~> 3.0'
+# google maps 井戸検索移動
+gem 'geocoder', '~> 1.6', '>= 1.6.2'
 
 group :test do
   gem "capybara", ">= 2.15"
