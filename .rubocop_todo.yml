@@ -409,3 +409,7 @@ Style/SymbolArray:
 # URISchemes: http, https
 Layout/LineLength:
   Max: 198
+
+  # "Missing top-level class documentation comment."を無効
+Style/Documentation:
+  Enabled: false
