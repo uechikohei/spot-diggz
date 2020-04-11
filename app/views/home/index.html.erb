@@ -1,6 +1,7 @@
 <div class="jumbotron jumbotron-fluid">
   <div class="container">
-    <h1 class="display-4">stock_quote</h1>
+    <h1 class="display-4">ここが[ SSS ]トップページ</h1>
+
       <%= form_tag root_path, :method => 'POST' do%>
         <%= text_field_tag 'ticker', nil, placeholder: "Enter Ticker Symbol", size: 50%>
         <%= submit_tag "seach" %>
@@ -14,8 +15,5 @@
     <% else @error %>
       <%= @error %>
     <% end %>
-
-
-
   </div>
 </div>
