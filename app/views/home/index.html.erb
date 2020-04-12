@@ -4,7 +4,7 @@
 
       <%= form_tag root_path, :method => 'POST' do%>
         <%= text_field_tag 'ticker', nil, placeholder: "Enter Ticker Symbol", size: 50%>
-        <%= submit_tag "seach" %>
+        <%= submit_tag "search" %>
       <% end %>
 
     <% if @stock %>

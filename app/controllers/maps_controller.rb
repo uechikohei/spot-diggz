@@ -8,6 +8,10 @@ class MapsController < ApplicationController
     @maps = Map.all
   end
 
+  def search
+    @test = Map.search(params[:address])
+  end
+
   # GET /maps/1
   # GET /maps/1.json
   def show

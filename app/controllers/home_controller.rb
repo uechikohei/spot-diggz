@@ -15,13 +15,4 @@ class HomeController < ApplicationController
 
   end
 
-  def about
-  end
-
 end
-
-
-# raiseは例外発生させる
-## 使用するクラスはデフォルトで、RuntimeErrorクラス
-# rescueメソッドで格納する変数は、execepetionクラス
-## rescueメソッドで、格納する変数にRuntimeErrorクラスなど小クラスを指定しないとデバックなど行えなくなる。

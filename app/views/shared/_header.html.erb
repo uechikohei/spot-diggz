@@ -1,41 +1,43 @@
 <header>
   <nav class="navbar navbar-expand-lg navbar-light bg-primary">
-    <%= link_to image_tag("sss.logo.png"), root_path, class:"navbar-brand" %>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-        <li class="nav-item">
-          <%= link_to "概要", home_about_path, class: "nav-link text-white" %>
-        </li>
+    <div class="container">
+      <%= link_to image_tag("sss.logo.png"), root_path, class:"navbar-brand" %>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-        <% if user_signed_in? %>
-          <li class="nav-item">
-          <%= link_to "プロフ編集", edit_user_registration_path, class: "nav-link text-white" %>
-          </li>
-          <li class="nav-item">
-          <%= link_to "ログアウト", destroy_user_session_path, method: :delete, class: "nav-link text-white" %>
-          </li>
-          <li class="nav-item">
-          <%= link_to "投稿一覧", maps_path, class: "nav-link text-white" %>
-          </li>
-          <li class="nav-item">
-          <%= link_to "mapを追加", new_map_path, class: "nav-link text-white" %>
-          </li>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <div id="users-result"></div>
 
-        <% else %>
-          <li class="nav-item">
-            <%= link_to "新規登録", new_user_registration_path, class: "nav-link text-white" %>
-          </li>
-          <li class="nav-item">
-            <%= link_to "ログイン", new_user_session_path, class: "nav-link text-white" %>
-          </li>
-          <li class="nav-item">
-          <%= link_to "投稿一覧", maps_path, class: "nav-link text-white" %>
-          </li>
-        　<% end %>
-      </ul>
+        <ul class="navbar-nav ml-md-auto">
+
+          <% if user_signed_in? %>
+            <li class="nav-item">
+            <%= link_to "プロフ編集", edit_user_registration_path, class: "nav-link text-white" %>
+            </li>
+            <li class="nav-item">
+            <%= link_to "ログアウト", destroy_user_session_path, method: :delete, class: "nav-link text-white" %>
+            </li>
+            <li class="nav-item">
+            <%= link_to "投稿一覧", maps_path, class: "nav-link text-white" %>
+            </li>
+            <li class="nav-item">
+            <%= link_to "mapを追加", new_map_path, class: "nav-link text-white" %>
+            </li>
+
+          <% else %>
+            <li class="nav-item">
+              <%= link_to "新規登録", new_user_registration_path, class: "nav-link text-white" %>
+            </li>
+            <li class="nav-item">
+              <%= link_to "ログイン", new_user_session_path, class: "nav-link text-white" %>
+            </li>
+            <li class="nav-item">
+            <%= link_to "投稿一覧", maps_path, class: "nav-link text-white" %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
     </div>
   </nav>
 </header>

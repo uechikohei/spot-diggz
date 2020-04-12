@@ -20,10 +20,14 @@ gem "nokogiri"
 gem 'rubocop', '~> 0.81.0'
 # ユーザー認証
 gem 'devise', '~> 4.7', '>= 4.7.1'
-# 外部API
-gem 'stock_quote', '~> 3.0'
 # google maps 井戸検索移動
 gem 'geocoder', '~> 1.6', '>= 1.6.2'
+
+gem 'fog-aws', '~> 3.6', '>= 3.6.2'
+gem 'carrierwave', '~> 2.1'
+gem 'rmagick', '~> 4.1', '>= 4.1.1'
+gem 'omniauth', '~> 1.9', '>= 1.9.1'
+gem 'omniauth-twitter', '~> 1.4'
 
 group :test do
   gem "capybara", ">= 2.15"
