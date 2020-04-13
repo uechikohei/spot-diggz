@@ -2,18 +2,5 @@
   <div class="container">
     <h1 class="display-4">ここが[ SSS ]トップページ</h1>
 
-      <%= form_tag root_path, :method => 'POST' do%>
-        <%= text_field_tag 'ticker', nil, placeholder: "Enter Ticker Symbol", size: 50%>
-        <%= submit_tag "search" %>
-      <% end %>
-
-    <% if @stock %>
-      <%= @stock.company_name %> <br>
-      $<%= @stock.latest_price %> <br>
-    <% elsif @nothing %>
-      <%= @nothing %>
-    <% else @error %>
-      <%= @error %>
-    <% end %>
   </div>
 </div>
