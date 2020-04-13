@@ -1,13 +1,20 @@
 class ImageUploader < CarrierWave::Uploader::Base
   # Include RMagick or MiniMagick support:
   include CarrierWave::RMagick
+  storage :file
   # 画像の上限を700pxにする
-  process :resize_to_limit => [700, 700]
+  process :resize_to_limit => [100, 100]
+  version :thumb do
+    process :resize_to_limit => [200, 200]
+  end
     # 保存形式をJPGにする
   process :convert => 'jpg'
+  def filename
+    super.chomp(File.extname(super)) + '.jpg' if original_filename.present?
+  end
 
   # Choose what kind of storage to use for this uploader:
-  storage :file
+
   # storage :fog
 
   # Override the directory where uploaded files will be stored.

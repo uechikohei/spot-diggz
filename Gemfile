@@ -26,6 +26,8 @@ gem 'geocoder', '~> 1.6', '>= 1.6.2'
 gem 'fog-aws', '~> 3.6', '>= 3.6.2'
 gem 'carrierwave', '~> 2.1'
 gem 'rmagick', '~> 4.1', '>= 4.1.1'
+gem 'image_processing', '~> 1.10', '>= 1.10.3'
+gem 'image_magick', '~> 0.1.9'
 gem 'omniauth', '~> 1.9', '>= 1.9.1'
 gem 'omniauth-twitter', '~> 1.4'
 
