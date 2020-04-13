@@ -1,7 +1,7 @@
-<header>
-  <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+<header class="sticky-top">
+  <nav class="navbar navbar-expand-lg shadow-sm p-3 mb-5 bg-white rounded">
     <div class="container">
-      <%= link_to image_tag("sss.logo.png"), root_path, class:"navbar-brand" %>
+      <%= link_to image_tag("new.sss.logo.png"), root_path, class:"navbar-brand" %>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -13,27 +13,27 @@
 
           <% if user_signed_in? %>
             <li class="nav-item">
-            <%= link_to "プロフ編集", edit_user_registration_path, class: "nav-link text-white" %>
+            <%= link_to "プロフ編集", edit_user_registration_path, class: "nav-link text-body" %>
             </li>
             <li class="nav-item">
-            <%= link_to "ログアウト", destroy_user_session_path, method: :delete, class: "nav-link text-white" %>
+            <%= link_to "ログアウト", destroy_user_session_path, method: :delete, class: "nav-link text-body" %>
             </li>
             <li class="nav-item">
-            <%= link_to "投稿一覧", maps_path, class: "nav-link text-white" %>
+            <%= link_to "投稿一覧", maps_path, class: "nav-link text-body" %>
             </li>
             <li class="nav-item">
-            <%= link_to "mapを追加", new_map_path, class: "nav-link text-white" %>
+            <%= link_to "mapを追加", new_map_path, class: "nav-link text-body" %>
             </li>
 
           <% else %>
             <li class="nav-item">
-              <%= link_to "新規登録", new_user_registration_path, class: "nav-link text-white" %>
+              <%= link_to "新規登録", new_user_registration_path, class: "nav-link text-body" %>
             </li>
             <li class="nav-item">
-              <%= link_to "ログイン", new_user_session_path, class: "nav-link text-white" %>
+              <%= link_to "ログイン", new_user_session_path, class: "nav-link text-body" %>
             </li>
             <li class="nav-item">
-            <%= link_to "投稿一覧", maps_path, class: "nav-link text-white" %>
+            <%= link_to "投稿一覧", maps_path, class: "nav-link text-body" %>
             </li>
           <% end %>
         </ul>
