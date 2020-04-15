@@ -1,12 +1,11 @@
 <div class=“row”>
     <div class="col-md-6 offset-md-3">
       <div class="jumbotron">
-      <h2 class="card-title text-center">編集 <%= resource_name.to_s.humanize %></h2>
-      <hr class="my-4"><br><br>
-
       <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
         <%= render "devise/shared/error_messages", resource: resource %>
 
+      <h2 class="card-title text-center"><%= resource_name.to_s.humanize %></h2>
+      <hr class="my-4"><br><br>
 
             <div>
               <div class= "d-flex align-items-center justify-content-center" alt="profile-image">
