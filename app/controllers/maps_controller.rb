@@ -1,7 +1,6 @@
 class MapsController < ApplicationController
   before_action :set_map, only: [:show, :edit, :update, :destroy]
 
-
   # GET /maps
   # GET /maps.json
   def index
@@ -21,6 +20,7 @@ class MapsController < ApplicationController
   # GET /maps/new
   def new
     @map = Map.new
+    @user = current_user
   end
 
   # GET /maps/1/edit
@@ -76,6 +76,6 @@ class MapsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def map_params
-    params.require(:map).permit(:address, :latitude, :longitude)
+    params.require(:map).permit(:address, :latitude, :longitude, :user_id)
   end
 end

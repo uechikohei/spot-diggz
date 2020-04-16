@@ -1,49 +1,8 @@
-<p id="notice"><%= notice %></p>
 
-<div class="d-flex flex-column align-items-center mt-3">
-  <div class="col-xl-7 col-lg-8 col-md-10 col-sm-11 post-card">
-    <div class="card">
-      <div class="card-header">
-        <%= @user.name %>
-        投稿する
-      </div>
-      <div class="card-body">
-          <div class="form-group row mt-2">
-            <div class="col-auto pr-0">
-            </div>
-            <div class="col pl-0">
-            </div>
-          </div>
-          <div class="fallback">
-          </div>
-          <div class="dz-message m-0"></div>
-          <div class="dropzone-previews mb-3">
-            <div class="upload-photos-icon">
-              <i class="fa fa-plus fa-2x" aria-hidden="true" style="color:#dddfe2"></i>
-            </div>
-          </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<br><br><br>
 
 <div class="jumbotron jumbotron-fluid">
   <div class="container">
-    <h1 class="display-4">ここが[ SSS ]トップページ</h1>
-
-      <br><br><br>
-
-      <%= form_tag maps_path, :method => 'get' do%>
-        <%= text_field_tag 'address', params[:address], placeholder: "あなたが検索したい場所は？", size: 50%>
-        <%= submit_tag "search" %>
-      <% end %>
-
-      <br><br><br>
-
-
-      <%= @test %>
+    <h1 class="display-4"><%= @user.name %></h1>
 
     <table>
       <thead>
@@ -55,7 +14,6 @@
           <th colspan="3"></th>
         </tr>
       </thead>
-
       <tbody>
         <% @maps.each do |map| %>
           <tr>
@@ -71,7 +29,8 @@
       </tbody>
     </table>
 
-    <br>
+    <h1 class="font-weight-bold text-center mb-5">コンテンツを検索</h1>
+    <h1 class="font-weight-bold text-center mb-5">フォームのリンク</h1>
   </div>
 </div>
 

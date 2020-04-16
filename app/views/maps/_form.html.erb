@@ -26,6 +26,10 @@
     <%= form.text_field :longitude %>
   </div>
 
+  <div class="field">
+    <%= form.hidden_field :user_id, value: @user.id %>
+  </div>
+
   <div class="actions">
     <%= form.submit %>
   </div>
