@@ -16,13 +16,16 @@
             <%= link_to "プロフ編集", edit_user_registration_path, class: "nav-link text-body" %>
             </li>
             <li class="nav-item">
-            <%= link_to "ログアウト", destroy_user_session_path, method: :delete, class: "nav-link text-body" %>
+            <%= link_to "ユーザー", users_path, class: "nav-link text-body" %>
             </li>
             <li class="nav-item">
             <%= link_to "投稿一覧", maps_path, class: "nav-link text-body" %>
             </li>
             <li class="nav-item">
             <%= link_to "mapを追加", new_map_path, class: "nav-link text-body" %>
+            </li>
+            <li class="nav-item">
+            <%= link_to "ログアウト", destroy_user_session_path, method: :delete, class: "nav-link text-body" %>
             </li>
 
           <% else %>

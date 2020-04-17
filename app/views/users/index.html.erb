@@ -1,2 +1,13 @@
 <h1 class="font-weight-bold text-center mb-5">ユーザー検索</h1>
 <h1 class="font-weight-bold text-center mb-5">検索フォームのリンク</h1>
+
+    <!-- 以下の<% %>を使ってeach文を追加してください -->
+    <% @users.each do |user| %>
+      <div class="card border-0 col-12">
+        <div class="card-body">
+          <!-- 以下の<%= %>を使ってユーザー名を表示してください -->
+          <%= link_to(user.name, "/users/#{user.id}") %>
+        </div>
+      </div>
+    <!-- 以下の<% %>を使ってeach文のendを追加してください -->
+    <% end %>
