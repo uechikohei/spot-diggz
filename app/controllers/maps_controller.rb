@@ -5,7 +5,6 @@ class MapsController < ApplicationController
   # GET /maps.json
   def index
     @maps = Map.all
-    @user = current_user
   end
 
   def search
@@ -21,7 +20,6 @@ class MapsController < ApplicationController
   # GET /maps/new
   def new
     @map = Map.new
-    @user = current_user
   end
 
   # GET /maps/1/edit
