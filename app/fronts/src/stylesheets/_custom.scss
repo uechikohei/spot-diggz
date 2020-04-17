@@ -1,3 +1,19 @@
 @import "~bootstrap/scss/functions";
 @import "variables-custom";
 
+/*slick setting*/
+
+.slider{
+    margin: 0 auto;
+    width: 80%;
+    padding-right:50px;
+    }
+    .slider img{
+        border-radius: 5px;
+        height: auto;
+        width: 100%;
+        }
+
+    .slick-dots{
+        right:0px;
+    }
