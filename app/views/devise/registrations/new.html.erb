@@ -1,0 +1,45 @@
+
+  <div class=“row”>
+    <div class="col-md-4 offset-md-7">
+      <div class="jumbotron border border-dark">
+
+      <h5 class="card-title text-center">新しくアカウントを<br>作成する</h5><br>
+
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+
+        <div class="form-group row justify-content-center">
+          <div>
+            <%= f.text_field :name, autofocus: true,
+                class: "form-control", placeholder: "名前" %>
+          </div>
+        </div><br>
+
+        <div class="form-group row justify-content-center">
+          <div>
+            <%= f.email_field :email, class: "form-control",
+                placeholder: "メールアドレス" %>
+          </div>
+        </div><br>
+
+        <div class="form-group row justify-content-center">
+          <div>
+            <%= f.password_field :password, autocomplete: "new-password",
+              class: "form-control", placeholder: "パスワード (#{@minimum_password_length}文字以上)" %>
+          </div>
+        </div><br>
+
+        <div class="d-flex align-items-end flex-column">
+          <div class="p-2">
+            <%= f.submit t('.sign_up'), class: "btn btn-outline-primary" %>
+          </div>
+          <div class="p-2">
+            <%= render "devise/shared/links" %>
+          </div>
+
+        </div>
+
+      <% end %>
+      </div>
+    </div>
+  </div>
