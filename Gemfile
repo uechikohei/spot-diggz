@@ -30,6 +30,7 @@ gem 'image_processing', '~> 1.10', '>= 1.10.3'
 gem 'image_magick', '~> 0.1.9'
 gem 'omniauth', '~> 1.9', '>= 1.9.1'
 gem 'omniauth-twitter', '~> 1.4'
+gem 'ransack', '~> 2.3', '>= 2.3.2'
 
 group :test do
   gem "capybara", ">= 2.15"
