@@ -1,10 +1,12 @@
 class MapsController < ApplicationController
   before_action :set_map, only: [:show, :edit, :update, :destroy]
 
+
   # GET /maps
   # GET /maps.json
   def index
     @maps = Map.all
+      # ransack
   end
 
   def search

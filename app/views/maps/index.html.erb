@@ -2,6 +2,13 @@
   <div class="container">
     <h1 class="display-4"><%= current_user.name %>(ユーザー名)</h1>
 
+
+    <%= search_form_for @key do |f| %>
+      <%= f.search_field :address_cont, placeholder: '名前を入力...' %>
+      <%= f.submit ("検索する") %>
+    <% end %>
+
+
     <table>
       <thead>
         <tr>
@@ -28,6 +35,7 @@
     </table>
 
     <h1 class="font-weight-bold text-center mb-5">コンテンツを検索</h1>
+
     <h1 class="font-weight-bold text-center mb-5">フォームのリンク</h1>
   </div>
 </div>
