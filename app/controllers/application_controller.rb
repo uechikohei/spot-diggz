@@ -2,12 +2,7 @@ class ApplicationController < ActionController::Base
     protect_from_forgery with: :exception
     before_action :configure_permitted_parameters, if: :devise_controller?
 
-    before_action :set_search
 
-    def set_search
-        @key = Map.ransack(params[:q])
-        @search_count = @key.result(distinct: true)
-    end
 
     protected
 
