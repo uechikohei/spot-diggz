@@ -1,6 +1,7 @@
 class MapsController < ApplicationController
-  before_action :set_map, only: [:show, :edit, :update, :destroy]
-
+  # google map apiを取得する
+  before_action :set_map, only: %i[show edit update destroy]
+  before_action :authenticate_user!, only: %i[index new create destroy]
 
   # GET /maps
   # GET /maps.json
@@ -79,6 +80,6 @@ class MapsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def map_params
-    params.require(:map).permit(:address, :latitude, :longitude, :user_id)
+    params.require(:map).permit(:address, :latitude, :longitude, :user_id, :picture, :content, :title)
   end
 end

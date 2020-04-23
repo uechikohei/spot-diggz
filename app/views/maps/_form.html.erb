@@ -12,18 +12,21 @@
   <% end %>
 
   <div class="field">
+    <%= form.label :picture %>
+    <%= form.file_field :picture %>
+  </div>
+
+  <div class="field">
     <%= form.label :address %>
     <%= form.text_field :address %>
   </div>
 
   <div class="field">
-    <%= form.label :latitude %>
-    <%= form.text_field :latitude %>
+    <%= form.hidden_field :latitude %>
   </div>
 
   <div class="field">
-    <%= form.label :longitude %>
-    <%= form.text_field :longitude %>
+    <%= form.hidden_field :longitude %>
   </div>
 
   <div class="field">

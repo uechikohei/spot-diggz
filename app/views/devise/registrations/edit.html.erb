@@ -14,7 +14,7 @@
                       <% if @user.image? %>
                         <%= image_tag @user.image.url, class:"rounded-circle" %>
                       <% else %>
-                        <%= image_tag "/assets/default.jpg", :size => '100x100', class:"rounded-circle" %>
+                        <%= image_pack_tag 'media/images/default.jpg', :size => '100x100', class:"rounded-circle" %>
                       <% end %>
                   </div>
                   <br>

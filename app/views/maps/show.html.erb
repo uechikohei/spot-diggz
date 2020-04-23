@@ -1,5 +1,13 @@
 <p id="notice"><%= notice %></p>
 
+<div class="container">
+  <% if @map.picture? %>
+    <%= image_tag @map.picture.url %>
+  <% else %>
+    <%= image_pack_tag 'media/images/no-image.jpg' %>
+  <% end %>
+</div>
+
 <p>
   <strong>Address:</strong>
   <%= @map.address %>
