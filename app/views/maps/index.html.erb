@@ -4,8 +4,8 @@
 
     <%= render'/shared/search_form' %>
 
-    <% if @results.any? %>
-      <% @results.each do |result| %>
+    <% if @search_count.any? %>
+      <% @search_count.each do |result| %>
         <p><%= result.address %></p>
         <p><%= result.latitude  %></p>
         <p><%= result.longitude %></p>
