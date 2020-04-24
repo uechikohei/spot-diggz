@@ -1,9 +1,8 @@
 Rails.application.routes.draw do
+  root "home#index"
+  devise_for :users
+  get 'users/:id', to: 'users#show'
+  post "/" => 'home#index'
   resources :maps
   resources :users
-  devise_for :users
-  root "home#index"
-  get 'users/:id', to: 'users#show'
-  get 'users', to: 'users#index'
-  post "/" => 'home#index'
 end

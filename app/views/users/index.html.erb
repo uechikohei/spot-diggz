@@ -2,22 +2,8 @@
 
 <%= render'/shared/search_form_user' %>
 
-<h1 class="font-weight-bold text-center mb-5">検索結果</h1>
-
 <div class="container">
     <% @search_feeds.each do |result| %>
       <%= link_to result.name, user_path(@q, :'id' => "#{result.id}") %>
     <% end %>
 </div>
-
-    <!-- 以下の<% %>を使ってeach文を追加してください -->
-    <% @users.each do |user| %>
-      <div class="card border-0 col-12">
-        <div class="card-body">
-          <!-- 以下の<%= %>を使ってユーザー名を表示してください -->
-          <%= link_to(user.name, "/users/#{user.id}") %>
-          <%= link_to 'Show', user %>
-        </div>
-      </div>
-    <!-- 以下の<% %>を使ってeach文のendを追加してください -->
-    <% end %>
