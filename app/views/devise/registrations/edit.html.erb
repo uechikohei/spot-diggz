@@ -12,7 +12,7 @@
 
                   <div class= "d-flex align-items-center justify-content-center" alt="profile-image">
                       <% if @user.image? %>
-                        <%= image_tag @user.image.url, class:"rounded-circle" %>
+                        <%= link_to image_tag(@user.image.url, class:"rounded-circle"), root_path %>
                       <% else %>
                         <%= image_pack_tag 'media/images/default.jpg', :size => '100x100', class:"rounded-circle" %>
                       <% end %>
