@@ -4,7 +4,7 @@
 
 <div class="container">
     <% @search_feeds.each do |result| %>
-      <%= image_pack_tag @user.image.url, class:"rounded-circle" %>
+      <%= render partial: 'users', collection: @search_feeds %>
       <%= link_to result.name, user_path(@q, :'id' => "#{result.id}") %>
     <% end %>
 </div>

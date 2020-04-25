@@ -7,4 +7,8 @@ module ApplicationHelper
             "SkateSpotSearch"
         end
     end
+
+    def user_image_valid?
+        @user.image.present?
+    end
 end
