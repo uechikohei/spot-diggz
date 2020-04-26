@@ -44,7 +44,7 @@
 
                   <hr class="my-4">
                   <br>
-                  <h5 class="text-monospace font-weight-bolder">新しくパスワード再設定する方</h5>
+                  <h5 class="text-monospace font-weight-bolder">新しくパスワードを設定する方</h5>
                     <div class="form-group row justify-content-center">
                       <p class="col-sm-4">
                         <% if @minimum_password_length %><br>
@@ -68,16 +68,15 @@
                     <br>
 
                   <hr class="my-4">
-                  <h5 class="text-monospace font-weight-bolder">変更内容を更新</h5>
                   <br>
                     <div class="form-group row justify-content-center">
                       <div class="col-sm-5">
                         <%= f.password_field :current_password, autocomplete: "current-password",
-                          class: "form-control", placeholder: "現在のパスワード" %>
-                      </div>
+                          class: "form-control", placeholder: "現在のパスワードを入力" %>
+                      </div><br><br>
                       <div class="form-group row justify-content-center">
                         <div class="col-sm-5">
-                          <%= f.submit "更新する", class: 'btn btn-primary' %>
+                          <%= f.submit "更新", class: 'btn btn-primary' %>
                         </div>
                       </div>
                     </div>
