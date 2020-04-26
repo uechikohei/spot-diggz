@@ -46,23 +46,17 @@
                   <br>
                   <h5 class="text-monospace font-weight-bolder">新しくパスワードを設定する方</h5>
                     <div class="form-group row justify-content-center">
-                      <p class="col-sm-4">
-                        <% if @minimum_password_length %><br>
-                          <em>( <%= @minimum_password_length %> 文字以上 )</em>
-                        <% end %>
-                      </p>
                       <div class="col-sm-5"><br>
                         <%= f.password_field :password, class: "form-control",
-                          placeholder: "新しいパスワード"%>
+                          placeholder: "新しいパスワード　(4文字以上)"%>
                       </div>
                     </div>
                     <br>
 
                     <div class="form-group row justify-content-center">
-                      <p class="col-sm-4">( 確認用 )</p>
                       <div class="col-sm-5">
                       <%= f.password_field :password_confirmation, autocomplete: "new-password",
-                        class: "form-control", placeholder: "新しいパスワード"%>
+                        class: "form-control", placeholder: "新しいパスワード　(確認用)"%>
                       </div>
                     </div>
                     <br>
