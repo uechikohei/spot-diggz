@@ -8,29 +8,61 @@
         <ul class="navbar-nav ml-md-auto">
           <% if user_signed_in? %>
             <li class="nav-item">
-            <%= link_to "プロフ編集", edit_user_registration_path, class: "nav-link text-body" %>
+            <%= link_to edit_user_registration_path, class: "nav-link text-body" do %>
+              <span class="fas fa-address-card"></span>
+              編集
+            <% end %>
             </li>
             <li class="nav-item">
-            <%= link_to "ユーザー", users_path, class: "nav-link text-body" %>
+            <%= link_to users_path, class: "nav-link text-body" do %>
+              <span class="fas fa-address-book"></span>
+              ユーザー
+            <% end %>
             </li>
             <li class="nav-item">
-            <%= link_to "投稿一覧", maps_path, class: "nav-link text-body" %>
+            <%= link_to maps_path, class: "nav-link text-body" do %>
+              <span class="fas fa-folder-open"></span>
+              投稿一覧
+            <% end %>
             </li>
             <li class="nav-item">
-            <%= link_to "mapを追加", new_map_path, class: "nav-link text-body" %>
+            <%= link_to new_map_path, class: "nav-link text-body" do %>
+              <span class="fas fa-paper-plane"></span>
+              投稿する
+              <% end %>
             </li>
             <li class="nav-item">
-            <%= link_to "ログアウト", destroy_user_session_path, method: :delete, class: "nav-link text-body" %>
+            <%= link_to destroy_user_session_path, method: :delete, class: "nav-link text-body" do %>
+              <i class="fas fa-sign-out-alt"></i>
+              ログアウト
+            <% end %>
+            </li>
+            <li class="nav-item">
+              <span class="fas fa-envelope"></span>
+              問い合わせ
             </li>
           <% else %>
             <li class="nav-item">
-              <%= link_to "新規登録", new_user_registration_path, class: "nav-link text-body" %>
+              <%= link_to new_user_registration_path, class: "nav-link text-body" do %>
+                <i class="fas fa-user-plus"></i>
+                新規登録
+              <% end %>
             </li>
             <li class="nav-item">
-              <%= link_to "ログイン", new_user_session_path, class: "nav-link text-body" %>
+              <%= link_to new_user_session_path, class: "nav-link text-body" do %>
+                <i class="fas fa-sign-in-alt"></i>
+                ログイン
+              <% end %>
             </li>
             <li class="nav-item">
-            <%= link_to "投稿一覧", maps_path, class: "nav-link text-body" %>
+            <%= link_to maps_path, class: "nav-link text-body" do %>
+              <span class="fas fa-folder-open"></span>
+              投稿一覧
+            <% end %>
+            </li>
+            <li class="nav-item">
+              <span class="fas fa-envelope"></span>
+              問い合わせ
             </li>
           <% end %>
         </ul>
