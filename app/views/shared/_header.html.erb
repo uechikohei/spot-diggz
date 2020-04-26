@@ -1,14 +1,10 @@
 <header class="sticky-top">
-  <nav class="navbar navbar-expand-lg shadow-sm p-3 mb-5 bg-white rounded">
-    <div class="container">
-      <%= link_to image_pack_tag("media/images/new.sss.logo.png"), root_path, class:"navbar-brand" %>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <div id="users-result"></div>
-
+  <nav class="navbar navbar-expand-lg shadow-sm p-3 mb-5 navbar-light bg-white rounded">
+    <%= link_to image_pack_tag("media/images/new.sss.logo.png"), root_path, class:"navbar-brand" %>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
         <ul class="navbar-nav ml-md-auto">
           <% if user_signed_in? %>
             <li class="nav-item">
