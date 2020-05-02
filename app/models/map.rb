@@ -1,7 +1,7 @@
 class Map < ApplicationRecord
-  geocoded_by :address
-  after_validation :geocode, if: :address_changed?
   mount_uploader :picture, PictureUploader
+  reverse_geocoded_by :latitude, :longitude
+  after_validation :reverse_geocode
 
   def self.search(address)
     return Map.all unless address

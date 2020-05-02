@@ -19,6 +19,7 @@ Rails.application.configure do
     config.cache_store = :null_store
   end
 
+
   config.active_storage.service = :local
 
   config.action_mailer.perform_caching = false

@@ -1,39 +1,47 @@
-<%= form_with(model: map, local: true) do |form| %>
-  <% if map.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(map.errors.count, "error") %> prohibited this map from being saved:</h2>
+ <%= form_with(model: map, local: true) do |form| %>
+    <% if map.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(map.errors.count, "error") %> prohibited this map from being saved:</h2>
 
-      <ul>
-        <% map.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
+        <ul>
+          <% map.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="field">
+      <%= form.text_field :title, placeholder: "タイトル" %>
+    </div><br>
+
+    <div class="field">
+      <%= form.text_area :content,  size: "60x5", placeholder: "スポットやスケートパークについて、説明や備考があれば" %>
+    </div><br>
+
+    <div class="d-flex align-items-center justify-content-center">
+      <button type="button" class="btn btn-outline-secondary rounded-pill">
+        <%= form.file_field :picture %>
+      </button>
+    </div><br>
+
+    <div class="field">
+      <%= form.hidden_field :latitude, {id: "lat"} %>
     </div>
+
+    <div class="field">
+      <%= form.hidden_field :longitude, {id: "lng"} %>
+    </div>
+
+    <div class="field">
+      <%= form.hidden_field :user_id, value: current_user.id %>
+    </div>
+
+    <div class="actions">
+      <%= button_tag type: 'submit', class: 'btn btn-primary' do %>
+        <span class="fas fa-paper-plane"></span>
+        投稿
+      <% end %>
+    </div>
+
   <% end %>
-
-  <div class="field">
-    <%= form.label :picture %>
-    <%= form.file_field :picture %>
-  </div>
-
-  <div class="field">
-    <%= form.label :address %>
-    <%= form.text_field :address %>
-  </div>
-
-  <div class="field">
-    <%= form.hidden_field :latitude %>
-  </div>
-
-  <div class="field">
-    <%= form.hidden_field :longitude %>
-  </div>
-
-  <div class="field">
-    <%= form.hidden_field :user_id, value: current_user.id %>
-  </div>
-
-  <div class="actions">
-    <%= form.submit %>
-  </div>
-<% end %>
