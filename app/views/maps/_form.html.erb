@@ -1,4 +1,4 @@
- <%= form_with(model: map, local: true) do |form| %>
+<%= form_with(model: map, local: true) do |form| %>
     <% if map.errors.any? %>
       <div id="error_explanation">
         <h2><%= pluralize(map.errors.count, "error") %> prohibited this map from being saved:</h2>
@@ -43,5 +43,4 @@
         投稿
       <% end %>
     </div>
-
-  <% end %>
+<% end %>

@@ -8,10 +8,14 @@
                         <i class="fas fa-search"></i>
                     <% end %>
                     <p>1. スポットを検索しよう！<br>2. 地図上にマーカーを落として住所を決定！</p>
-                    <%= render "googlemap" %>
-                    <%= render "form", map: @map %><br>
-                    <%= link_to 'Back', maps_path %>
             </form>
+
+
+            <%= render "googlemap" %>
+            <%= render "form", map: @map %>
+
+
+            <%= link_to 'Back', maps_path %>
         </div>
     </div>
 </div>
