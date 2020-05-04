@@ -11,6 +11,20 @@
       </div>
     <% end %>
 
+    <div class="field text-left">
+      <p>
+        1. どんなスポット？　　
+        <%= form.select :spot_style, [['スケートパーク', true], ['ストリートスポット', false]] %>
+      </p>
+    </div>
+
+    <div class="field text-left">
+      <p>
+        2. ヘルメットの着用義務は？　　
+        <%= form.select :helmet, [['有り', true],['無し', false]] %>
+      </p>
+    </div><br>
+
     <div class="field">
       <%= form.text_field :title, placeholder: "タイトル" %>
     </div><br>

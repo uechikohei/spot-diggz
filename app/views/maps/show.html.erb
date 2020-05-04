@@ -10,25 +10,33 @@
 </div>
 
 <h1>
+<% if @map.title? %>
   <%= @map.title %>
+<% else %>
+  タイトル
+<% end %>
 </h1>
 
 <p>
+<% if @map.content? %>
   <%= @map.content %>
+<% else %>
+  あなたのお気に入り、スケートボードスポットです！
+<% end %>
 </p>
 
 <p>
-  <strong>Address:</strong>
+  <strong>住所: </strong>
   <%= @map.address %>
 </p>
 
 <p>
-  <strong>Latitude:</strong>
+  <strong>緯度: </strong>
   <%= @map.latitude %>
 </p>
 
 <p>
-  <strong>Longitude:</strong>
+  <strong>経度: </strong>
   <%= @map.longitude %>
 </p>
 
