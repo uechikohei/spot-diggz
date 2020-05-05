@@ -2,35 +2,38 @@
   <div class="container">
     <h1 class="display-4">投稿一覧</h1>
 
-    <% @maps.each do |map| %>
-      <div class="card" style="width: 18rem;">
-        <div class="card-img-top">
-          <% if map.picture? %>
-            <%= image_tag map.picture.url, class: "card-img-top" %>
-          <% else %>
-            <%= image_pack_tag 'media/images/no-image.jpg', class: "card-img-top" %>
-          <% end %>
-        </div>
-          <div class="card-body">
-            <h5 class="card-title">
-              <% if map.title? %>
-                <%= map.title %>
-              <% else %>
-                タイトル
-              <% end %>
-            </h5>
-            <p class="card-text">
-              <% if map.content? %>
-                <%= map.content %>
-              <% else %>
-                あなたのお気に入りスポットです！
-              <% end %>
-            </p>
-            <%= link_to 'Show', map %> | 
-            <%= link_to 'Edit', edit_map_path(map) %> | 
-            <%= link_to 'Destroy', map, method: :delete, data: { confirm: 'Are you sure?' } %>
-          </div>
-      </div><br>
-    <% end %>
+
+    <div class="container-fluid d-flex flex-row card-deck">
+      <% @maps.each do |map| %>
+        <div class="card p-2">
+          
+            <% if map.picture? %>
+              <%= image_tag map.picture.url, class: "card-img-top" %>
+            <% else %>
+              <%= image_pack_tag 'media/images/no-image.jpg', class: "card-img-top" %>
+            <% end %>
+          
+            <div class="card-body text-center">
+              <h5 class="card-title">
+                <% if map.title? %>
+                  <%= map.title %>
+                <% else %>
+                  タイトル
+                <% end %>
+              </h5>
+              <p class="card-text">
+                <% if map.content? %>
+                  <%= map.content %>
+                <% else %>
+                  あなたのお気に入りスポットです！
+                <% end %>
+              </p>
+              <%= link_to 'Show', map %> | 
+              <%= link_to 'Edit', edit_map_path(map) %> | 
+              <%= link_to 'Destroy', map, method: :delete, data: { confirm: 'Are you sure?' } %>
+            </div>
+        </div><br>
+      <% end %>
+    </div>
 
 <%= link_to 'New Map', new_map_path %>
