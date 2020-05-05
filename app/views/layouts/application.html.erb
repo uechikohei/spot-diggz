@@ -16,6 +16,7 @@
     <div id="wrapper">
       <%= render "shared/header" %>
         <div id="container-fluid">
+        <p class="font-italic text-right"><%= current_user.name %>でログイン中</p>
           <%= render "shared/flash" %>
           <%= yield %>
         </div>
