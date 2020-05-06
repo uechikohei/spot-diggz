@@ -3,8 +3,19 @@
 <%= render'/shared/search_form_user' %>
 
 <div class="container">
+  <div class="row row-cols-1 row-cols-md-3">
+
     <% @search_feeds.each do |result| %>
-      <%= render partial: 'users', collection: @search_feeds %>
-      <%= link_to result.name, user_path(@q, :'id' => "#{result.id}") %>
+      <div class="col mb-4">
+        <div class="card">
+          <div class="card-body">
+
+            <%= image_tag result.image.url %>
+            <%= link_to result.name, user_path(@q, :'id' => "#{result.id}") %>
+
+          </div>
+        </div>
+      </div>
     <% end %>
+  </div>
 </div>

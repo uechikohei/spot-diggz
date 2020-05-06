@@ -6,10 +6,16 @@ class User < ApplicationRecord
 
   mount_uploader :image, ImageUploader
   validates :name, presence: true, length: { maximum: 80}
+  validates :image, presence: true
 
   def self.guest
-    find_or_create_by!(email: 'guest@example.com', name: 'guest') do |user|
+
+    image_path = open("./db/fixtures/faker_user_image.png")
+
+    find_or_create_by!(email: 'guest@example.com') do |user|
       user.password = SecureRandom.urlsafe_base64
+      user.name = "guest_user"
+      user.image = image_path
       # user.confirmed_at = Time.now  # Confirmable を使用している場合は必要
     end
   end
