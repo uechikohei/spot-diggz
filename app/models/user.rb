@@ -7,10 +7,9 @@ class User < ApplicationRecord
   mount_uploader :image, ImageUploader
   validates :name, presence: true, length: { maximum: 80}
 
+  # 簡単ログインユーザー作成
   def self.guest
-
     image_path = open("./db/fixtures/faker_user_image.png")
-
     find_or_create_by!(email: 'guest@example.com') do |user|
       user.password = SecureRandom.urlsafe_base64
       user.name = "guest_user"

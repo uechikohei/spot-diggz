@@ -11,16 +11,12 @@
               <br>
 
                   <div class= "d-flex align-items-center justify-content-center" alt="profile-image">
-                      <% if @user.image? %>
-                        <%= link_to image_tag(@user.image.url, class:"rounded-circle"), users_path %>
-                      <% else %>
-                        <%= image_pack_tag 'media/images/default.jpg', :size => '100x100', class:"rounded-circle" %>
-                      <% end %>
+                    <%= link_to image_tag(@user.image.url, class: "rounded-circle"), users_path %>
                   </div>
                   <br>
                   <div class= "d-flex align-items-center justify-content-center">
                     <button type="button" class="btn btn-outline-secondary rounded-pill">
-                      <%= f.file_field :image, accept: 'image/jpeg,image/gif,image/png' %>
+                      <%= f.file_field :image %>
                     </button>
                   </div>
                   <br><br>

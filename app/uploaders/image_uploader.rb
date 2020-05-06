@@ -1,17 +1,16 @@
 class ImageUploader < CarrierWave::Uploader::Base
   # Include RMagick or MiniMagick support:
-  include CarrierWave::RMagick
+  include CarrierWave::MiniMagick
 
   # Choose what kind of storage to use for this uploader:
   storage :file
 
-  # 画像の上限を100pxにする
-  process :resize_to_limit => [100, 100]
-  version :thumb do
-    process :resize_to_limit => [200, 200]
-  end
     # 保存形式をJPGにする
   process :convert => 'jpg'
+
+    # サムネイルを生成する設定
+  process resize_to_fit: [200, 200]
+
   def filename
     super.chomp(File.extname(super)) + '.jpg' if original_filename.present?
   end
@@ -26,10 +25,11 @@ class ImageUploader < CarrierWave::Uploader::Base
     "uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
   end
 
-
+  # プロフ画像としてimageがnillなら適用
   def default_url(*args)
-    ActionController::Base.helpers.asset_path("fallback/" + [version_name, "bg-md.jpg"].compact.join('_'))
+    "/images/" + [version_name, "prof.jpg"].compact.join('_')
   end
+
   # Process files as they are uploaded:
   # process scale: [200, 300]
   #
