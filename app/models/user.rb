@@ -6,7 +6,6 @@ class User < ApplicationRecord
 
   mount_uploader :image, ImageUploader
   validates :name, presence: true, length: { maximum: 80}
-  validates :image, presence: true
 
   def self.guest
 

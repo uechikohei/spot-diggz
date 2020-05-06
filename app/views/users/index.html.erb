@@ -11,6 +11,7 @@
           <div class="card-body">
 
             <%= image_tag result.image.url %>
+            <%= image_pack_tag 'media/images/no-image.jpg' %>
             <%= link_to result.name, user_path(@q, :'id' => "#{result.id}") %>
 
           </div>
