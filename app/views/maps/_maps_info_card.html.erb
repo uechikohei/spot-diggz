@@ -1,8 +1,7 @@
 <% @maps.each do |map| %>
     <div class="col mb-4">
-        <div class="card">
+        <div class="card border-0">
             <div class="card-body">
-                <%= image_tag map.picture.url, class: "card-img-top" %>
 
                 <h5>
                 <% if map.title? %>
@@ -19,6 +18,7 @@
                     あなたのお気に入りスポットです！
                 <% end %>
                 </p>
+                <%= image_tag map.picture.url, class: "card-img-top border rounded border-dark" %>
 
                 <%= link_to 'Show', map %> | 
                 <%= link_to 'Edit', edit_map_path(map) %> | 

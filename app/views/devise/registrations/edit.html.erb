@@ -1,6 +1,6 @@
 <div class=“row”>
   <div class="col-md-6 offset-md-3">
-    <div class="jumbotron border border-dark">
+    <div class="jumbotron border">
       <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
       <%= render "devise/shared/error_messages", resource: resource %>
 
@@ -11,7 +11,7 @@
               <br>
 
                   <div class= "d-flex align-items-center justify-content-center" alt="profile-image">
-                    <%= link_to image_tag(@user.image.url, class: "rounded-circle"), users_path %>
+                    <%= link_to image_tag(@user.image.url, class: "rounded-circle border border-dark"), users_path %>
                   </div>
                   <br>
                   <div class= "d-flex align-items-center justify-content-center">

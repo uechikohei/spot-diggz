@@ -1,3 +1,7 @@
 <h1 class="font-weight-bold text-center mb-5">ユーザー検索</h1>
-<%= render'/shared/search_form_user' %>
-<%= render'users_info_card' %>
+    <%= render'/shared/search_form_user' %> <br>
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-3">
+        <%= render partial: 'users_info_card' %>
+    </div>
+</div>

@@ -1,17 +1,10 @@
-<div class="container">
-  <div class="row row-cols-1 row-cols-md-3">
-
-    <% @search_feeds.each do |result| %>
-      <div class="col mb-4">
-        <div class="card">
-          <div class="card-body">
-
-            <%= image_tag result.image.url %>
-            <%= link_to result.name, user_path(@q, :'id' => "#{result.id}") %>
-
-          </div>
-        </div>
+<% @search_feeds.each do |result| %>
+  <div class="col mb-4">
+    <div class="card border-0">
+      <div class="card-body">
+        <%= link_to result.name, user_path(@q, :'id' => "#{result.id}") %>
+        <%= image_tag result.image.url, class: "card-img-top border rounded-circle border-dark" %>
       </div>
-    <% end %>
+    </div>
   </div>
-</div>
+<% end %>
