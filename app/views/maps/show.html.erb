@@ -1,40 +1,12 @@
 <p id="notice"><%= notice %></p>
 
-
 <div class="container">
     <%= image_tag @map.picture.url %>
+
+    <%= render "navs_tab" %>
+
+    <%= link_to 'Edit', edit_map_path(@map) %> |
+    <%= link_to 'Back', maps_path %>
 </div>
 
-<h1>
-<% if @map.title? %>
-  <%= @map.title %>
-<% else %>
-  タイトル
-<% end %>
-</h1>
 
-<p>
-<% if @map.content? %>
-  <%= @map.content %>
-<% else %>
-  あなたのお気に入りスポットです！
-<% end %>
-</p>
-
-<p>
-  <strong>住所: </strong>
-  <%= @map.address %>
-</p>
-
-<p>
-  <strong>緯度: </strong>
-  <%= @map.latitude %>
-</p>
-
-<p>
-  <strong>経度: </strong>
-  <%= @map.longitude %>
-</p>
-
-<%= link_to 'Edit', edit_map_path(@map) %> |
-<%= link_to 'Back', maps_path %>
