@@ -6,11 +6,7 @@
       <!-- 以下で、メールアドレスを出力してください -->
       <p><%= @user.email %></p>
 
-      <% if user_image_valid? %>
-        <%= image_tag @user.image.url %>
-      <% else %>
-        <%= image_pack_tag 'media/images/no-image.jpg' %>
-      <% end %>
+      <%= image_tag @user.image.url %>　<!--false時、image_uploadsによるdefault_urlが起動 -->
 
     </div>
   </div>
