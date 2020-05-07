@@ -2,12 +2,7 @@
     <div class="col mb-4">
         <div class="card">
             <div class="card-body">
-
-                <% if map.picture? %>
                 <%= image_tag map.picture.url, class: "card-img-top" %>
-                <% else %>
-                <%= image_pack_tag 'media/images/no-image.jpg', class: "card-img-top" %>
-                <% end %>
 
                 <h5>
                 <% if map.title? %>

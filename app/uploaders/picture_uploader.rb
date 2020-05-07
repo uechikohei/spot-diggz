@@ -1,14 +1,22 @@
 class PictureUploader < CarrierWave::Uploader::Base
   # Include RMagick or MiniMagick support:
-  include CarrierWave::RMagick
+  include CarrierWave::MiniMagick
 
   # Choose what kind of storage to use for this uploader:
   storage :file
 
-  # 画像の上限を700pxにする
-  process resize_to_fill: [700, 700]
-
   process convert: 'jpg'
+
+  # 画像リサイズと分類
+  process resize_to_fill: [200, 200]
+
+  version :thumb40 do
+    process resize_to_fit: [400, 400]
+  end
+
+  version :thumb60 do
+    process resize_to_fit: [600, 600]
+  end
 
   def filename
     super.chomp(File.extname(super)) + '.jpg' if original_filename.present?
@@ -20,12 +28,12 @@ class PictureUploader < CarrierWave::Uploader::Base
     "uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
   end
 
-  version :thumb do
-    process resize_to_fit: [500, 500]
-  end
-
   def extension_whitelist
     %w[jpg jpeg png]
+  end
+
+  def default_url(*args)
+    "/images/" + [version_name, "default_no_image_2.jpg"].compact.join('_')
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
