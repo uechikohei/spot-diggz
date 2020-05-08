@@ -1,13 +1,11 @@
 <!-- gmap挿入 -->
 
-<script>
-function initMap(){
-  let map = new google.maps.Map(document.getElementById('routemap'), {
-  center: {lat: -34.397, lng: 150.644},
-  zoom: 8
-  });
-}
-</script>
-
-<!-- apiキー -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5qtdZ0_IRKciy41eDwLL9fTQzwR_7BAI&callback=initMap" async defer></script>
+<iframe
+  width="600"
+  height="450"
+  frameborder="0" style="border:0"
+  src="https://www.google.com/maps/embed/v1/directions?key=AIzaSyA5qtdZ0_IRKciy41eDwLL9fTQzwR_7BAI
+    &origin= 34.525241, 135.476857
+    &destination= 34.519624, 135.492173
+    &avoid=tolls|highways" allowfullscreen>
+</iframe>
