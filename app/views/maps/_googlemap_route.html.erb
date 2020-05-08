@@ -1,0 +1,13 @@
+<!-- gmap挿入 -->
+
+<script>
+function initMap(){
+  let map = new google.maps.Map(document.getElementById('routemap'), {
+  center: {lat: -34.397, lng: 150.644},
+  zoom: 8
+  });
+}
+</script>
+
+<!-- apiキー -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5qtdZ0_IRKciy41eDwLL9fTQzwR_7BAI&callback=initMap" async defer></script>

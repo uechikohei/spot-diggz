@@ -1,12 +1,18 @@
 <p id="notice"><%= notice %></p>
 
 <div class="container">
-    <%= image_tag @map.picture.url %>
 
-    <%= render "navs_tab" %>
+  <div class="text-center">
+    <%= render "navs_tab" %><br>
+    <!-- 地図を表示させる要素 -->
+    <div id='routemap'></div>
+    <%= render "googlemap_route" %>
+    <%= image_tag @map.picture.url, class: "post-picture img-fluid" %>
+  </div><br>
 
+  <div class="text-center">
     <%= link_to 'Edit', edit_map_path(@map) %> |
     <%= link_to 'Back', maps_path %>
+  </div>
+
 </div>
-
-

@@ -20,7 +20,7 @@ gem "nokogiri"
 gem 'rubocop', '~> 0.81.0'
 # ユーザー認証
 gem 'devise', '~> 4.7', '>= 4.7.1'
-# google maps 井戸検索移動
+# google maps 検索移動
 gem 'geocoder', '~> 1.6', '>= 1.6.2'
 
 gem 'fog-aws', '~> 3.6', '>= 3.6.2'
