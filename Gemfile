@@ -33,7 +33,7 @@ gem 'omniauth', '~> 1.9', '>= 1.9.1'
 gem 'omniauth-twitter', '~> 1.4'
 gem 'ransack', '~> 2.3', '>= 2.3.2'
 gem 'faker', '~> 2.11'
-gem 'exifr', '~> 1.3', '>= 1.3.6'
+gem 'gon', '~> 6.3', '>= 6.3.2'
 gem 'kaminari'
 
 group :test do

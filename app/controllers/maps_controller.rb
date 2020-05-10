@@ -1,5 +1,6 @@
 class MapsController < ApplicationController
   # google map apiを取得する
+  before_action :set_map, only: %i[show edit update destroy]
   before_action :authenticate_user!, only: %i[index new create destroy]
 
   # GET /maps
@@ -16,6 +17,8 @@ class MapsController < ApplicationController
   # GET /maps/1.json
   def show
     @map = Map.find_by(id: params[:id])
+    gon.lat = @map.latitude
+    gon.lng = @map.longitude
   end
 
   # GET /maps/new
