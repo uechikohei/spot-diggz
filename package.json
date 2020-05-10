@@ -10,6 +10,7 @@
     "boostrap": "^2.0.0",
     "bootstrap": "^4.4.1",
     "jquery": "^3.4.1",
+    "jscroll": "^2.4.1",
     "node-sass": "^4.13.1",
     "popper.js": "^1.16.1",
     "resolve-url-loader": "^3.1.1",
