@@ -1,3 +1,2 @@
-
 $("#items").append("<%= escape_javascript(render partial: 'users', locals: { user: @users }) %>");
-$("#more_link").replaceWith("<%= escape_javascript(link_to_next_page(@users, 'つづきを見る', remote: true, id: 'more_link')) %>");
+$("#more_link").replaceWith("<%= escape_javascript(link_to_next_page(@search_feeds, 'つづきを見る', remote: true, id: 'more_link')) %>");

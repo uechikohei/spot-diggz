@@ -5,11 +5,11 @@ class ApplicationController < ActionController::Base
 
     def set_search
     @maps = Map.all
-    @key = Map.ransack(params[:q])
     @users = User.all
+    @key = Map.ransack(params[:q])
+    @search_count = @key.result(distinct: true).page(params[:page])
     @user_key = User.ransack(params[:q])
-    @search_count = @key.result(distinct: true)
-    @search_feeds = @user_key.result(distinct: true)
+    @search_feeds = @user_key.result(distinct: true).page(params[:page])
     end
 
     protected

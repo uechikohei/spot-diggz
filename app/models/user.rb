@@ -7,10 +7,10 @@ class User < ApplicationRecord
   mount_uploader :image, ImageUploader
   validates :name, presence: true, length: { maximum: 80}
 
-    # 最近作成されたユーザーから表示
-    default_scope -> { order(created_at: :desc) }
-    # 一度に表示する投稿数
-    paginates_per 2
+  # 最近作成されたユーザーから表示
+  default_scope -> { order(created_at: :desc) }
+  # 一度に表示する投稿数
+  paginates_per 6
 
   # 簡単ログインユーザー作成
   def self.guest
