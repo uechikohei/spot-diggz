@@ -5,3 +5,9 @@
         <%= render partial: 'users_info_card' %>
     </div>
 </div>
+
+<div id="items">
+    <%= render partial: 'users', locals: { user: @users } %>
+</div>
+
+<%= link_to_next_page @users, 'つづきを見る', remote: true, id: 'more_link' %>
