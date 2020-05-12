@@ -4,11 +4,13 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
           :recoverable, :rememberable, :validatable
 
-  has_many :maps, dependent: :destroy
-
   mount_uploader :image, ImageUploader
   validates :name, presence: true, length: { maximum: 80}
 
+  # mapテーブルと1対多になる。ユーザが削除＝投稿も削除
+  has_many :maps, dependent: :destroy
+  # likeテーブルと1対多になる
+  has_many :likes, dependent: :destroy
   # 最近作成されたユーザーから表示
   default_scope -> { order(created_at: :desc) }
   # 一度に表示する投稿数
@@ -19,7 +21,7 @@ class User < ApplicationRecord
     image_path = open("./db/fixtures/faker_user_image.png")
     find_or_create_by!(email: 'guest@example.com') do |user|
       user.password = SecureRandom.urlsafe_base64
-      user.name = "guest"
+      user.name = "guest_user"
       user.image = image_path
       # user.confirmed_at = Time.now  # Confirmable を使用している場合は必要
     end
