@@ -1,29 +1,29 @@
 <%# 検索フォームで抽出されたtitleカラムを持つ要素を表示%>
-<% @search_maps.each do |map| %>
-  <div class="col mb-4">
-    <div class="card border-0">
-      <div class="card-body">
-        <h5>
-          <% if map.title? %>
-              <%= map.title %>
-          <% else %>
-              タイトル
-          <% end %>
-        </h5>
-        <p>
-          <% if map.content? %>
-              <%= map.content %>
-          <% else %>
-              あなたのお気に入りスポットです！
-          <% end %>
-        </p>
-          <%= image_tag map.picture.url, class: "card-img-top border rounded border-dark" %>
-        <div>
-          <%= link_to 'Show', map %> | 
-          <%= link_to 'Edit', edit_map_path(map) %> | 
-          <%= link_to 'Destroy', map, method: :delete, data: { confirm: 'Are you sure?' } %>
+  <% @search_maps.each do |map| %>
+    <div class="col mb-4">
+      <div class="card border-0">
+        <div class="card-body">
+          <h5>
+            <% if map.title? %>
+                <%= map.title %>
+            <% else %>
+                タイトル
+            <% end %>
+          </h5>
+          <p>
+            <% if map.content? %>
+                <%= map.content %>
+            <% else %>
+                あなたのお気に入りスポットです！
+            <% end %>
+          </p>
+            <%= image_tag map.picture.url, class: "card-img-top border rounded border-dark" %>
+          <div>
+            <%= link_to 'Show', map %> | 
+            <%= link_to 'Edit', edit_map_path(map) %> | 
+            <%= link_to 'Destroy', map, method: :delete, data: { confirm: 'Are you sure?' } %>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-<% end %>
+  <% end %>
