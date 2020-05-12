@@ -9,7 +9,7 @@ class User < ApplicationRecord
 
   # mapテーブルと1対多になる。ユーザが削除＝投稿も削除
   has_many :maps, dependent: :destroy
-  # likeテーブルと1対多になる
+  # likeテーブルと1対多になる。ユーザが削除＝投稿も削除
   has_many :likes, dependent: :destroy
   # 最近作成されたユーザーから表示
   default_scope -> { order(created_at: :desc) }
