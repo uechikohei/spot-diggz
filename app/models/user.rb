@@ -18,6 +18,11 @@ class User < ApplicationRecord
   # 一度に表示する投稿数
   paginates_per 6
 
+  # ユーザが投稿に対し、いいね済かcheckするメソッドを定義
+  def already_liked?(map)
+    self.likes.exists?(map_id: map.id)
+  end
+
   # 簡単ログインユーザー作成
   def self.guest
     image_path = open("./db/fixtures/faker_user_image.png")

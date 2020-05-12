@@ -17,6 +17,8 @@ class MapsController < ApplicationController
   # GET /maps/1.json
   def show
     @map = Map.find_by(id: params[:id])
+    # いいね機能追加
+    @like = Like.new
     gon.lat = @map.latitude
     gon.lng = @map.longitude
   end
