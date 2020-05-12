@@ -11,6 +11,8 @@ class User < ApplicationRecord
   has_many :maps, dependent: :destroy
   # likeテーブルと1対多になる。ユーザが削除＝投稿も削除
   has_many :likes, dependent: :destroy
+  # ユーザが、どの投稿をいいねしているか取得
+  has_many :liked_maps, through: :likes, source: :map
   # 最近作成されたユーザーから表示
   default_scope -> { order(created_at: :desc) }
   # 一度に表示する投稿数
