@@ -1,9 +1,11 @@
 <h1 class="font-weight-bold text-center mb-5">ユーザー検索</h1>
 
-    <%= render partial: "/shared/search_form/user_name" %>
-        <div class="container">
-            <div class="row row-cols-1 row-cols-md-3" id="items">
-                <%= render partial: '/shared/users', locals: { user: @users }, as: "user" %>
-            </div>
+  <div class="container">
+    <div class="text-center">
+      <%= render partial: "/shared/search_form/user_name_cont" %>
+        <div class="row row-cols-1 row-cols-md-3" id="items">
+            <%= render partial: 'users_card', locals: { user: @users }, as: "user" %>
         </div>
-    <%= link_to_next_page @search_feeds, 'つづきを見る', remote: true, id: 'more_link' %>
+      <%= link_to_next_page @search_feeds, 'つづきを見る', remote: true, id: 'more_link', class: 'btn btn-warning btn-lg' %>
+    </div>
+  </div>
