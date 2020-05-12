@@ -3,8 +3,9 @@
       <%= render partial: "/shared/search_form/title" %>
         <div class="container">
           <div class="row row-cols-1 row-cols-md-3" id="items" >
-            <%= render partial: "shared/maps/list_card" %>
+            <%= render partial: "shared/maps/list_card", locals: { map: @maps } %>
           </div>
+            <%= link_to_next_page @search_feeds, 'つづきを見る', remote: true, id: 'more_link' %>
         </div>
       <%= link_to 'New Map', new_map_path %>
     </div>

@@ -1,0 +1,2 @@
+$("#items").append("<%= escape_javascript(render partial: 'shared/maps/list_card', locals: { map: @maps }) %>");
+$("#more_link").replaceWith("<%= escape_javascript(link_to_next_page(@search_maps, 'つづきを見る', remote: true, id: 'more_link')) %>");
