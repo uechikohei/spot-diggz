@@ -10,4 +10,5 @@ Rails.application.routes.draw do
   post "/" => 'home#index'
   resources :maps
   resources :users
+    resources :likes, only: [:create, :destroy]
 end
