@@ -17,7 +17,7 @@ class User < ApplicationRecord
     image_path = open("./db/fixtures/faker_user_image.png")
     find_or_create_by!(email: 'guest@example.com') do |user|
       user.password = SecureRandom.urlsafe_base64
-      user.name = "guest_user"
+      user.name = "guest"
       user.image = image_path
       # user.confirmed_at = Time.now  # Confirmable を使用している場合は必要
     end
