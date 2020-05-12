@@ -8,7 +8,9 @@ Rails.application.routes.draw do
   end
   get 'users/:id', to: 'users#show'
   post "/" => 'home#index'
-  resources :maps
   resources :users
+  # ブロック関数を使用
+  resources :maps do
     resources :likes, only: [:create, :destroy]
+  end
 end

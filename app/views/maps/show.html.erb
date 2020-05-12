@@ -11,6 +11,23 @@
         <%= image_tag @map.picture.url, class: "post-picture img-fluid" %>
     </div><br>
 
+
+    <%# 実装したいいね機能表示　%>
+      <h3>いいね件数: <%= @map.likes.count %></h3>
+        <% if current_user.already_liked?(@map) %>
+              <%# ブロック関数でlikesテーブルに書き込んでいるのでパスにmapがつく%>
+          <%= button_to 'いいねを取り消す', map_like_path(@map), method: :delete %>
+        <% else %>
+              <%# ブロック関数でlikesテーブルに書き込んでいるのでパスにmapがつく%>
+          <%= button_to 'いいね', map_likes_path(@map) %>
+        <% end %>
+
+      <h2>いいねしたユーザー</h2>
+        <% @map.liked_users.each do |map| %>
+          <li><%= map.email %></li>
+        <% end %>
+
+
       <div class="text-center">
         <%= link_to 'Edit', edit_map_path(@map) %> |
         <%= link_to 'Back', maps_path %>
