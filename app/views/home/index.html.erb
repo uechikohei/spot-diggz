@@ -1,5 +1,5 @@
-    <% if user_signed_in? %>
-        <%= render 'logged_home' %>
-    <% else %>
-        <%= render 'not_logged_home' %>
-    <% end %>
+<% if user_signed_in? %>
+    <%= render 'shared/home/logged_home' %>
+<% else %>
+    <%= render 'shared/home/not_logged_home' %>
+<% end %>

@@ -6,17 +6,13 @@ class ApplicationController < ActionController::Base
     def set_search
     @maps = Map.all
     @users = User.all
-    @key = Map.ransack(params[:q])
-    @search_count = @key.result(distinct: true).page(params[:page])
+    @map_key = Map.ransack(params[:q])
+    @search_maps = @map_key.result(distinct: true).page(params[:page])
     @user_key = User.ransack(params[:q])
     @search_feeds = @user_key.result(distinct: true).page(params[:page])
     end
 
     protected
-
-    def after_sign_in_path_for(resource)
-        edit_user_registration_path
-    end
 
     def after_sign_up_path_for(resource)
         edit_user_registration_path

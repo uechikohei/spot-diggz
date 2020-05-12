@@ -1,19 +1,19 @@
 <p id="notice"><%= notice %></p>
 
-<div class="container">
+  <div class="container">
 
-  <div class="text-center">
-    <%= render "navs_tab" %><br>
-    <!-- 地図を表示させる要素 -->
-    <h2>routemap</h2>
-    <div id='routemap'></div>
-    <%= render "googlemap_route" %> <br><br>
-    <%= image_tag @map.picture.url, class: "post-picture img-fluid" %>
-  </div><br>
+    <div class="text-center">
+      <%= render "shared/maps/navs_tab" %><br>
+      <!-- 地å図を表示させる要素 -->
+      <h2>routemap</h2>
+      <div id='routemap'></div>
+        <%= render "shared/google_api/routemap" %> <br><br>
+        <%= image_tag @map.picture.url, class: "post-picture img-fluid" %>
+    </div><br>
 
-  <div class="text-center">
-    <%= link_to 'Edit', edit_map_path(@map) %> |
-    <%= link_to 'Back', maps_path %>
+      <div class="text-center">
+        <%= link_to 'Edit', edit_map_path(@map) %> |
+        <%= link_to 'Back', maps_path %>
+      </div>
+
   </div>
-
-</div>

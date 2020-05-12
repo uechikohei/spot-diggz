@@ -1,13 +1,11 @@
 <div class="container">
     <div class="text-center">
-      <h1 class="font-weight-bold text-center mb-5">投稿一覧</h1>
-
-      <div class="container">
-        <div class="row row-cols-1 row-cols-md-3">
-          <%= render partial: "maps_info_card" %>
+      <%= render partial: "/shared/search_form/title" %>
+        <div class="container">
+          <div class="row row-cols-1 row-cols-md-3" id="items" >
+            <%= render partial: "shared/maps/list_card" %>
+          </div>
         </div>
-      </div>
-
       <%= link_to 'New Map', new_map_path %>
     </div>
 </div>

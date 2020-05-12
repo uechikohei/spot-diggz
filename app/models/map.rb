@@ -5,6 +5,12 @@ class Map < ApplicationRecord
   validates :title, length: { maximum: 20}
   validates :content, length: { maximum: 300}
 
+    # 最近作成されたユーザーから表示
+    default_scope -> { order(created_at: :desc) }
+    # 一度に表示する投稿数
+    paginates_per 6
+
+
   def self.search(address)
     return Map.all unless address
     Map.where(['content LIKE ?', "%#{address}%"])
