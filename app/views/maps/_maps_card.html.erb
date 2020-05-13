@@ -25,9 +25,12 @@
           </div>
 
           <div>
-            <%# 作成日時 %>
-            <%= map.created_at.strftime("%m/%d %H:%M") %>
-            <%= map.likes.count%>
+            <%= link_to image_tag(map.user.image.url, size:"40x40",
+                class:'rounded-circle border border-dark'),map.user %>
+            <%= link_to map.user.name, map.user%>
+          <%# 作成日時 %>
+            <%= map.created_at.strftime("%m/%d") %>
+            いいね数<%= map.likes.count%>
           </div>
 
         </div>
