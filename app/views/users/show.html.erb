@@ -8,6 +8,18 @@
 
       <%= image_tag @user.image.url %>　<!--false時、image_uploadsによるdefault_urlが起動 -->
 
+      <h2>投稿内容</h2>
+      <% @user.maps.each do |map| %>
+        <a href="/maps/<%= map.id %>"><%= map.content %></a>
+        <hr>
+      <% end %>
+
+      <h3>いいねしている投稿</h3>
+      <% @user.liked_maps.each do |map| %>
+        <%= map.user.name %>
+        <%= map.content %>
+      <% end %>
+
     </div>
   </div>
 </div>

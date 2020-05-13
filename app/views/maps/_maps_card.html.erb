@@ -23,6 +23,18 @@
             <%= link_to 'Edit', edit_map_path(map) %> | 
             <%= link_to 'Destroy', map, method: :delete, data: { confirm: 'Are you sure?' } %>
           </div>
+
+          <div>
+          <h1>いいねサンプル</h1>
+
+              <h2>投稿一覧</h2>
+              <% @maps.each do |map| %>
+                <a href="/users/<%= map.user.id %>"><%= map.user.email %></a>
+                <a href="/maps/<%= map.id %>"><%= map.content %></a>
+                (<%= map.liked_users.count %>)
+              <% end %>
+          </div>
+
         </div>
       </div>
     </div>
