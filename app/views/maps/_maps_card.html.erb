@@ -25,14 +25,9 @@
           </div>
 
           <div>
-          <h1>いいねサンプル</h1>
-
-              <h2>投稿一覧</h2>
-              <% @maps.each do |map| %>
-                <a href="/users/<%= map.user.id %>"><%= map.user.email %></a>
-                <a href="/maps/<%= map.id %>"><%= map.content %></a>
-                (<%= map.liked_users.count %>)
-              <% end %>
+            <%# 作成日時 %>
+            <%= map.created_at.strftime("%m/%d %H:%M") %>
+            <%= map.likes.count%>
           </div>
 
         </div>
