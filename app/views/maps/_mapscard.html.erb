@@ -1,0 +1,31 @@
+<div class="col mb-4">
+  <div class="card border-0">
+    <div class="card-body">
+      <h5>
+        <% if post.title? %>
+            <%= post.title %>
+        <% else %>
+            タイトル
+        <% end %>
+      </h5>
+      <p>
+        <% if post.content? %>
+            <%= post.content %>
+        <% else %>
+            あなたのお気に入りスポットです！
+        <% end %>
+      </p>
+        <%= image_tag post.picture.url, class: "card-img-top border rounded border-dark" %>
+      <div>
+        <%= link_to 'Show', post %> | 
+        <%= link_to 'Edit', edit_map_path(post) %> | 
+        <%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %>
+      </div>
+      <div>
+        <span id="map-<%= post.id %>">
+          <%= render partial: '/likes/likes_btn', locals: {post: post} %>
+          </span>
+      </div>
+    </div>
+  </div>
+</div>

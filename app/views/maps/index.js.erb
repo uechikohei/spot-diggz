@@ -1,2 +1,4 @@
-$("#items").append("<%= escape_javascript(render partial: 'maps_card', locals: { map: @maps }) %>");
-$("#more_link").replaceWith("<%= escape_javascript(link_to_next_page(@search_maps, 'つづきを見る', remote: true, id: 'more_link', class: 'btn btn-warning btn-lg')) %>");
+$("#items").append("<%= escape_javascript(
+  render partial: 'maps/mapscard', collection: @search_maps, as: "post") %>");
+$("#more_link").replaceWith("<%= escape_javascript(
+  link_to_next_page(@search_maps, 'つづきを見る', remote: true, id: 'more_link', class: 'btn btn-warning btn-lg')) %>");
