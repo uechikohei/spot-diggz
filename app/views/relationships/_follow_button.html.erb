@@ -1,0 +1,10 @@
+<%# unless分岐： %>
+<% unless current_user == user %>
+  <% if current_user.following?(user) %>
+  テスト１
+  <% else %>
+  テスト２
+  <% end %>
+<% else %>
+  テスト３
+<% end %>

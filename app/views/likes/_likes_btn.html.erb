@@ -1,18 +1,19 @@
-          <%# unless分岐：current_userが投稿したパターン（true)== %>
-          <% unless current_user == post.user %>
-
-          <%# current_userのいいねが有る(true)%>
-                <% if current_user.already_liked?(post) %>
-                  いいね有
-                  <%# deleteメソッド使用、id=nillエラー防ぐため@maps%>
-                  <%= button_to 'いいねを取り消す', map_like_path(post, @maps), method: :delete %>
-                <%# current_userのいいねが無い(false)%>
-                <% else %>
-                  いいね無
-                    <%= button_to 'いいね', map_likes_path(post) %>
-                <% end %>
-
-          <%# unless分岐：current_userが投稿していないパターン(false)%>
-          <% else %>
-
-          <% end %>
+<%# unless: 現在ログインしているユーザーが投稿しているコンテンツには、いいねボタンを出現させない %>
+<% unless current_user == post.user %>
+    <%# if: いいねがついている状態のボタン %>
+    <% if current_user.already_liked?(post) %>
+        <%# deleteメソッド使用、id=nillエラー防ぐため@maps%>
+        <%= button_to map_like_path(post, @maps), method: :delete, class: "like-button" do %>
+          <i class="fas fa-heart fa-lg heart_red"></i>
+        <% end %>
+    <%# if: いいねがついていない状態のボタン %>
+    <% else %>
+        <%= button_to map_likes_path(post), class: "like-button" do %>
+          <i class="far fa-heart fa-lg heart_grey"></i>
+        <% end %>
+    <% end %>
+<%# unless分岐：current_userが投稿していないパターン(false)%>
+<% else %>
+    <i class="fas fa-heart fa-lg heart_red"></i>
+    <%= post.likes.count %>
+<% end %>
