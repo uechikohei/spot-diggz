@@ -3,19 +3,20 @@
     <div class="card-body">
       <h5>
         <% if post.title? %>
-            <%= link_to post.title %>
+            <%= link_to post.title, map_path(post) %>
         <% else %>
-            タイトル
+            <%= link_to "タイトル", map_path(post) %>
         <% end %>
       </h5>
         <p>
           <% if post.content? %>
-              <%= post.content %>
+              <%= link_to post.content, map_path(post) %>
           <% else %>
-              あなたのお気に入りスポットです！
+              <%= link_to "あなたのお気に入りスポットです！", map_path(post) %>
           <% end %>
         </p>
-          <%= image_tag post.picture.url, class: "card-img-top border rounded border-dark" %>
+          <%= link_to image_tag(post.picture.url,
+                  class: "card-img-top border rounded border-dark"), map_path(post) %>
 
           <%# ボトム部分1 %>
           <div>
