@@ -5,9 +5,9 @@ class ApplicationController < ActionController::Base
 
     def set_search
     @maps = Map.all
-    @users = User.all
     @map_key = Map.ransack(params[:q])
     @search_maps = @map_key.result(distinct: true).page(params[:page])
+    @users = User.all
     @user_key = User.ransack(params[:q])
     @search_feeds = @user_key.result(distinct: true).page(params[:page])
     end

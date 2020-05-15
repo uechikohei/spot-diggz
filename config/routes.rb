@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   end
   get 'users/:id', to: 'users#show'
   post "/" => 'home#index'
+  post 'follow/:id' => 'relationships#follow', as: 'follow' # フォローする
+  post 'unfollow/:id' => 'relationships#unfollow', as: 'unfollow' # フォロー外す
   resources :users
   # ブロック関数を使用
   resources :maps do

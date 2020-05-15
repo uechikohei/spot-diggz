@@ -1,2 +1,4 @@
-$("#items").append("<%= escape_javascript(render partial: 'users_card', locals: { user: @users }) %>");
-$("#more_link").replaceWith("<%= escape_javascript(link_to_next_page(@search_feeds, 'つづきを見る', remote: true, id: 'more_link', class: 'btn btn-warning btn-lg')) %>");
+$("#items").append("<%= escape_javascript(
+  render partial: 'users/users_card', collection: @search_feeds, as: "feed") %>");
+$("#more_link").replaceWith("<%= escape_javascript(
+  link_to_next_page(@search_feeds, 'つづきを見る', remote: true, id: 'more_link', class: 'btn btn-warning btn-lg')) %>");

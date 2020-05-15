@@ -1,11 +1,11 @@
-<%# 検索フォームで抽出されたtitleカラムを持つ要素を表示%>
-  <% @search_feeds.each do |r| %>
-    <div class="col mb-4">
-      <div class="card border-0">
-        <div class="card-body">
-          <%= link_to r.name, user_path(@q, :'id' => "#{r.id}") %>
-          <%= image_tag r.image.url, class: "card-img-top border rounded-circle border-dark" %>
-        </div>
-      </div>
+<div class="col mb-4">
+  <div class="card border-0">
+    <div class="card-body">
+      <%= link_to feed.name %>
+      <%= link_to image_tag(feed.image.url,
+              class: "card-img-top border rounded border-dark")%>
+              <%# フォローボタン挿入%>
+              <%= render partial: 'relationships/follow_button', locals: {feed: feed} %>
     </div>
-  <% end %>
+  </div>
+</div>

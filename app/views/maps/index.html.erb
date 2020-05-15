@@ -1,6 +1,6 @@
 <h1 class="font-weight-bold text-center mb-5">投稿一覧検索</h1>
   <div class="container">
-    <%# 要素の中に真の値が存在すればtrueを返す　%>
+    <%# any?: 検索キーワード１つでも該当すれかどうかで分岐　%>
     <% if @search_maps.any? %>
         <div class="text-center">
           <%= render partial: "/shared/search_form/map_title_cont" %>
