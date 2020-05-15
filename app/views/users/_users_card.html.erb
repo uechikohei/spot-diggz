@@ -1,9 +1,9 @@
 <div class="col mb-4">
   <div class="card border-0">
     <div class="card-body">
-      <%= link_to feed.name %>
+      <%= link_to feed.name, user_path(feed) %>
       <%= link_to image_tag(feed.image.url,
-              class: "card-img-top border rounded border-dark")%>
+              class: "card-img-top border rounded border-dark"),user_path(feed) %>
               <%# フォローボタン挿入%>
               <%= render partial: 'relationships/follow_button', locals: {feed: feed} %>
     </div>
