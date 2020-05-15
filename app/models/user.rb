@@ -14,6 +14,12 @@ class User < ApplicationRecord
   # ユーザが、どの投稿をいいねしているか取得
   has_many :liked_maps, through: :likes, source: :map
 
+  has_many :follower, class_name: "Relationship", foreign_key: "follower_id", dependent: :destroy # フォロー取得
+  has_many :followed, class_name: "Relationship", foreign_key: "followed_id", dependent: :destroy # フォロワー取得
+
+  has_many :following_user, through: :follower, source: :followed # 自分がフォローしている人
+  has_many :follower_user, through: :followed, source: :follower # 自分をフォローしている人
+
   # 最近作成されたユーザーから表示
   default_scope -> { order(created_at: :desc) }
   # 一度に表示する投稿数
