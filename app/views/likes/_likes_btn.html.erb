@@ -3,12 +3,12 @@
     <%# if: いいねがついている状態のボタン %>
     <% if current_user.already_liked?(post) %>
         <%# deleteメソッド使用、id=nillエラー防ぐため@maps%>
-        <%= button_to map_like_path(post, @maps), method: :delete, class: "like-button" do %>
+        <%= button_to map_like_path(post, @maps), method: :delete, class: "clear-button" do %>
           <i class="fas fa-heart fa-lg heart_red"></i>
         <% end %>
     <%# if: いいねがついていない状態のボタン %>
     <% else %>
-        <%= button_to map_likes_path(post), class: "like-button" do %>
+        <%= button_to map_likes_path(post), class: "clear-button" do %>
           <i class="far fa-heart fa-lg heart_grey"></i>
         <% end %>
     <% end %>
