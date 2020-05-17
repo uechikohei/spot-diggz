@@ -5,7 +5,7 @@ class User < ApplicationRecord
           :recoverable, :rememberable, :validatable
 
   mount_uploader :image, ImageUploader
-  validates :name, presence: true, length: { maximum: 80}
+  validates :name, presence: true, length: { maximum: 20}
 
   # mapテーブルと1対多になる。ユーザが削除＝投稿も削除
   has_many :maps, dependent: :destroy

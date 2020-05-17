@@ -22,7 +22,6 @@ gem 'rubocop', '~> 0.81.0'
 gem 'devise', '~> 4.7', '>= 4.7.1'
 # google maps 検索移動
 gem 'geocoder', '~> 1.6', '>= 1.6.2'
-
 gem 'fog-aws', '~> 3.6', '>= 3.6.2'
 gem 'carrierwave', '~> 2.1'
 gem 'mini_magick', '~> 4.10', '>= 4.10.1'
@@ -39,13 +38,14 @@ gem 'kaminari'
 group :test do
   gem "capybara", ">= 2.15"
   gem "selenium-webdriver"
-  gem "rspec-rails"
-  gem "factory_bot_rails"
 end
 
 group :development, :test do
   gem 'pry-rails', '~> 0.3.9'
   gem 'pry-byebug', '~> 3.9'
+  gem 'rspec-rails'
+  gem 'factory_bot_rails'
+  gem 'spring-commands-rspec'
 end
 
 group :development do

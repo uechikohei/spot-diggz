@@ -2,13 +2,13 @@
   <div class="container">
     <%# any?: 検索キーワード１つでも該当すれかどうかで分岐　%>
     <% if @search_maps.any? %>
-        <div class="text-center">
-          <%= render partial: "/shared/search_form/map_title_cont" %>
-            <div class="row row-cols-1 row-cols-md-3" id="items" >
-              <%= render partial: "maps/mapscard", collection: @search_maps, as: "post" %>
-            </div>
+      <div class="text-center">
+        <%= render partial: "/shared/search_form/map_title_cont" %>
+          <div class="row row-cols-1 row-cols-md-3" id="items" >
+            <%= render partial: "maps/mapscard", collection: @search_maps, as: "post" %>
+          </div>
             <%= link_to_next_page @search_maps, 'つづきを見る', remote: true, id: 'more_link', class: 'btn btn-warning btn-lg' %>
-        </div>
+      </div>
           <%= link_to 'New Map', new_map_path %>
     <% else %>
         <div class="text-center">
