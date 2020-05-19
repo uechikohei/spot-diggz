@@ -32,6 +32,11 @@ module App
       g.test_framework :rspec
       g.controller_specs false
       g.view_specs false
+      g.test_framework :rspec,
+        view_specs: false,
+        helper_specs: false,
+        routing_specs: false,
+        request_specs: false
     end
   end
 end
