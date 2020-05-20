@@ -53,4 +53,15 @@ RSpec.describe Map, type: :model do
     expect(map.reload.title).to eq 'sample'
   end
 
+  it 'latitudeが存在しない投稿はエラー' do
+    map.latitude = nil
+    map.valid?
+    expect(map.errors).to be_added(:latitude, :blank)
+  end
+
+  it 'longitudeが存在しない投稿はエラー' do
+    map.longitude = nil
+    map.valid?
+    expect(map.errors).to be_added(:longitude, :blank)
+  end
 end
