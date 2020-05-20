@@ -38,6 +38,17 @@ RSpec.describe User, type: :model do
       expect(@user.errors).to be_added(:password, :blank)
     end
 
+    it 'emailが255文字以下のユーザーを許可する' do
+      @user.email = 'a' * 245 + '@sample.jp'
+      expect(@user).to be_valid
+    end
+
+    it 'emailが256文字以上のユーザーを許可しない' do
+      @user.email = 'a' * 246 + '@sample.jp'
+      @user.valid?
+      expect(@user.errors).to be_added(:email, :too_long, count: 255)
+    end
+
     it 'passwordが4文字未満でエラー' do
       @user.password = 'a' * 3
       @user.valid?

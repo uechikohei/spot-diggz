@@ -8,7 +8,8 @@ class User < ApplicationRecord
   validates :name,  presence: true, uniqueness: { case_sensitive: true },
                     length: { minimum: 2,maximum: 20}
 
-  validates :email, presence: true, length: { maximum: 255 }
+  validates :email, presence: true, uniqueness: { case_sensitive: true },
+                    length: { maximum: 255 }
 
   # mapテーブルと1対多になる。ユーザが削除＝投稿も削除
   has_many :maps, dependent: :destroy

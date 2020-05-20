@@ -36,7 +36,8 @@ class MapsController < ApplicationController
   # POST /maps.json
   def create
     @map = Map.new(map_params)
-
+    @map.user_id = current_user.id
+    @map.save
     respond_to do |format|
       if @map.save
         format.html { redirect_to @map, notice: 'Map was successfully created.' }
@@ -81,6 +82,6 @@ class MapsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def map_params
-    params.require(:map).permit(:address, :latitude, :longitude, :user_id, :picture, :content, :title)
+    params.require(:map).permit( :latitude, :longitude, :picture, :content, :title )
   end
 end

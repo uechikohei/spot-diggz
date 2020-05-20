@@ -22,15 +22,15 @@ ActiveRecord::Schema.define(version: 2020_05_15_105012) do
   end
 
   create_table "maps", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "title"
+    t.text "content"
+    t.string "picture"
     t.string "address"
     t.float "latitude"
     t.float "longitude"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "user_id"
-    t.string "picture"
-    t.text "content"
-    t.string "title"
     t.boolean "helmet", default: false, null: false
     t.boolean "spot_style", default: true
   end

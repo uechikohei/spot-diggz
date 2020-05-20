@@ -47,10 +47,6 @@
       <%= form.hidden_field :longitude, {id: "lng"} %>
     </div>
 
-    <div class="field">
-      <%= form.hidden_field :user_id, value: current_user.id %>
-    </div>
-
     <div class="actions">
       <%= button_tag type: 'submit', class: 'btn btn-primary' do %>
         <span class="fas fa-paper-plane"></span>

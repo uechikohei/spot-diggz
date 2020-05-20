@@ -2,8 +2,12 @@ class Map < ApplicationRecord
   mount_uploader :picture, PictureUploader
   reverse_geocoded_by :latitude, :longitude
   after_validation :reverse_geocode
-  validates :title, length: { maximum: 20}
-  validates :content, length: { maximum: 300}
+
+  validates :user_id, presence: true
+  validates :title,   presence: true,
+                      length: { maximum: 20}
+  validates :content, presence: true,
+                      length: { maximum: 300}
 
   # user.rbのhas_manyに対応する
   belongs_to :user
