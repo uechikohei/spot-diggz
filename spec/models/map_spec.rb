@@ -36,4 +36,21 @@ RSpec.describe Map, type: :model do
     expect(map.errors).to be_added(:title, :too_long, count: 20)
   end
 
+  it 'contentが300文字以下の場合、投稿を許可する' do
+    map.content = 'a' * 300
+    expect(map).to be_valid
+  end
+
+  it 'titleが301文字以上の場合、エラー' do
+    map.content = 'a' * 301
+    map.valid?
+    expect(map.errors).to be_added(:content, :too_long, count: 300)
+  end
+
+  it 'titleは、半角、全角スペースを削除して保存される' do
+    map.title = 'sa m　ple'
+    map.save!
+    expect(map.reload.title).to eq 'sample'
+  end
+
 end

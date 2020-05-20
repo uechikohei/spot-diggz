@@ -2,6 +2,7 @@ class Map < ApplicationRecord
   mount_uploader :picture, PictureUploader
   reverse_geocoded_by :latitude, :longitude
   after_validation :reverse_geocode
+  before_validation :kill_whitespace
 
   validates :user_id, presence: true
   validates :title,   presence: true,
@@ -24,6 +25,13 @@ class Map < ApplicationRecord
   def self.search(address)
     return Map.all unless address
     Map.where(['content LIKE ?', "%#{address}%"])
+  end
+
+  private
+
+  # 投稿時のタイトルに入力されるスペースを削除する
+  def kill_whitespace
+    self.title = title.gsub(/[[:space:]]/, '') if self.title.present?
   end
 
 end
