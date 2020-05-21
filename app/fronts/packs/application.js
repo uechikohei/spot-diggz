@@ -1,10 +1,6 @@
-
 require("@rails/activestorage").start()
 require.context('../images', true)
 global.$ = require('jquery')
-
-import Rails from '@rails/ujs';
-Rails.start();
 
 //プラグイン
 import "bootstrap"
