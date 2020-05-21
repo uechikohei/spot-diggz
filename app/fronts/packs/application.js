@@ -1,11 +1,10 @@
-require("@rails/ujs").start()
+
 require("@rails/activestorage").start()
 require.context('../images', true)
-//ログアウトできなくなるので注意
-//= require jquery_ujs
-// require("channels")
-// require("bootstrap"); // bootstrap_custom.js を使います
 global.$ = require('jquery')
+
+import Rails from '@rails/ujs';
+Rails.start();
 
 //プラグイン
 import "bootstrap"
