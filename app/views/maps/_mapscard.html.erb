@@ -1,6 +1,6 @@
-<div class="col mb-4">
-  <div class="card border-0">
-    <div class="card-body">
+<div>
+  <div>
+    <div>
       <h5>
         <% if post.title? %>
             <%= link_to post.title, map_path(post) %>
@@ -15,8 +15,7 @@
               <%= link_to "あなたのお気に入りスポットです！", map_path(post) %>
           <% end %>
         </p>
-          <%= link_to image_tag(post.picture.url,
-                  class: "card-img-top border rounded border-dark"), map_path(post) %>
+          <%= link_to image_tag(post.picture.url), map_path(post) %>
 
           <%# ボトム部分1 %>
           <div>
@@ -25,12 +24,11 @@
             <%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %>
           </div>
             <%# ボトム部分2 %>
-            <div class="card-body border-bottom">
-                <i class="text-muted float-left">by</i>
-                <%= link_to image_tag(post.user.image.url, size:"45x45",
-                          class: "border rounded-circle border-dark float-left mr-sm-2 ml-1 d-none d-sm-block"),post.user %>
-                <%= link_to post.user.name, post.user, class:"float-left text-dark ml-2 ml-sm-0" %>
-                <span class="float-left ml-2 text-muted  d-sm-block d-none">
+            <div>
+                <i>by</i>
+                <%= link_to image_tag(post.user.image.url, size:"45x45") post.user %>
+                <%= link_to post.user.name, post.user %>
+                <span>
                   <%= post.created_at.strftime("%m/%d") %>
                 </span>
                   <%# いいねボタン挿入 %>

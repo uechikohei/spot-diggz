@@ -1,66 +1,63 @@
-<header class="sticky-top">
-  <nav class="navbar navbar-expand-lg shadow-sm p-3 mb-5 navbar-light bg-white rounded">
-    <%= link_to image_pack_tag("media/images/new.sss.logo.png"), root_path, class:"navbar-brand" %>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-      <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-        <ul class="navbar-nav ml-md-auto">
+<header>
+  <nav>
+    <%= link_to image_pack_tag("media/images/new.sss.logo.png"), root_path %>
+      <div id="navbarTogglerDemo02">
+        <ul>
           <% if user_signed_in? %>
-            <li class="nav-item">
-            <%= link_to edit_user_registration_path, class: "nav-link text-body" do %>
+            <li>
+            <%= link_to edit_user_registration_path do %>
               <span class="fas fa-address-card"></span>
               編集
             <% end %>
             </li>
-            <li class="nav-item">
-            <%= link_to users_path, class: "nav-link text-body" do %>
+            <li>
+            <%= link_to users_path do %>
               <span class="fas fa-address-book"></span>
               ユーザー
             <% end %>
             </li>
-            <li class="nav-item">
-            <%= link_to maps_path, class: "nav-link text-body" do %>
+            <li>
+            <%= link_to maps_path do %>
               <span class="fas fa-folder-open"></span>
               投稿一覧
             <% end %>
             </li>
-            <li class="nav-item">
-            <%= link_to new_map_path, class: "nav-link text-body" do %>
+            <li>
+            <%= link_to new_map_path do %>
               <span class="fas fa-paper-plane"></span>
               投稿する
               <% end %>
             </li>
-            <li class="nav-item">
-            <%= link_to destroy_user_session_path, method: :delete, class: "nav-link text-body" do %>
+            <li>
+            <%= link_to destroy_user_session_path, method: :delete do %>
               <i class="fas fa-sign-out-alt"></i>
               ログアウト
             <% end %>
             </li>
-            <li class="nav-item">
+            <li>
               <span class="fas fa-envelope"></span>
               問い合わせ
             </li>
           <% else %>
-            <li class="nav-item">
-              <%= link_to new_user_registration_path, class: "nav-link text-body" do %>
+            <li>
+              <%= link_to new_user_registration_path do %>
                 <i class="fas fa-user-plus"></i>
                 新規登録
               <% end %>
             </li>
-            <li class="nav-item">
-              <%= link_to new_user_session_path, class: "nav-link text-body" do %>
+            <li>
+              <%= link_to new_user_session_path do %>
                 <i class="fas fa-sign-in-alt"></i>
                 ログイン
               <% end %>
             </li>
-            <li class="nav-item">
-            <%= link_to maps_path, class: "nav-link text-body" do %>
+            <li>
+            <%= link_to maps_path do %>
               <span class="fas fa-folder-open"></span>
               投稿一覧
             <% end %>
             </li>
-            <li class="nav-item">
+            <li>
               <span class="fas fa-envelope"></span>
               問い合わせ
             </li>

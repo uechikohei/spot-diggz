@@ -1,14 +1,14 @@
 <p id="notice"><%= notice %></p>
 
-  <div class="container">
+  <div>
 
-    <div class="text-center">
+    <div>
       <%= render "shared/maps/navs_tab" %><br>
       <!-- 地å図を表示させる要素 -->
       <h2>routemap</h2>
       <div id='routemap'></div>
         <%= render "shared/google_api/routemap" %> <br><br>
-        <%= image_tag @map.picture.url, class: "post-picture img-fluid" %>
+        <%= image_tag @map.picture.url %>
     </div><br>
 
 
