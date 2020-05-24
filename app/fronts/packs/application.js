@@ -1,7 +1,8 @@
 require("@rails/activestorage").start()
 require.context('../images', true)
 
-
+//↓これを削除すると、ログアウトできなくなるので注意
+require("@rails/ujs").start()
 
 //プラグイン
 import "@fortawesome/fontawesome-free/js/all"

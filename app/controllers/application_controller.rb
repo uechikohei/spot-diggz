@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
         devise_parameter_sanitizer.permit(:account_update, keys: [:image])
     end
     # エラークラスを定義する
-    class Forbidden < ActionController::ActionControllerError; end
+    class Forbidden         < ActionController::ActionControllerError; end
     class IpAddressRejected < ActionController::ActionControllerError; end
 
     # rescue_formは定義順番が大事。親クラスを先に指定。
