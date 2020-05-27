@@ -1,17 +1,31 @@
-<h1>kameron</h1>
-<h1>日本語</h1>
-<p>baraike skate park</p>
-<p class="font-sm">原池スケートパーク</p>
+<div id="main-content">
+  <main>
+    <section class="googlemaps">
+      <div>
+        <h2 class="main-title">地図から探す</h2>
+        <p class="sub-title">お気に入りのスポットを探しましょう</p>
+      </div>
+      <div class="googlemaps__inner">
+        <div class="googlemaps__item">
+        <div class="googlemaps__title">登録スポットを探す</div>
+        </div>
+      </div>
+          <%= link_to destroy_user_session_path, class: "btn-cubic", method: :delete do %>
+            <span class="hovering">
+              <i class="fas fa-sign-out-alt"></i>
+            </span>
+            <span class="default">
+              ログアウト
+            </span>
+          <% end %>
+    </section>
+  </main>
+</div>
 
-<%= link_to destroy_user_session_path, method: :delete do %>
-  <i class="fas fa-sign-out-alt"></i>
-  ログアウト
-<% end %>
-
-<button class="btn float">Button</button>
+<%# <button class="btn float">Button</button>
 <button class="btn filled">Button</button>
 <button class="btn letter-spacing">Button</button>
 <button class="btn shadow">Button</button>
 <button class="btn solid">Button</button>
 <button class="btn slide-bg">Button</button>
-<a class="btn-cubic"><span class="hovering">Now, Hovering</span><span class="default">Button</span></a>
+<a class="btn-cubic"><span class="hovering">Now, Hovering</span><span class="default">Button</span></a> %>

@@ -8,6 +8,9 @@ environment.loaders.get('sass').use.splice(-1, 0, {
 const webpack = require('webpack')
 environment.plugins.prepend('Provide',
     new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery',
+      jquery: 'jquery',
     })
 )
 

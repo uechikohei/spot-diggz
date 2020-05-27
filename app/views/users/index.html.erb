@@ -6,7 +6,7 @@
           <div id="items">
               <%= render partial: 'users/users_card', collection: @search_feeds, as: "feed" %>
           </div>
-        <%= link_to_next_page @search_feeds, 'つづきを見る', remote: true, id: 'more_link'　%>
+        <%= link_to_next_page @search_feeds, 'つづきを見る', remote: true, id: 'more_link' %>
       </div>
     </div>
     <% else %>

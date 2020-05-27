@@ -1,21 +1,36 @@
 <div>
+  <div>
     <div>
-        <div>
-            <h1>新しく投稿する</h1><br>
-                <p>1. スポットを検索しよう！<br>2. 地図上にマーカーを落として住所を決定！</p><br>
-                    <form onsubmit="return false;">
-                            <input type="text" value="東京　スケートパーク" id="address"><br>
-                            <%= button_tag type: 'submit', id: "map_button", class: 'btn btn-warning mb-1' do %>
-                                <i></i>
-                            <% end %><br>
-                    </form>
-                        <!-- 地図を表示させる要素 -->
-                        <div>
-                            <div id='initmap'></div>
-                        </div><br>
-                            <%= render "shared/google_api/postmap" %>
-                            <%= render "shared/maps/form", map: @map %> <br>
-                            <%= link_to 'Back', maps_path %>
-        </div>
+      <h1>
+        <i class="fas fa-map-marked-alt"></i>
+        新しく投稿する
+      </h1> <br>
+        <ol>
+          <li value="1">スポットを検索しよう！</li>
+          <li value="2">地名やスケートパーク名で地図上を移動できます！</li>
+            <i class="fas fa-arrows-alt-v fa-2x"></i>
+          <li value="1">地図上をクリック！</li>
+          <li value="2">googlemapを移動して、スポットを見つけよう！</li>
+          <li value="3">マーカーを落として、登録しよう！</li>
+        </ol>
+          <form onsubmit="return false;">
+            <input type="text" maxlength="20" value="東京　スケートパーク" id="address">
+                <br><br>
+              <%= button_tag type: 'submit', id: "map_button", class: "btn slide-bg" do %>
+                  <i class="fas fa-search-location"></i>
+              <% end %>
+                <br><br>
+          </form>
+                <!-- 地図を表示させる要素 -->
+                <div>
+                    <div id='initmap'></div>
+                      <br><br>
+                </div>
+                  <br>
+                  <%= render "shared/google_api/postmap" %>
+                  <%= render "shared/maps/form", map: @map %>
+                    <br>
+                  <%= link_to 'Back', maps_path %>
     </div>
+  </div>
 </div>
