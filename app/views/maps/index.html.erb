@@ -4,12 +4,12 @@
     <% if @search_maps.any? %>
       <div>
         <%= render partial: "/shared/search_form/map_title_cont" %>
-          <div id="items" >
+          <div id="items">
             <%= render partial: "maps/mapscard", collection: @search_maps, as: "post" %>
           </div>
-            <%= link_to_next_page @search_maps, 'つづきを見る', remote: true, id: 'more_link' %>
+        <%= link_to_next_page @search_maps, 'つづきを見る', remote: true, id: 'more_link' %>
+        <%= link_to 'New Map', new_map_path %>
       </div>
-          <%= link_to 'New Map', new_map_path %>
     <% else %>
         <div>
           <%= render'/shared/search_form/map_title_cont' %>

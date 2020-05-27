@@ -1,39 +1,29 @@
 <div>
-  <div>
-    <div>
-      <h5>
-        <% if post.title? %>
-            <%= link_to post.title, map_path(post) %>
-        <% else %>
-            <%= link_to "タイトル", map_path(post) %>
-        <% end %>
-      </h5>
-        <p>
-          <% if post.content? %>
-              <%= link_to post.content, map_path(post) %>
-          <% else %>
-              <%= link_to "あなたのお気に入りスポットです！", map_path(post) %>
-          <% end %>
-        </p>
-          <%= link_to image_tag(post.picture.url), map_path(post) %>
-
-          <%# ボトム部分1 %>
-          <div>
-            <%= link_to 'Show', post %> | 
-            <%= link_to 'Edit', edit_map_path(post) %> | 
-            <%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %>
-          </div>
-            <%# ボトム部分2 %>
-            <div>
-                <i>by</i>
-                <%= link_to image_tag(post.user.image.url, size:"45x45") post.user %>
-                <%= link_to post.user.name, post.user %>
-                <span>
-                  <%= post.created_at.strftime("%m/%d") %>
-                </span>
-                  <%# いいねボタン挿入 %>
-                  <%= render partial: '/likes/likes_btn', locals: {post: post} %>
-            </div>
-    </div>
-  </div>
+    <h5>
+      <% if post.title? %>
+          <%= link_to post.title, map_path(post) %>
+      <% else %>
+          <%= link_to "タイトル", map_path(post) %>
+      <% end %>
+    </h5>
+    <p>
+      <% if post.content? %>
+          <%= link_to post.content, map_path(post) %>
+      <% else %>
+          <%= link_to "あなたのお気に入りスポットです！", map_path(post) %>
+      <% end %>
+    </p>
+    <%= link_to image_tag(post.picture.url), map_path(post) %>
+      <br>
+    <%= link_to 'Show', post %> | 
+    <%= link_to 'Edit', edit_map_path(post) %> | 
+    <%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %>
+      <br>
+    <i>by</i>
+    <%= link_to image_tag(post.user.image.url, size:"45x45") %>
+    <%= link_to post.user.name, post.user %>
+    <span><%= post.created_at.strftime("%m/%d") %></span>
+    <%# いいねボタン挿入 %>
+    <%= render partial: '/likes/likes_btn', locals: {post: post} %>
 </div>
+<br><br>

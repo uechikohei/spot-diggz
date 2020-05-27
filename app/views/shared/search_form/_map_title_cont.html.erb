@@ -1,8 +1,8 @@
 <%# キーワードに一致する、titleカラムを持つ要素を返す%>
-<div class="text-center mt-2">
+<div>
     <%= search_form_for @map_key do |f| %>
         <%= f.search_field :title_cont, placeholder: 'タイトル名を...' %>
-        <%= button_tag type: 'submit', class: 'btn btn-warning mb-1' do %>
+        <%= button_tag type: 'submit' do %>
             <i class="fas fa-search"></i>
         <% end %>
     <% end %>
