@@ -1,7 +1,7 @@
 20.times do|n|
     address = Faker::Address.city
-    title = "ここにタイトル"
-    content = "本文"
+    title = "サンプルタイトル"
+    content = "rails db:seedで投入したよ"
     user_id = "1"
     latitude = "35.652832"
     longitude = "139.703865"

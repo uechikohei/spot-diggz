@@ -4,16 +4,18 @@
     <% if current_user.already_liked?(post) %>
         <%# deleteメソッド使用、id=nillエラー防ぐため@maps%>
         <%= button_to map_like_path(post, @maps), method: :delete, class: "clear-button" do %>
-          <i class="fas fa-heart fa-lg heart_red"></i>
+          <i class="fas fa-heart fa-lg heart_red"></i><small>✓</small>
         <% end %>
     <%# if: いいねがついていない状態のボタン %>
     <% else %>
         <%= button_to map_likes_path(post), class: "clear-button" do %>
-          <i class="far fa-heart fa-lg heart_grey"></i>
+          <i class="fas fa-heart fa-lg heart_white"></i>
         <% end %>
     <% end %>
 <%# unless分岐：current_userが投稿していないパターン(false)%>
 <% else %>
-    <i class="fas fa-heart fa-lg heart_red"></i>
-    <%= post.likes.count %>
+  <div>
+    <i class="fas fa-heart heart_red"></i>
+    <small><%= post.likes.count %>ｲｲﾈ!</small>
+  </div>
 <% end %>

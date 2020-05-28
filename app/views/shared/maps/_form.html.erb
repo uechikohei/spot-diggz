@@ -12,26 +12,30 @@
       <div>
         <ol>
           <div>
-            <li>どんなスポット？<br><%= form.select :spot_style, [['スケートパーク', true], ['ストリートスポット', false]], class: "clear-button" %></li>
-              <br>
-            <li>ヘルメットの着用義務は？<br><%= form.select :helmet, [['有り', true],['無し', false]] %></li>
-              <br>
-            <li><%= form.text_field :title, placeholder: "タイトル(20字以内で)" %></li>
-              <br>
-            <li><%= form.text_area :content, size: "60x3", placeholder: "説明や備考があれば(400字以内で)", class: "li-top-position" %></li>
-              <br>
-            <li><%= form.file_field :picture, class: "btn slide-bg" do %><% end %></li>
-              <br>
-            <li>
-              <%= button_tag type: 'submit', class: "btn-cubic" do %>
-                <span class="hovering">
-                  <i class="fas fa-paper-plane"></i>
-                </span>
-                <span class="default">投稿</span>
-              <% end %>
-            </li>
-                <%= form.hidden_field :latitude, {id: "lat"} %>
-                <%= form.hidden_field :longitude, {id: "lng"} %>
+            <li><h3><span class="marker-brunt">どんなスポット？</span></h3>
+              <%= form.select :spot_style, [['スケートパーク', true], ['ストリートスポット', false]], class: "clear-button" %>
+            </li> <br>
+            <li><h3><span class="marker-brunt">ヘルメットの着用義務は？</span></h3>
+              <%= form.select :helmet, [['有り', true],['無し', false]] %>
+            </li> <br>
+            <li><h3><span class="marker-brunt">スケートパークやスポット名は？</span></h3>
+              <%= form.text_field :title, placeholder: "20字以内で" %>
+            </li> <br>
+            <li><h3><span class="marker-brunt">説明や備考などあれば</span></h3>
+              <%= form.text_area :content, size: "60x3", placeholder: "400字以内で" %>
+            </li> <br>
+            <li><h3><span class="marker-brunt">写真をアップロード</span></h3>
+                <p>（未設定でデフォルト画像がセットされます）</p>
+                <%= form.file_field :picture, class: "btn slide-bg"%>
+            </li> <br>
+              <%= form.hidden_field :latitude, {id: "lat"} %>
+              <%= form.hidden_field :longitude, {id: "lng"} %>
+            <%= button_tag type: 'submit', class: "btn-cubic" do %>
+              <span class="hovering">
+                <i class="fas fa-paper-plane"></i>
+              </span>
+              <span class="default">投稿</span>
+            <% end %>
           </div>
         </ol>
       </div>

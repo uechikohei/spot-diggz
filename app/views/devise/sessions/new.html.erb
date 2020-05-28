@@ -1,38 +1,24 @@
-<div>
-  <div>
-    <div>
-      <h5>ログインページ</h5><br>
-
-      <%= form_for(resource, as: resource_name, url:
-        session_path(resource_name)) do |f| %>
-        <div>
-          <%= f.label :email %>
-          <div>
-          <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "Email" %>
-          </div>
-        </div>
-        <div>
-          <%= f.label :password %>
-          <div>
-            <%= f.password_field :password, autocomplete: "current-password", placeholder: "Password" %>
-          </div>
-        </div>
-        <% if devise_mapping.rememberable? %>
-          <div>
-          <%= f.label :remember_me, class: 'form-check-label col-sm-10' do %>
-            <%= f.check_box :remember_me, type: "checkbox", id: "gridCheck1" %>
-              <%= resource.class.human_attribute_name('remember_me') %>
-            <% end %>
-          </div>
-        <% end %>
-        <br>
-        <div>
-          <%= f.submit  t('.sign_in') %>
-        </div>
+<main>
+  <div class="first-content">
+    <h1>ログインページ</h1> <br>
+      <%= form_for(resource, as: resource_name, url:session_path(resource_name)) do |f| %>
+        <ul>
+          <li> <h3><span class="marker-brunt"><%= f.label :email %></span></h3>
+              <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "Email" %>
+          </li> <br>
+          <li> <h3><span class="marker-brunt"><%= f.label :password %></span></h3>
+              <%= f.password_field :password, autocomplete: "current-password", placeholder: "Password" %>
+          </li> <br>
+          <li>
+              <%= button_tag type: 'submit', class: "btn-cubic" do %>
+                <span class="hovering">
+                  <i class="fas fa-sign-in-alt"></i>
+                </span>
+                <span class="default">ログイン</span>
+              <% end %> <br><br>
+              <%= render 'devise/shared/links' %>
+          </li>
+        </ul>
       <% end %>
-      <br>
-      <%= render 'devise/shared/links' %>
-    </div>
   </div>
-  <br>
-</div>
+</main>

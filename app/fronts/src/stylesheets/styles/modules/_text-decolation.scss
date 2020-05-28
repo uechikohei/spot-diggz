@@ -1,0 +1,15 @@
+.link_to_text {
+  color: $cWhite;
+  &:hover{
+    color: $cMimosa;
+  }
+}
+
+.marker-brunt {
+  background: linear-gradient(transparent 70%, $cBrunt 0%);
+}
+
+h1:first-letter {
+  font-size: 2em;
+  color: $cBrunt;
+}

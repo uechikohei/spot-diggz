@@ -12,7 +12,12 @@ input{
 }
 
 ol{
-  line-height: 2.5;
+  line-height: 2;
+}
+
+ul{
+  list-style-type: none;
+  line-height: 2;
 }
 
 .font-sm {
@@ -53,4 +58,8 @@ ol{
   width: 90%;
   margin: 0 auto;
   max-width: $contentMaxWidth;
+}
+
+.first-content {
+  @extend .content-width;
 }

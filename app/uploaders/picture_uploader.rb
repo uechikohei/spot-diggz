@@ -8,14 +8,10 @@ class PictureUploader < CarrierWave::Uploader::Base
   process convert: 'jpg'
 
   # 画像リサイズと分類
-  process resize_to_fill: [200, 200]
+  process resize_to_fill: [273, 275]
 
-  version :thumb40 do
-    process resize_to_fit: [400, 400]
-  end
-
-  version :thumb60 do
-    process resize_to_fit: [600, 600]
+  version :thumb50 do
+    process resize_to_fit: [500, 500]
   end
 
   def filename
@@ -32,8 +28,9 @@ class PictureUploader < CarrierWave::Uploader::Base
     %w[jpg jpeg png]
   end
 
+  # public/imagesへとパスがつながっている
   def default_url(*args)
-    "/images/" + [version_name, "default_no_image_2.jpg"].compact.join('_')
+    "/images/" + [version_name, "picture_default.png"].compact.join('_')
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:

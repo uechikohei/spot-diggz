@@ -10,6 +10,13 @@ class Users::RegistrationsController < Devise::RegistrationsController
       redirect_to root_path, alert: 'ゲストユーザーは削除できません。'
     end
   end
+
+  protected
+  # アカウント編集後、プロフィール画面に移動する
+  def after_update_path_for(resource)
+    user_path(id: current_user.id)
+  end
+
   # GET /resource/sign_up
   # def new
   #   super

@@ -2,7 +2,7 @@
   <div>
     <div>
       <%= link_to feed.name, user_path(feed) %>
-      <%= link_to image_tag(feed.image.url), user_path(feed) %>
+      <%= link_to image_tag(feed.image.url, size: "150x150",class: "user-window"), user_path(feed) %>
       <%# フォローボタン挿入%>
       <%= render partial: 'relationships/follow_button', locals: {feed: feed} %>
     </div>

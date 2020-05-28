@@ -1,29 +1,22 @@
-<div>
-    <h5>
-      <% if post.title? %>
-          <%= link_to post.title, map_path(post) %>
-      <% else %>
-          <%= link_to "タイトル", map_path(post) %>
-      <% end %>
-    </h5>
-    <p>
-      <% if post.content? %>
-          <%= link_to post.content, map_path(post) %>
-      <% else %>
-          <%= link_to "あなたのお気に入りスポットです！", map_path(post) %>
-      <% end %>
-    </p>
-    <%= link_to image_tag(post.picture.url), map_path(post) %>
-      <br>
-    <%= link_to 'Show', post %> | 
-    <%= link_to 'Edit', edit_map_path(post) %> | 
-    <%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %>
-      <br>
-    <i>by</i>
-    <%= link_to image_tag(post.user.image.url, size:"45x45") %>
-    <%= link_to post.user.name, post.user %>
-    <span><%= post.created_at.strftime("%m/%d") %></span>
-    <%# いいねボタン挿入 %>
-    <%= render partial: '/likes/likes_btn', locals: {post: post} %>
-</div>
-<br><br>
+
+        <div class="card">
+          <div class="card-image"><%= link_to image_tag(post.picture.url, size: "273x275"),map_path(post), class: "link_to_text" %></div>
+          <div class="card-info">
+            <div class="card-title"><%= link_to post.title, map_path(post), class: "link_to_text" %></div>
+            <div class="card-detail"><%= link_to post.content, map_path(post), class: "link_to_text" %></div>
+          </div>
+          <div class="card-social"><br>
+            <ul>
+              <div>
+                <%= link_to image_tag(post.user.image.url, size:"45x45", class: "user-window") %>
+                <%= link_to post.user.name, post.user ,class: "link_to_text"%>
+              </div>
+              <div>
+                <small>作成日:</small>
+                <span><%= post.created_at.strftime("%m/%d") %></span>
+              </div>
+                <%# いいねボタン挿入 %>
+                <%= render partial: '/likes/likes_btn', locals: {post: post} %>
+            </ul>
+          </div>
+        </div>

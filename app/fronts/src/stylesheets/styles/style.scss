@@ -1,9 +1,11 @@
 @import 'modules/variables';
 @import 'modules/button';
 @import 'modules/mixin';
-@import 'modules/hero-slider';
 @import 'modules/text-animation';
-
+@import 'modules/text-decolation';
+@import 'modules/border';
+@import 'modules/card';
+@import 'modules/googlemap';
 
 //上から順にscssが適用される
 //モバイルファースト

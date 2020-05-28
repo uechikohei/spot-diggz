@@ -1,51 +1,31 @@
-  <div>
-    <div>
-      <div>
-
-      <h5>新しくアカウントを<br>作成する</h5><br>
-
+<main>
+  <div class="first-content">
+    <h1>ようこそ！アカウントを作成しよう</h1> <br>
       <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-        <%= render "devise/shared/error_messages", resource: resource %>
-
-        <div>
-          <div>
-            <label>プロフ画像を設定</label><br>
-            <%= f.file_field :image, accept: 'image/jpeg,image/gif,image/png' %>
-          </div>
-        </div><br>
-
-        <div>
-          <div>
-            <%= f.text_field :name, autofocus: true,
-                placeholder: "名前" %>
-          </div>
-        </div><br>
-
-        <div>
-          <div>
-            <%= f.email_field :email,
-                placeholder: "メールアドレス" %>
-          </div>
-        </div><br>
-
-        <div>
-          <div>
-            <%= f.password_field :password, autocomplete: "new-password",
-              placeholder: "パスワード (#{@minimum_password_length}文字以上)" %>
-          </div>
-        </div><br>
-
-        <div>
-          <div>
-            <%= f.submit t('.sign_up') %>
-          </div>
-          <div>
-            <%= render "devise/shared/links" %>
-          </div>
-
-        </div>
-
+      <%= render "devise/shared/error_messages", resource: resource %>
+        <ul>
+          <li>
+              <h3><span class="marker-brunt">プロフ画像を設定</span></h3>
+              <p>※「未選択」で、デフォルト画像が設定されます</p>
+              <%= f.file_field :image, accept: 'image/jpeg,image/gif,image/png', class: "btn slide-bg" do %><% end %>
+          </li>
+          <li>
+            <h3><span class="marker-brunt">アカウント情報を入力</span></h3>
+              <%= f.text_field :name, autofocus: true,
+                  placeholder: "名前" %> <br><br>
+              <%= f.email_field :email,
+                  placeholder: "メールアドレス" %> <br><br>
+              <%= f.password_field :password, autocomplete: "new-password",
+                placeholder: "パスワード (#{@minimum_password_length}文字以上)" %> <br><br>
+              <%= button_tag type: 'submit', class: "btn-cubic" do %>
+                <span class="hovering">
+                  <i class="fas fa-user-plus"></i>
+                </span>
+                <span class="default">登録</span>
+              <% end %>
+          </li> <br>
+              <%= render "devise/shared/links" %>
+        </ul>
       <% end %>
-      </div>
-    </div>
   </div>
+</main>

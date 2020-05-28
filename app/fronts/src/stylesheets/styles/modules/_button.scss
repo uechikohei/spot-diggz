@@ -105,11 +105,16 @@
       text-align: center;
       transition: all 0.3s;
       transform-origin: center center -25px;
-
     }
 
     & .hovering {
       background-color: $cBlack;
+      color: $cWhite;
+      transform: rotateX(90deg);
+    }
+
+    & .hovering-danger {
+      background-color: $cRed;
       color: $cWhite;
       transform: rotateX(90deg);
     }
@@ -124,8 +129,76 @@
       & .hovering {
         transform: rotateX(0);
       }
+      & .hovering-danger {
+        transform: rotateX(0);
+      }
       & .default {
         transform: rotateX(-90deg);
       }
     }
   }
+
+.btn-mini {
+    position: relative;
+    display: inline-block;
+    background-color: $cWhite;
+    border: 1px solid $cBlack;
+    font-weight: 600;
+    padding: 5px 10px;
+    margin: 5px auto;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: $cBlack;
+    text-decoration: none !important;
+
+    &.slide-bg {
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+
+      &::before {
+          content: '';
+          display: inline-block;
+          width: 100%;
+          height: 100%;
+          background-color: $cBlack;
+          position: absolute;
+          top: 0;
+          left: 0;
+          transform: translateX(-100%);
+          transition: transform 0.3s;
+          z-index: -1;
+      }
+
+      &:hover {
+          color: $cWhite;
+
+          &::before {
+              transform: none;
+          }
+        }
+      }
+  }
+
+//ボタンのデフォルト
+.clear-button{
+  background-color:rgba(0, 0, 0, 0);
+  border:none;
+}
+
+//イイねぼたん
+.heart_red{
+  color: $cRed;
+}
+
+.heart_white{
+  color: $cWhite;
+}
+
+.follow_green{
+  color: $cTeal;
+}
+
+.unfollow_white{
+  color: $cWhite;
+}

@@ -1,18 +1,18 @@
 <%# unless分岐： %>
 <% unless current_user == feed %>
-    uechi以外
+    <%#本人操作ユーザー以外で表示%>
         <% if current_user.following?(feed) %>
-          フォローしている
+          <%#フォローしている%>
           <%= link_to unfollow_path(feed.id), method: :POST, class: "clear-button" do %>
             <i class="fas fa-handshake fa-lg follow_green"></i>
           <% end %>
         <% else %>
-          まだフォローしてない
+          <%#まだフォローしてない%>
           <%= link_to follow_path(feed.id), method: :POST, class: "clear-button" do %>
             <i class="far fa-handshake fa-lg unfollow_grey"></i>
           <% end %>
         <% end %>
 <% else %>
-      uechi
+      <%#本人操作ユーザー%>
 <% end %>
 
