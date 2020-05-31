@@ -1,26 +1,19 @@
 <main>
   <div class="first-content">
-      <h1>新しく投稿する</h1> <br>
-        <ol>
-          <li>検索バー or 地図上を移動してクリック</li>
-          <li>マーカーを落として、登録しよう！</li>
-        </ol>
-          <form onsubmit="return false;">
-            <input type="text" maxlength="20" value="東京　スケートパーク" id="address">
-              <%= button_tag type: 'submit', id: "map_button", class: "btn-mini slide-bg" do %>
-                  <i class="fas fa-search-location"></i>
-              <% end %>
-                <br><br>
-          </form>
-                <!-- 地図を表示させる要素 -->
-                <div>
-                    <div id='initmap'></div>
-                      <br><br>
-                </div>
-                  <br>
-                  <%= render "shared/google_api/postmap" %>
-                  <%= render "shared/maps/form", map: @map %>
-                    <br>
-                  <%= link_to 'Back', maps_path %>
+    <h1>新しく投稿する</h1> <br>
+      <ul>
+        <li>検索バー　or　地図上を移動してクリック</li>
+        <li>マーカーを落として、登録しよう！</li>
+      </ul>
+        <form onsubmit="return false;">
+          <input type="text" maxlength="20" value="東京　スケートパーク" id="address">
+            <%= button_tag type: 'submit', id: "map_button", class: "btn-mini slide-bg" do %>
+                <i class="fas fa-search-location"></i>
+            <% end %>
+              <br><br>
+        </form>
+    <%= render "shared/maps/form", map: @map %>
+      <br>
+    <%= link_to 'Back', maps_path %>
   </div>
 </main>

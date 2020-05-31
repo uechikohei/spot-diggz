@@ -5,7 +5,10 @@
       <%= render "shared/maps/navs_tab" %><br>
       <!-- 地å図を表示させる要素 -->
       <h2>routemap</h2>
-      <div id='routemap'></div>
+        車での走行距離：<span id="msg_d"></span>
+        <br>
+        目的地までの距離：<span id="msg_t"></span>
+      <div class="map" id='routes'></div>
         <%= render "shared/google_api/routemap" %> <br><br>
         <%= image_tag @map.picture.url %>
     </div><br>

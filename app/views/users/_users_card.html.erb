@@ -1,10 +1,18 @@
-<div>
-  <div>
-    <div>
-      <%= link_to feed.name, user_path(feed) %>
-      <%= link_to image_tag(feed.image.url, size: "150x150",class: "user-window"), user_path(feed) %>
-      <%# フォローボタン挿入%>
-      <%= render partial: 'relationships/follow_button', locals: {feed: feed} %>
+  <div class="user_card">
+    <div class="additional">
+      <div class="user-info">
+        <small><%= link_to feed.name, user_path(feed), class: "link_to_text_bk" %></small> <br> <hr>
+        <%= link_to image_tag(feed.image.url, size: "110x110"), user_path(feed) %>
+      </div>
+      <div class="more-info">
+        <ul>
+          <li><small>投稿した件数</small> <%= feed.maps.count %></li>
+          <li><small>いいね総数</small>　<%= feed.likes.count %></li>
+          <li><small>フォロー数</small>　<%= feed.follower.count %></li>
+          <li><small>フォロワー数</small> <%= feed.followed.count %></li>
+          <%= link_to "詳細ページへ", user_path(feed) %>
+        </ul>
+      </div>
     </div>
+    <div class="general"><h2> user <br> info <br> card</h2></div>
   </div>
-</div>

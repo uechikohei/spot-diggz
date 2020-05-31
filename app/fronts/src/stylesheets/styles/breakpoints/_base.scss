@@ -19,7 +19,9 @@ ul{
   list-style-type: none;
   line-height: 2;
 }
-
+.font-xs {
+  font-size: 11px;
+}
 .font-sm {
   font-size: 14px;
 }
@@ -62,4 +64,9 @@ ul{
 
 .first-content {
   @extend .content-width;
+}
+
+.map{
+  @extend .content-width;
+  height: 300px;
 }

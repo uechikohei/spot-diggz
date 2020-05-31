@@ -4,7 +4,7 @@
       <% if @search_feeds.any? %>
         <div>
           <%= render partial: "/shared/search_form/user_name_cont" %>
-            <div id="items">
+            <div class="user_card_container" id="items">
                 <%= render partial: 'users/users_card', collection: @search_feeds, as: "feed" %>
             </div>
           <%= link_to_next_page @search_feeds, 'つづきを見る', remote: true, class: "btn filled", id: 'more_link' %>

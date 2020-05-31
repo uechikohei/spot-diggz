@@ -11,7 +11,9 @@
     <% end %>
       <div>
         <ol>
+          <!-- 地図を表示させる要素 -->
           <div>
+            <div class="map" id='newpost'></div>
             <li><h3><span class="marker-brunt">どんなスポット？</span></h3>
               <%= form.select :spot_style, [['スケートパーク', true], ['ストリートスポット', false]], class: "clear-button" %>
             </li> <br>
@@ -40,3 +42,5 @@
         </ol>
       </div>
 <% end %>
+
+<%= render "shared/google_api/postmap" %>

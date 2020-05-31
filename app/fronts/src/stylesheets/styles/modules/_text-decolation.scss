@@ -1,7 +1,14 @@
-.link_to_text {
+.link_to_text_wh {
   color: $cWhite;
   &:hover{
     color: $cMimosa;
+  }
+}
+
+.link_to_text_bk {
+  color: $cBlack;
+  &:hover{
+    color: $cGrotto;
   }
 }
 

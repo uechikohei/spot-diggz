@@ -4,7 +4,8 @@
     <% if current_user.already_liked?(post) %>
         <%# deleteメソッド使用、id=nillエラー防ぐため@maps%>
         <%= button_to map_like_path(post, @maps), method: :delete, class: "clear-button" do %>
-          <i class="fas fa-heart fa-lg heart_red"></i><small>✓</small>
+          <i class="fas fa-heart fa-lg heart_red"></i>
+          <p class="font-xs">ｲｲﾈ!!</p>
         <% end %>
     <%# if: いいねがついていない状態のボタン %>
     <% else %>
@@ -16,6 +17,6 @@
 <% else %>
   <div>
     <i class="fas fa-heart heart_red"></i>
-    <small><%= post.likes.count %>ｲｲﾈ!</small>
+    <p class="font-xs">your post!</p>
   </div>
 <% end %>
