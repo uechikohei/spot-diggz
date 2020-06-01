@@ -2,7 +2,6 @@
 <main>
   <div class="first-content">
     <div>
-      <%= render "shared/maps/navs_tab" %><br>
       <!-- 地å図を表示させる要素 -->
       <h2>routemap</h2>
         車での走行距離：<span id="msg_d"></span>
@@ -13,14 +12,21 @@
         <%= image_tag @map.picture.url %>
     </div><br>
     <%# いいね登録と解除　%>
-      <h3>いいね件数: <%= @map.likes.count %></h3>
-        <% if current_user.already_liked?(@map) %>
-              <%# likeはmapはネスト%>
-          <%= button_to 'いいねを取り消す', map_like_path(@map), method: :delete %>
-        <% else %>
-              <%# likeはmapはネスト%>
-          <%= button_to 'いいね', map_likes_path(@map) %>
-        <% end %>
+      <h3>イイネ！数: <%= @map.likes.count %></h3>
+      <% unless current_user == @map.user %>
+          <% if current_user.already_liked?(@map) %>
+                <%# likeはmapはネスト%>
+            <%= button_to 'いいねを取り消す', map_like_path(@map), method: :delete %>
+          <% else %>
+                <%# likeはmapはネスト%>
+            <%= button_to 'いいね', map_likes_path(@map) %>
+          <% end %>
+      <% else %>
+        <div>
+          <i class="fas fa-heart heart_red"></i>
+          <span class="font-xs">あなたの投稿にｲｲﾈ!はできません</span>
+        </div>
+      <% end %>
       <h2>いいねしたユーザー</h2>
         <% @map.liked_users.each do |map| %>
           <li><%= map.email %></li>

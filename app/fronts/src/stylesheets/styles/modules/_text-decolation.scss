@@ -12,6 +12,14 @@
   }
 }
 
+.text-danger{
+  color: $cRed;
+}
+
+.text_info{
+  color: $cTeal;
+}
+
 .marker-brunt {
   background: linear-gradient(transparent 70%, $cBrunt 0%);
 }
