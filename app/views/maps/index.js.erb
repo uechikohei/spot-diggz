@@ -3,3 +3,8 @@ $("#items").append("<%= escape_javascript(
 
 $("#more_link").replaceWith("<%= escape_javascript(
   link_to_next_page(@search_maps, 'つづきを見る', remote: true, class: "btn filled", id: 'more_link')) %>");
+
+  <%# main_card実装　%>
+$('body').on('click', '[data-action="drawer"]', function() {
+  $(this).closest('.card').toggleClass("active");
+});
