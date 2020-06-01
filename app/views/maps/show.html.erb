@@ -1,6 +1,40 @@
 <p id="notice"><%= notice %></p>
 <main>
   <div class="first-content">
+
+  <%# main_card実装　%>
+  <div class="main_card">
+    <div class="main_card-image">
+      <h1>Get Lost In the Woods</h1>
+    </div>
+    <div class="main_card-body">
+      <div class="main_controls">
+        <a data-action="drawer" href="#">
+          <i class="ion-android-arrow-up up"></i>
+          <i class="ion-android-arrow-down down"></i>
+        </a>
+        <a data-action="share" href="#">
+          <i class="ion-android-share-alt"></i>
+        </a>
+        <a data-action="bookmark" href="#">
+          <i class="ion-android-bookmark"></i>
+        </a>
+        <a data-action="favorite" href="#">
+          <i class="ion-android-favorite"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
     <div>
       <!-- 地å図を表示させる要素 -->
       <h2>routemap</h2>
@@ -10,16 +44,20 @@
       <div class="map" id='routes'></div>
         <%= render "shared/google_api/routemap" %> <br><br>
         <%= image_tag @map.picture.url %>
-    </div><br>
-    <%# いいね登録と解除　%>
-      <h3>イイネ！数: <%= @map.likes.count %></h3>
+    </div>
+
       <% unless current_user == @map.user %>
           <% if current_user.already_liked?(@map) %>
                 <%# likeはmapはネスト%>
-            <%= button_to 'いいねを取り消す', map_like_path(@map), method: :delete %>
+            <%= button_to map_like_path(@map), method: :delete, class: "clear-button" do %>
+              <i class="fas fa-heart fa-lg heart_red"></i>
+              <p class="font-xs">ｲｲﾈ!!</p>
+            <% end %>
           <% else %>
                 <%# likeはmapはネスト%>
-            <%= button_to 'いいね', map_likes_path(@map) %>
+            <%= button_to  map_likes_path(@map), class: "clear-button" do %>
+              <i class="fas fa-heart fa-lg heart_white"></i>
+            <% end %>
           <% end %>
       <% else %>
         <div>
@@ -27,10 +65,32 @@
           <span class="font-xs">あなたの投稿にｲｲﾈ!はできません</span>
         </div>
       <% end %>
-      <h2>いいねしたユーザー</h2>
+
+      <h2>いいねしたユーザー<%= @map.likes.count %>人</h2>
+      <ul>
         <% @map.liked_users.each do |map| %>
-          <li><%= map.email %></li>
+          <li><%= map.name %></li>
         <% end %>
+        <li><%= @map.title %></li>
+        <li><%= @map.content %></li>
+        <li><%= @map.address %></li>
+        <li>
+          <% if @map.spot_style? %>
+            スケートパーク
+          <% else%>
+            ストリートスポット
+          <% end %>
+        </li>
+        <li>
+          <% if @map.helmet? %>
+          　ヘルメット必須
+          <% else %>
+            ヘルメット不要
+          <% end %>
+        </li>
+      </ul>
+
+
       <div class="text-center">
         <%= link_to 'Edit', edit_map_path(@map) %> |
         <%= link_to 'Back', maps_path %>
