@@ -1,5 +1,4 @@
 window.addEventListener('load', function initMap () {
-
   //マップを生成して表示
   var routesmap = new google.maps.Map(document.getElementById('routes'), {
     center: {lat: 35.681167, lng: 139.767052},
