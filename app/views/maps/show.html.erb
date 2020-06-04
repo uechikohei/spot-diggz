@@ -1,40 +1,7 @@
 <p id="notice"><%= notice %></p>
 <main>
+<button class="click_button">button</button>
   <div class="first-content">
-
-  <%# main_card実装　%>
-  <div class="main_card">
-    <div class="main_card-image">
-      <h1>Get Lost In the Woods</h1>
-    </div>
-    <div class="main_card-body">
-      <div class="main_controls">
-        <a data-action="drawer" href="#">
-          <i class="ion-android-arrow-up up"></i>
-          <i class="ion-android-arrow-down down"></i>
-        </a>
-        <a data-action="share" href="#">
-          <i class="ion-android-share-alt"></i>
-        </a>
-        <a data-action="bookmark" href="#">
-          <i class="ion-android-bookmark"></i>
-        </a>
-        <a data-action="favorite" href="#">
-          <i class="ion-android-favorite"></i>
-        </a>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
     <div>
       <!-- 地å図を表示させる要素 -->
       <h2>routemap</h2>
@@ -42,7 +9,6 @@
         <br>
         目的地までの距離：<span id="msg_t"></span>
       <div class="map" id='routes'></div>
-        <%= render "shared/google_api/routemap" %> <br><br>
         <%= image_tag @map.picture.url %>
     </div>
 
@@ -97,3 +63,5 @@
       </div>
   </div>
 </main>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5qtdZ0_IRKciy41eDwLL9fTQzwR_7BAI&callback=initMap" async defer></script>

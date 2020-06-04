@@ -2,8 +2,12 @@ class LikesController < ApplicationController
 
   def create
     @like = current_user.likes.create(map_id: params[:map_id])
-    @like.save
-    redirect_back(fallback_location: root_path)
+    respond_to do |format|
+      if @like.save
+        format.html { redirect_back(fallback_location: root_path) }
+        format.js
+      end
+    end
   end
 
   def destroy

@@ -1,9 +1,9 @@
+
 require("@rails/activestorage").start()
 require.context('../images', true)
-
-//↓これを削除すると、ログアウトできなくなるので注意
-require("@rails/ujs").start()
 global.$ = require('jquery')
+import Rails from '@rails/ujs';
+Rails.start();
 
 //プラグイン
 import "@fortawesome/fontawesome-free/js/all"
