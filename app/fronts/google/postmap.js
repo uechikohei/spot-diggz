@@ -1,5 +1,5 @@
 window.addEventListener('DOMContentLoaded', function getMap () {
-  var getMap = (function() {
+  var postMap = (function() {
     function codeAddress(address) {
     // google.maps.Geocoder()コンストラクタのインスタンスを生成
     var geocoder = new google.maps.Geocoder();
@@ -74,5 +74,5 @@ window.addEventListener('DOMContentLoaded', function getMap () {
             }
           };
     })();
-  getMap.getAddress();
+  postMap.getAddress();
   });
