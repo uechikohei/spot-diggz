@@ -1,6 +1,18 @@
 <hr>
-<footer class="text-center">
-    <div>
-      <p>&copy; 2020 UechiKohei</p>
-    </div>
+<footer class="footer">
+  <div class="logo">
+      <span><%= link_to image_pack_tag("media/images/logo.svg", size: "50"), root_path, class: "logo__img" %></span>
+      <span class="logo__skate">skate_</span>
+      <span class="logo__spot">spot_</span>
+      <span class="logo__search">search</span>
+  </div>
+  <nav class="footer__nav">
+      <ul class="footer__ul">
+        <li class="footer__li">問い合わせ</li>
+        <li class="footer__li">サービス</li>
+      </ul>
+      <div class="footer__copyright">
+        &copy; 2020 UechiKohei
+      </div>
+  </nav>
 </footer>

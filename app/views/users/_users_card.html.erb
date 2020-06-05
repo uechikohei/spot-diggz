@@ -1,20 +1,19 @@
-  <div class="user_card">
-    <div class="additional">
-      <div class="user-info">
-        <small><%= link_to feed.name, user_path(feed), class: "link_to_text_bk" %></small> <br> <hr>
-        <%= link_to image_tag(feed.image.url, size: "110x110"), user_path(feed) %>
-      </div>
-      <div class="more-info">
-        <ul>
-          <li><%= render partial: '/relationships/follow_button', locals: {feed: feed} %></li>
-          <li><span class="font-xs">投稿した件数</span> <%= feed.maps.count %></li>
-          <li><span class="font-xs">いいね総数</span>　<%= feed.likes.count %></li>
-          <li><span class="font-xs">フォロー数</span>　<%= feed.follower.count %></li>
-          <li><span class="font-xs">フォロワー数</span> <%= feed.followed.count %></li>
-          <%= link_to "詳細ページへ", user_path(feed), class: "font-xs" %>
-        </ul>
-      </div>
+<div class="card">
+  <div class="additional">
+    <div class="info">
+      <small><%= link_to feed.name, user_path(feed), class: "link_to_text_bk" %></small> <br> <hr>
+      <%= link_to image_tag(feed.image.url, size: "110x110"), user_path(feed) %>
     </div>
-    <div class="general"><h2> user <br> info <br> card</h2></div>
+    <div class="more-info">
+      <ul>
+        <li><%= render partial: '/relationships/follow_button', locals: {feed: feed} %></li>
+        <li><span class="font-xs">投稿した件数</span> <%= feed.maps.count %></li>
+        <li><span class="font-xs">いいね総数</span>　<%= feed.likes.count %></li>
+        <li><span class="font-xs">フォロー数</span>　<%= feed.follower.count %></li>
+        <li><span class="font-xs">フォロワー数</span> <%= feed.followed.count %></li>
+        <%= link_to "詳細ページへ", user_path(feed), class: "font-xs" %>
+      </ul>
+    </div>
   </div>
-<p class="font-xs"></p>
+  <div class="general"><h2> user <br> info <br> card</h2></div>
+</div>

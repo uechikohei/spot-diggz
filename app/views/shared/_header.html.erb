@@ -1,6 +1,9 @@
 <header>
   <nav>
-    <%= link_to image_pack_tag("media/images/new.sss.logo.png"), root_path %>
+    <%= link_to image_pack_tag("media/images/logo.svg", size: "50"), root_path %>
+    <span class="logo__skate">skate_</span>
+    <span class="logo__spot">spot_</span>
+    <span class="logo__search">search_</span>
       <div id="navbarTogglerDemo02">
         <ul>
           <% if user_signed_in? %>
@@ -33,10 +36,6 @@
               <i class="fas fa-sign-out-alt"></i>
               ログアウト
             <% end %>
-            </li>
-            <li>
-              <span class="fas fa-envelope"></span>
-              問い合わせ
             </li>
           <% else %>
             <li>

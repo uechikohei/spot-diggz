@@ -70,3 +70,49 @@ ul{
   @extend .content-width;
   height: 300px;
 }
+
+.flex {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  font-size: 42px;
+  display: flex;
+
+  &__img {
+    width: 0.7em;
+  }
+
+  &__search{
+    color: $cRed;
+  }
+}
+
+.footer {
+  padding: 60px 0;
+  @extend .content-width;
+
+  &__nav {
+    @extend .flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+  }
+
+  &__ul {
+    @extend .flex;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__li {
+    padding: 0;
+    margin: 10px;
+  }
+
+  & .logo {
+    font-size: 38px;
+    justify-content: center;
+  }
+}

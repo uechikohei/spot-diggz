@@ -1,5 +1,5 @@
 //ユーザー一覧カード
-.user_card_container {
+.user_card_content {
   position: relative;
   flex-wrap: wrap;
   display: flex;
@@ -8,56 +8,52 @@
   overflow: hidden;
   padding-top: 15px;
   padding-bottom: 15px;
-}
-
-.user_card {
-  width: 280px;
-  height: 180px;
-  background-color: $cBrunt;
-  box-shadow: 0 8px 16px -8px rgba(0,0,0,0.4);
-  border-radius: 6px;
-  border-top-style: ridge;
-  border-left-style: ridge;
-  overflow: hidden;
-  position: relative;
-  margin: 1.5rem;
-}
-
-.user_card .additional {
-  position: absolute;
-  width: 150px;
-  height: 100%;
-  background: $cWhite;
-  transition: width 0.4s;
-  overflow: hidden;
-  z-index: 2;
-}
-
-.user_card:hover .additional {
-  width: 100%;
-  border-radius: 0 5px 5px 0;
-}
-
-.user_card .additional .user-info{
-  width: 150px;
-  height: 100%;
-  position: relative;
-  float: left;
-  text-align: center;
-}
-
-.user_card .additional .more-info{
-  padding-top: 5px;
-  text-align: center;
-}
-
-.user_card .general {
-  width: 130px;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 1;
-  padding-top: 20px;
-  text-align: center;
+  & .card {
+    width: 280px;
+    height: 180px;
+    background-color: $cBrunt;
+    box-shadow: 0 8px 16px -8px rgba(0,0,0,0.4);
+    border-radius: 6px;
+    border-top-style: ridge;
+    border-left-style: ridge;
+    overflow: hidden;
+    position: relative;
+    margin: 1.5rem;
+    &:hover {
+      & .additional {
+        width: 100%;
+        border-radius: 0 5px 5px 0;
+      }
+    }
+    & .additional {
+      position: absolute;
+      width: 150px;
+      height: 100%;
+      background: $cWhite;
+      transition: width 0.4s;
+      overflow: hidden;
+      z-index: 2;
+      & .info {
+        width: 150px;
+        height: 100%;
+        position: relative;
+        float: left;
+        text-align: center;
+      }
+      & .more-info {
+        padding-top: 5px;
+        text-align: center;
+      }
+    }
+    & .general {
+      width: 130px;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: 1;
+      padding-top: 20px;
+      text-align: center;
+    }
+  }
 }

@@ -1,3 +1,3 @@
 global.$ = require('jquery')
-import "../google/routesmap.js";
-import "../google/postmap.js";
+import "../src/javascripts/google/routesmap.js";
+import "../src/javascripts/google/postmap.js";

@@ -3,3 +3,18 @@
 Stylesheet: 600px以上のタブレットやモニタで適用
 
 ******************************************************************/
+.flex {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.footer {
+  & .logo {
+    justify-content: flex-start;
+  }
+
+  &__li {
+    margin-left: 0;
+    margin-right: 30px;
+  }
+}
