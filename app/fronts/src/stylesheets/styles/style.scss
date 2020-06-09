@@ -3,8 +3,10 @@
 @import 'modules/mixin';
 @import 'modules/text-animation';
 @import 'modules/text-decolation';
-@import 'modules/card';
-@import 'modules/user_card';
+@import 'modules/maps_card';
+@import 'modules/users_card';
+@import 'modules/show_card';
+@import 'modules/mobile-menu';
 
 //上から順にscssが適用される
 //モバイルファースト

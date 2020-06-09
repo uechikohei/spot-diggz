@@ -1,6 +1,6 @@
 <%# unless分岐： %>
 <% unless current_user == feed %>
-    <%#本人操作ユーザー以外で表示%>
+    <%#本人以外で表示%>
     <% if current_user.following?(feed) %>
           <%#フォローしている%>
           <span class="font-xs">フォロー中　</span>
@@ -15,7 +15,7 @@
           <% end %>
     <% end %>
 <% else %>
-    <%#本人操作ユーザー%>
+    <%#ログイン中ユーザーと同じユーザーカードに対して%>
     <span class="font-xs text_danger">ログイン中</span>
 <% end %>
 

@@ -4,7 +4,7 @@ Stylesheet: ベーススタイル
 
 ******************************************************************/
 body {
-  font-family: 'Oswald', 'Kosugi Maru', sans-serif;
+  font-family: 'Oswald', 'Sawarabi Gothic', sans-serif;
 }
 
 input{
@@ -56,6 +56,51 @@ ul{
   padding-bottom: 80px !important;
 }
 
+#container {
+  padding-top: $navHeight;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: $navHeight;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  z-index: 100;
+
+  &__nav {
+    display: none;
+  }
+  &__ul {
+    display: flex;
+    padding: 0;
+    margin: 0;
+    align-items: center;
+  }
+  &__li {
+    padding: 0;
+    margin: 10px;
+    & > a {
+      color: $cBlack;
+      text-decoration: none !important;
+      text-transform: uppercase;
+    }
+  }
+  & .logo {
+    font-size: 38px;
+    justify-content: center;
+  }
+  &__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    @extend .content-width;
+  }
+}
+
 .content-width {
   width: 90%;
   margin: 0 auto;
@@ -84,8 +129,17 @@ ul{
     width: 0.7em;
   }
 
-  &__search{
-    color: $cRed;
+  &__skate {
+    color: $cBlack !important;
+    text-decoration: none !important;
+  }
+  &__spot {
+    color: $cBlack !important;
+    text-decoration: none !important;
+  }
+  &__search {
+    color: $cRed !important;
+    text-decoration: none !important;
   }
 }
 
@@ -98,6 +152,7 @@ ul{
     justify-content: space-between;
     align-items: center;
     text-align: center;
+    text-transform: uppercase;
   }
 
   &__ul {
@@ -114,5 +169,20 @@ ul{
   & .logo {
     font-size: 38px;
     justify-content: center;
+    &__img {
+      width: 0.7em;
+    }
+    &__skate {
+      color: $cBlack !important;
+      text-decoration: none !important;
+    }
+    &__spot {
+      color: $cBlack !important;
+      text-decoration: none !important;
+    }
+    &__search {
+      color: $cRed !important;
+      text-decoration: none !important;
+    }
   }
 }

@@ -4,7 +4,11 @@
       <h2><%= @user.name %></h2>
       <!-- 以下で、メールアドレスを出力してください -->
       <p><%= @user.email %></p>
-
+      <%= link_to edit_user_registration_path do %>
+        <i class="fas fa-edit"></i>
+        編集
+      <% end %>
+      <br>
       <%= image_tag @user.image.url %>　<!--false時、image_uploadsによるdefault_urlが起動 -->
 
       <h2>投稿内容</h2>
@@ -31,7 +35,6 @@
           <%= link_to 'フォローする', follow_path(@user.id), method: :POST %>
         <% end %>
       <% end %>
-      <p></p>
       <h3>フォロー一覧</h3>
         <% @user.following_user.where.not(id: current_user.id).each do |user| %>
           <p>

@@ -33,3 +33,15 @@ Stylesheet: 960px以上のモニタで適用
 .map {
   height: 350px;
 }
+
+.header {
+  &__nav {
+    display: block;
+  }
+}
+
+.mobile-menu {
+  &__btn {
+    display: none;
+  }
+}
