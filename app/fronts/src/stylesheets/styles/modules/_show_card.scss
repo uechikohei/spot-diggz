@@ -2,7 +2,7 @@
   @extend .content-width;
   display: block;
   position: relative;
-  height: 260px;
+  height: 500px;
   border-radius: 2px;
   background: #FAFAFA;
   overflow: hidden;
@@ -12,7 +12,7 @@
 .show_card .card-image {
   display: block;
   position: relative;
-  height: 210px;
+  height: 450px;
   background-position: 50% 20%;
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 }
@@ -30,9 +30,9 @@
   @extend .content-width;
   position: absolute;
   display: block;
-  bottom: -210px;
+  bottom: -250px;
   left: 0;
-  height: 260px;
+  height: 300px;
   background: #FAFAFA;
   padding: 0 10px;
   box-sizing: border-box;

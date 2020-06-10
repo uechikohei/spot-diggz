@@ -5,7 +5,7 @@
   <!-- toggleClass -->
     <div class="show_card" id="drawer-menu">
       <div class="card-image">
-        <h1>テスト１</h1>
+        <div class="map" id='routes'></div>
       </div>
       <div class="card-body">
         <div class="controls">
@@ -21,14 +21,10 @@
       </div>
     </div>
 
-
     <div>
-      <!-- 地å図を表示させる要素 -->
-      <h2>routemap</h2>
-        車での走行距離：<span id="msg_d"></span>
+        距離：<span id="msg_d"></span>
         <br>
-        目的地までの距離：<span id="msg_t"></span>
-      <div class="map" id='routes'></div>
+        時間：<span id="msg_t"></span>
         <%= image_tag @map.picture.url %>
     </div>
 
