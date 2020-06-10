@@ -81,6 +81,35 @@
         }
       }
     }
+
+
+  &.slide-grey {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+
+    &::before {
+        content: '';
+        display: inline-block;
+        width: 100%;
+        height: 100%;
+        background-color: $cGrey;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform: translateX(-100%);
+        transition: transform 0.3s;
+        z-index: -1;
+    }
+
+    &:hover {
+        color: $cWhite;
+
+        &::before {
+            transform: none;
+        }
+      }
+    }
   }
 
 .btn-cubic {
@@ -119,6 +148,12 @@
       transform: rotateX(90deg);
     }
 
+    & .hovering-submit {
+      background-color: $cGrotto;
+      color: $cWhite;
+      transform: rotateX(90deg);
+    }
+
     & .default {
       background-color: $cWhite;
       color: $cBlack;
@@ -130,6 +165,9 @@
         transform: rotateX(0);
       }
       & .hovering-danger {
+        transform: rotateX(0);
+      }
+      & .hovering-submit {
         transform: rotateX(0);
       }
       & .default {
