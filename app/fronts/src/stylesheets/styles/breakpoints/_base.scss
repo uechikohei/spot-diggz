@@ -7,18 +7,10 @@ body {
   font-family: 'Oswald', 'Sawarabi Gothic', sans-serif;
 }
 
-input{
-  width: 250px;
+input {
+  width: 300px;
 }
 
-ol{
-  line-height: 2;
-}
-
-ul{
-  list-style-type: none;
-  line-height: 1.7;
-}
 .font-xs {
   font-size: 11px;
 }
@@ -57,7 +49,11 @@ ul{
 }
 
 #container {
+  background-color: $cWhite;
+  z-index: 10;
+  position: relative;
   padding-top: $navHeight;
+  transition: transform 0.5s, box-shadow 0.5s;
 }
 
 .header {
@@ -66,11 +62,11 @@ ul{
   left: 0;
   width: 100%;
   height: $navHeight;
-  background-color: transparent;
+  background-color: rgba(255,255,255,0.9);
+  box-shadow: 10px 0 25px -10px rgba(0,0,0,.5);
   display: flex;
   align-items: center;
   z-index: 100;
-
   &__nav {
     display: none;
   }
@@ -79,16 +75,17 @@ ul{
     padding: 0;
     margin: 0;
     align-items: center;
+    list-style-type: none;
   }
   &__li {
     padding: 0;
     margin: 10px;
-    & > a {
-      color: $cBlack;
-      text-decoration: none !important;
-      text-transform: uppercase;
+    text-transform: uppercase;
     }
-  }
+  &__link {
+    text-decoration: none !important;
+    color: $cBlack;
+    }
   & .logo {
     font-size: 38px;
     justify-content: center;
@@ -164,6 +161,7 @@ ul{
   &__li {
     padding: 0;
     margin: 10px;
+    list-style: none;
   }
 
   & .logo {
@@ -184,5 +182,11 @@ ul{
       color: $cRed !important;
       text-decoration: none !important;
     }
+  }
+}
+
+.mobile-menu {
+  &__main {
+    text-transform: uppercase;
   }
 }

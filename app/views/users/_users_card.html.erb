@@ -1,7 +1,7 @@
 <div class="card">
   <div class="additional">
     <div class="info">
-      <small><%= link_to feed.name, user_path(feed), class: "link_to_text_bk" %></small> <br> <hr>
+      <%= link_to feed.name, user_path(feed), class: "link_to_text_bk font-xs" %><br> <hr>
       <%= link_to image_tag(feed.image.url, size: "110x110"), user_path(feed) %>
     </div>
     <div class="more-info">

@@ -1,9 +1,6 @@
-<%# キーワードに一致する、titleカラムを持つ要素を返す%>
-<div>
-    <%= search_form_for @map_key do |f| %>
-        <%= f.search_field :title_cont, placeholder: 'タイトル名を...' %>
-        <%= button_tag type: 'submit' do %>
-            <i class="fas fa-search"></i>
-        <% end %>
-    <% end %>
-</div>
+<%= search_form_for @map_key do |f| %>
+  <%= f.search_field :title_cont, placeholder: 'タイトル名を...' %>
+  <%= button_tag type: 'submit' , class: "btn-mini slide-bg" do %>
+    <i class="fas fa-search"></i>
+  <% end %>
+<% end %>

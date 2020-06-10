@@ -43,6 +43,9 @@
       & .more-info {
         padding-top: 5px;
         text-align: center;
+        & li {
+          list-style: none;
+        }
       }
     }
     & .general {
