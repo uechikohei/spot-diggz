@@ -1,5 +1,4 @@
 <div class="mobile-menu__cover"></div>
-
 <header class="header">
   <div class="header__inner">
     <div class="logo">
@@ -11,12 +10,6 @@
     <nav class="header__nav">
       <ul class="header__ul">
         <% if user_signed_in? %>
-            <li class="header__li">
-              <%= link_to destroy_user_session_path, method: :delete , class: "btn filled" do %>
-                <i class="fas fa-sign-out-alt"></i>
-                ログアウト
-              <% end %>
-            </li>
             <li class="header__li">
               <%= link_to maps_path, class: "header__link" do %>
                 <i class="fab fa-searchengin"></i>
@@ -35,14 +28,18 @@
                 lists
               <% end %>
             </li>
-
             <li class="header__li">
               <%= link_to user_path(id: current_user), class: "header__link"  do %>
                 <i class="fas fa-user-circle"></i>
                 profile
               <% end %>
             </li>
-
+            <li class="header__li">
+              <%= link_to destroy_user_session_path, method: :delete , class: "btn filled" do %>
+                <i class="fas fa-sign-out-alt"></i>
+                ログアウト
+              <% end %>
+            </li>
         <% else %>
             <li class="header__li">
               <%= link_to new_user_registration_path , class: "btn filled" do %>

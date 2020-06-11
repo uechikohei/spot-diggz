@@ -1,9 +1,77 @@
 /******************************************************************
 
-Stylesheet: 1280px以上のモニタで適用
+Stylesheet: 1280px以上のモニタで適用[mac book]
 
 ******************************************************************/
+.skatespotimage {
+  overflow: hidden;
+  &__resize {
+    width: 400px;
+    height: 210px;
+  }
+}
 
-.map {
-  height: 400px;
+.show_card .card-body .Grid {
+  width: 100%;
+  height: 350px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  &__c1{ //タイトル
+    grid-column: 8 span;
+    grid-row: 2 span;
+  }
+  &__c2{ //パークorストリート？
+    grid-column: 4 span;
+    grid-row: 1 span;
+  }
+  &__c3{ //ヘルメット？
+    grid-column: 4 span;
+    grid-row: 1 span;
+  }
+  &__c4{ //画像
+    grid-column: 6 span;
+    grid-row: 5 span;
+  }
+  &__c5{ //いいねボタン
+    grid-column: 1 span;
+    grid-row: 1 span;
+  }
+  &__c6{ //いいねした人数
+    grid-column: 5 span;
+    grid-row: 1 span;
+  }
+  &__c7{ //本文
+    grid-column: 6 span;
+    grid-row: 4 span;
+  }
+  &__c8{ //住所
+    grid-column: 12 span;
+    grid-row: 1 span;
+  }
+  &__c9{ //住所
+    grid-column: 12 span;
+    grid-row: 1 span;
+  }
+  &__font-s {
+    font-size: 15px;
+  }
+  &__font-m {
+    font-size: 18px;
+  }
+  &__font-l {
+    font-size: 26px;
+  }
+  &__like-button {
+    line-height: 41.6px;
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+  &__like-msg {
+    line-height: 41.6px;
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
 }

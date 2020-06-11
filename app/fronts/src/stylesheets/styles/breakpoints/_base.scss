@@ -1,6 +1,6 @@
 /******************************************************************
 
-Stylesheet: ベーススタイル
+Stylesheet: ベーススタイル[iphone 5,SE,6,7,8,PLUS]
 
 ******************************************************************/
 body {
@@ -9,6 +9,14 @@ body {
 
 input {
   width: 300px;
+}
+
+.map{
+  height: 450px;
+}
+
+.font-xxs {
+  font-size: 9px;
 }
 
 .font-xs {
@@ -87,7 +95,7 @@ input {
     color: $cBlack;
     }
   & .logo {
-    font-size: 38px;
+    font-size: 30px;
     justify-content: center;
   }
   &__inner {
@@ -108,9 +116,7 @@ input {
   @extend .content-width;
 }
 
-.map{
-  height: 450px;
-}
+
 
 .flex {
   display: flex;
@@ -164,7 +170,7 @@ input {
   }
 
   & .logo {
-    font-size: 38px;
+    font-size: 30px;
     justify-content: center;
     &__img {
       width: 0.7em;

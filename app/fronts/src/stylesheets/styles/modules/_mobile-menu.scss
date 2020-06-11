@@ -46,8 +46,6 @@ $cMenuOpen: $cBlack;
     }
     &__main {
         padding: 0;
-        perspective: 2000px;
-        transform-style: preserve-3d;
     }
     &__item {
         list-style: none;
@@ -55,7 +53,6 @@ $cMenuOpen: $cBlack;
         transform: translate3d(0, 0, -1000px);
         padding: 0 40px;
         transition: transform 0.3s, opacity 0.2s;
-        opacity: 0;
     }
     &__link {
         display: block;

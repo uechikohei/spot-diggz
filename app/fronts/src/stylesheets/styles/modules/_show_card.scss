@@ -30,11 +30,11 @@
   @extend .content-width;
   position: absolute;
   display: block;
-  bottom: -250px;
+  bottom: -450px;
   left: 0;
-  height: 300px;
-  background: #FAFAFA;
-  padding: 0 10px;
+  height: 500px;
+  background: rgba(255,255,255,0.8);
+  margin: 0 10px;
   box-sizing: border-box;
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 }
@@ -43,14 +43,12 @@
   padding: 0;
   margin: 0 0 20px 0;
   color: #323232;
-  font-size: 20px;
 }
 .show_card .card-body p {
   display: block;
   overflow: hidden;
   margin: 0;
   color: black;
-  font-size: 16px;
   text-align: left;
   opacity: 0;
   padding: 0px;
@@ -60,11 +58,91 @@
   transition-delay: 0.1s;
 }
 .show_card .card-body .controls {
-  display: block;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
   width: 100%;
   height: 50px;
-  margin-bottom: 20px;
+  background: rgba(0,128,128,0.7);
+  &__c1 {
+    grid-column: 1 span;
+  }
+  &__c2 {
+    grid-column: 11 span;
+  }
+  & p {
+    text-align: center;
+    align-items: center;
+    line-height: 50px;
+  }
 }
+
+.show_card .card-body .Grid {
+  width: 100%;
+  height: 450px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  &__c1{
+    grid-column: 12 span;
+    grid-row: 1 span;
+  }
+  &__c2{
+    grid-column: 6 span;
+    grid-row: 1 span;
+  }
+  &__c3{
+    grid-column: 6 span;
+    grid-row: 1 span;
+  }
+  &__c4{
+    grid-column: 12 span;
+    grid-row: 3 span;
+  }
+  &__c5{
+    grid-column: 4 span;
+    grid-row: 1 span;
+  }
+  &__c6{
+    grid-column: 8 span;
+    grid-row: 1 span;
+  }
+  &__c7{
+    grid-column: 12 span;
+    grid-row: 2 span;
+  }
+  &__c8{
+    grid-column: 12 span;
+    grid-row: 1 span;
+  }
+  &__font-s {
+    font-size: 8px;
+  }
+  &__font-m {
+    font-size: 10px;
+  }
+  &__font-l {
+    font-size: 14px;
+  }
+  &__like-button {
+    line-height: 48.5px;
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+  &__like-msg {
+    line-height: 48.5px;
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+.center {
+  width: 100%;
+  text-align: center;
+}
+
+
 .show_card .card-body .controls a {
   position: relative;
   display: block;
@@ -94,6 +172,7 @@
 }
 .show_card .card-body .controls a.drawer p.up {
   opacity: 1;
+  color: $cWhite;
   transform: translateX(-50%) rotate(0deg);
 }
 
@@ -111,6 +190,7 @@
 }
 .show_card.active .card-body .controls a.drawer p.down {
   opacity: 1;
+  color: $cWhite;
   transform: translateX(-50%) rotate(0deg);
 }
 .show_card.active .card-body .controls a.drawer p.up {
@@ -119,4 +199,12 @@
 }
 .show_card.active .card-body p {
   opacity: 1;
+}
+
+.skatespotimage {
+  overflow: hidden;
+  &__resize {
+    width: 233px;
+    height: 139px;
+  }
 }
