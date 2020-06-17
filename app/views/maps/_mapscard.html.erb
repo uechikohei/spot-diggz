@@ -10,9 +10,12 @@
           <p class="font-xs name-aria"><%= link_to post.user.name, post.user ,class: "link_to_text_wh"%></p>
           <p>作成日<br><%= post.created_at.strftime("%m/%d") %></p>
           <%# いいねボタン挿入 %>
-          <div class="post_<%= post.id %>">
-            <%= render partial: '/likes/likes_btn', locals: {post: post} %>
-          </div>
+          <% if user_signed_in? %>
+              <div class="post_<%= post.id %>">
+                <%= render partial: '/likes/likes_btn', locals: {post: post} %>
+              </div>
+          <% else %>
+          <% end %>
         </ul>
       </div>
   </div>

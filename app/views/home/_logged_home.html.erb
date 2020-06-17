@@ -1,31 +1,20 @@
-  <main>
-    <section class="first-content">
-      
-      <div>
-        <h2 class="main-title">地図から探す</h2>
-        <p class="sub-title">お気に入りのスポットを探しましょう</p>
-      </div>
-      <div class="googlemaps__inner">
-        <div class="googlemaps__item">
-        <div class="googlemaps__title">登録スポットを探す</div>
-        </div>
-      </div>
-          <%= link_to destroy_user_session_path, class: "btn-cubic", method: :delete do %>
-            <span class="hovering">
-              <i class="fas fa-sign-out-alt"></i>
-            </span>
-            <span class="default">
-              ログアウト
-            </span>
-          <% end %>
-    </section>
-    
-  </main>
-
-<%# <button class="btn float">Button</button>
-<button class="btn filled">Button</button>
-<button class="btn letter-spacing">Button</button>
-<button class="btn shadow">Button</button>
-<button class="btn solid">Button</button>
-<button class="btn slide-bg">Button</button>
-<a class="btn-cubic"><span class="hovering">Now, Hovering</span><span class="default">Button</span></a> %>
+<main>
+  <div class="first-content">
+    <h1>投稿一覧検索</h1>
+    <%# any?: 検索キーワード１つでも該当すれかどうかで分岐　%>
+    <% if @search_maps.any? %>
+          <div>
+            <%= render partial: "/shared/search_form/map_title_cont" %>
+              <div class="map_card_container" id="items">
+                <%= render partial: "maps/mapscard", collection: @search_maps, as: "post" %>
+              </div>
+            <%= link_to_next_page @search_maps, 'つづきを見る', remote: true, class: "btn filled", id: 'more_link' %>
+          </div>
+    <% else %>
+          <div>
+            <%= render'/shared/search_form/map_title_cont' %>
+            <p>エラー</p>
+          </div>
+    <% end %>
+  </div>
+</main>

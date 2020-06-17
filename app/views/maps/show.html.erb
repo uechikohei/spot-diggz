@@ -40,6 +40,8 @@
               <div class="Grid__c4"><div class="Grid__image"><%= image_tag @map.picture.thumb1080.url , class: "Grid__resize"%></div></div>
               <div class="Grid__c5">
                 <div class="Grid__like-button">
+
+                <% if user_signed_in? %>
                   <% unless current_user == @map.user %>
                       <% if current_user.already_liked?(@map) %>
                             <%# likeはmapはネスト%>
@@ -55,6 +57,9 @@
                   <% else %>
                     <i class="fas fa-heart heart_blk"></i>
                   <% end %>
+                <% else %>
+                <% end %>
+
                 </div>
               </div>
               <div class="Grid__c6"><div class="Grid__like-msg"><p class="Grid__font-s">ｲｲﾈ!したユーザーは<%= @map.likes.count %>人です。</p></div></div>
@@ -63,9 +68,13 @@
           </div>
       </div>
     </div>
-    <%= link_to 'Edit', edit_map_path(@map) %> |
-    <%= link_to 'Back', maps_path %> | 
-    <%= link_to 'Destroy', @map, method: :delete, data: { confirm: 'Are you sure?' } %>
+    <% if user_signed_in? %>
+      <%= link_to 'Edit', edit_map_path(@map) %> |
+      <%= link_to 'Back', maps_path %> | 
+      <%= link_to 'Destroy', @map, method: :delete, data: { confirm: 'Are you sure?' } %>
+    <% else %>
+      <%= link_to 'Back', maps_path %>
+    <% end %>
     <%# function initMap関数をコールバックして、#routesに挿入。サイズはclass="map"で指定 %>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5qtdZ0_IRKciy41eDwLL9fTQzwR_7BAI&callback=initMap" async defer></script>
   </div>

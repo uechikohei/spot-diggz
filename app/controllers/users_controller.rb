@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :authenticate_user!, only: %i[show index destroy edit]
+  before_action :authenticate_user!, only: %i[show destroy edit]
 
   def index
     @users = User.all

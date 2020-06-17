@@ -1,7 +1,7 @@
 class MapsController < ApplicationController
   # google map apiを取得する
   before_action :set_map, only: %i[show edit update destroy]
-  before_action :authenticate_user!, only: %i[index new create destroy]
+  before_action :authenticate_user!, only: %i[new create destroy]
 
   # GET /maps
   # GET /maps.json
