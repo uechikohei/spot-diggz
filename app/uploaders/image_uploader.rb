@@ -9,7 +9,7 @@ class ImageUploader < CarrierWave::Uploader::Base
   process :convert => 'jpg'
 
     # サムネイルを生成する設定
-  process resize_to_fit: [200, 200]
+  process resize_to_fit: [110, 110]
 
   def filename
     super.chomp(File.extname(super)) + '.jpg' if original_filename.present?

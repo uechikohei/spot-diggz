@@ -3,13 +3,7 @@
 Stylesheet: 1280px以上のモニタで適用[mac book]
 
 ******************************************************************/
-.skatespotimage {
-  overflow: hidden;
-  &__resize {
-    width: 400px;
-    height: 210px;
-  }
-}
+
 
 .show_card .card-body .Grid {
   width: 100%;
@@ -73,5 +67,12 @@ Stylesheet: 1280px以上のモニタで適用[mac book]
     width: 100%;
     align-items: center;
     text-align: center;
+  }
+  &__image {
+    overflow: hidden;
+  }
+  &__resize {
+    width: 400px;
+    height: 210px;
   }
 }

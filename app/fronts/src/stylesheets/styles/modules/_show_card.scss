@@ -135,6 +135,13 @@
     align-items: center;
     text-align: center;
   }
+  &__image {
+    overflow: hidden;
+    }
+  &__resize {
+      width: 233px;
+      height: 139px;
+  }
 }
 
 .center {
@@ -201,10 +208,3 @@
   opacity: 1;
 }
 
-.skatespotimage {
-  overflow: hidden;
-  &__resize {
-    width: 233px;
-    height: 139px;
-  }
-}

@@ -2,13 +2,7 @@
 
 Stylesheet: 960px以上のモニタで適用[ipad pro]
 ******************************************************************/
-.skatespotimage {
-  overflow: hidden;
-  &__resize {
-    width: 373px;
-    height: 210px;
-  }
-}
+
 
 .show_card .card-body .Grid {
   width: 100%;
@@ -72,6 +66,13 @@ Stylesheet: 960px以上のモニタで適用[ipad pro]
     width: 100%;
     align-items: center;
     text-align: center;
+  }
+  &__image {
+    overflow: hidden;
+  }
+  &__resize {
+    width: 373px;
+    height: 210px;
   }
 }
 

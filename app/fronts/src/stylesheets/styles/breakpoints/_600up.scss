@@ -81,16 +81,15 @@ Stylesheet: 600px以上のタブレットやモニタで適用[ipad]
     align-items: center;
     text-align: center;
   }
-}
-
-
-.skatespotimage {
-  overflow: hidden;
+  &__image {
+    overflow: hidden;
+  }
   &__resize {
     width: 278px;
     height: 210px;
   }
 }
+
 
 
 .flex {

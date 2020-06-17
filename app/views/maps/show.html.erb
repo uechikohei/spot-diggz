@@ -1,7 +1,6 @@
 <p id="notice"><%= notice %></p>
 <main>
   <div class="first-content">
-  <!-- toggleClass -->
     <div class="show_card" id="drawer-menu">
       <div class="card-image">
         <div class="map" id='routes'></div>
@@ -38,7 +37,7 @@
                   <span class="Grid__font-m">ヘルメット不要</span>
                 <% end %>
               </div>
-              <div class="Grid__c4"><div class="skatespotimage"><%= image_tag @map.picture.thumb1080.url , class: "skatespotimage__resize"%></div></div>
+              <div class="Grid__c4"><div class="Grid__image"><%= image_tag @map.picture.thumb1080.url , class: "Grid__resize"%></div></div>
               <div class="Grid__c5">
                 <div class="Grid__like-button">
                   <% unless current_user == @map.user %>
@@ -46,13 +45,11 @@
                             <%# likeはmapはネスト%>
                         <%= button_to map_like_path(@map), method: :delete, class: "clear-button" do %>
                           <i class="fas fa-heart fa-lg heart_red"></i>
-                          <p class="Grid__font-s">ｲｲﾈ!やめる</p>
                         <% end %>
                       <% else %>
                             <%# likeはmapはネスト%>
                         <%= button_to  map_likes_path(@map), class: "clear-button" do %>
                           <i class="fas fa-heart fa-lg heart_grey"></i>
-                          <p class="Grid__font-s">ｲｲﾈ!する</p>
                         <% end %>
                       <% end %>
                   <% else %>
@@ -63,20 +60,13 @@
               <div class="Grid__c6"><div class="Grid__like-msg"><p class="Grid__font-s">ｲｲﾈ!したユーザーは<%= @map.likes.count %>人です。</p></div></div>
               <div class="Grid__c7"><p class="Grid__font-m">本文：<br><%= @map.content %></p></div>
               <div class="Grid__c8"><p class="Grid__font-m">目的地の住所：<br><%= @map.address %></p></div>
-            </div>
           </div>
       </div>
     </div>
-        <% @map.liked_users.each do |map| %>
-          <p><%= map.name %></p><
-        <% end %>
-
-      <div class="text-center">
-        <%= link_to 'Edit', edit_map_path(@map) %> |
-        <%= link_to 'Back', maps_path %>
-      </div>
+    <%= link_to 'Edit', edit_map_path(@map) %> |
+    <%= link_to 'Back', maps_path %> | 
+    <%= link_to 'Destroy', @map, method: :delete, data: { confirm: 'Are you sure?' } %>
+    <%# function initMap関数をコールバックして、#routesに挿入。サイズはclass="map"で指定 %>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5qtdZ0_IRKciy41eDwLL9fTQzwR_7BAI&callback=initMap" async defer></script>
   </div>
 </main>
-
-<%# function initMap関数をコールバックして、#routesに挿入。サイズはclass="map"で指定 %>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5qtdZ0_IRKciy41eDwLL9fTQzwR_7BAI&callback=initMap" async defer></script>

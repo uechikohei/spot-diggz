@@ -1,63 +1,19 @@
 <main>
   <div class="first-content">
-      <!-- 以下で、ユーザー名を出力してください -->
-      <h2><%= @user.name %></h2>
-      <!-- 以下で、メールアドレスを出力してください -->
-      <p><%= @user.email %></p>
+    <% if user_signed_in? && current_user.id.to_s == params[:id] %>
+      <h2>@ <%= current_user.name %></h2>
       <%= link_to edit_user_registration_path do %>
         <i class="fas fa-edit"></i>
         編集
       <% end %>
-      <br>
-      <%= image_tag @user.image.url %>　<!--false時、image_uploadsによるdefault_urlが起動 -->
+      <%= image_tag current_user.image.url %>
+      <%= render partial: "users/tab_card" %>
+    <% else %>
 
-      <h2>投稿内容</h2>
-      <% @user.maps.each do |map| %>
-        <a href="/maps/<%= map.id %>"><%= map.content %></a>
-        <%= link_to 'Edit', edit_map_path(map) %> | 
-        <%= link_to 'Destroy', map, method: :delete, data: { confirm: 'Are you sure?' } %>
-        <hr>
-      <% end %>
+      <h2>@ <%= @user.name %></h2>
+      <%= image_tag @user.image.url %>
 
-      <h3>いいねしている投稿</h3>
-      <% @user.liked_maps.each do |map| %>
-        <%= map.user.name %>
-        <%= map.content %>
-      <% end %>
-      <h2>ユーザー詳細ページ</h2>
-      <p><%= "id: #{@user.id}" %></p>
-      <p><%= "フォロー数: #{@user.follower.count}" %></p>
-      <p><%= "フォロワー数: #{@user.followed.count}" %></p>
-      <% unless @user == current_user %>
-        <% if current_user.following?(@user) %>
-          <%= link_to 'フォロー外す', unfollow_path(@user.id), method: :POST %>
-        <% else %>
-          <%= link_to 'フォローする', follow_path(@user.id), method: :POST %>
-        <% end %>
-      <% end %>
-      <h3>フォロー一覧</h3>
-        <% @user.following_user.where.not(id: current_user.id).each do |user| %>
-          <p>
-            <%= "id: #{user.id} email: #{user.email}" %>
-            <% if current_user.following?(user) %>
-              <%= link_to 'フォロー外す', unfollow_path(user.id), method: :POST %>
-            <% else %>
-              <%= link_to 'フォローする', follow_path(user.id), method: :POST %>
-            <% end %>
-            <%= link_to "show", user_path(user) %>
-          </p>
-        <% end %>
-      <h3>フォロワー一覧</h3>
-        <% @user.follower_user.where.not(id: current_user.id).each do |user| %>
-          <p>
-            <%= "id: #{user.id} email: #{user.email}" %>
-            <% if current_user.following?(user) %>
-              <%= link_to 'フォロー外す', unfollow_path(user.id), method: :POST %>
-            <% else %>
-              <%= link_to 'フォローする', follow_path(user.id), method: :POST %>
-            <% end %>
-            <%= link_to "show", user_path(user) %>
-          </p>
-        <% end %>
+      <%= render partial: "users/tab_card" %>
+    <% end %>
   </div>
 </main>

@@ -1,0 +1,17 @@
+<% @user.liked_maps.each do |map| %>
+    <div class="card">
+      <div class="image"><%= link_to image_tag(map.picture.url, size: "275x275"),map_path(map) %></div>
+        <div class="info">
+          <div class="title"><%= link_to map.title, map_path(map), class: "link_to_text_wh" %></div>
+          <div class="detail"><%= link_to map.content, map_path(map), class: "link_to_text_wh" %></div>
+        </div>
+        <div class="social">
+          <ul>
+            <%= link_to image_tag(map.user.image.url, size:"45x45", class: "window") %>
+            <p class="font-xs name-aria"><%= link_to map.user.name, map.user ,class: "link_to_text_wh"%></p>
+            <p>ä½œæˆ�æ—¥<br><%= map.created_at.strftime("%m/%d") %></p>
+            <%= render partial: '/likes/likes_btn_map', locals: {map: map} %>
+          </ul>
+        </div>
+    </div>
+<% end %>
