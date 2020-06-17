@@ -1,22 +1,27 @@
-<%# unless: 現在ログインしているユーザーが投稿しているコンテンツには、いいねボタンを出現させない %>
-<% unless current_user == post.user %>
-    <%# if: いいねがついている状態のボタン %>
-    <% if Like.find_by(user_id: current_user.id, map_id: post.id) %>
-        <%# deleteメソッド使用、id=nillエラー防ぐため@maps%>
-        <%= button_to map_like_path(post, @maps), method: :delete, class: "clear-button" do %>
-          <i class="fas fa-heart fa-lg heart_red"></i>
-          <p class="font-xs">ｲｲﾈ!!</p>
-        <% end %>
-    <%# if: いいねがついていない状態のボタン %>
-    <% else %>
-        <%= button_to map_likes_path(post), class: "clear-button" do %>
-          <i class="fas fa-heart fa-lg heart_white"></i>
-        <% end %>
-    <% end %>
-<%# unless分岐：current_userが投稿していないパターン(false)%>
+<%# 未ログイン、いいねボタン非表示 %>
+<% if user_signed_in? %>
+  <%# unless: 現在ログインしているユーザーが投稿しているコンテンツには、いいねボタン非表示 %>
+  <% unless current_user == post.user %>
+      <%# if: いいねがついている状態のボタン %>
+      <% if Like.find_by(user_id: current_user.id, map_id: post.id) %>
+          <%= button_to map_like_path(post.id), remote: true, method: :delete, class: "clear-button" do %>
+            <i class="fas fa-heart fa-lg heart_red"></i>
+            <p class="font-xs">ｲｲﾈ!!</p>
+          <% end %>
+      <%# if: いいねがついていない状態のボタン %>
+      <% else %>
+          <%= button_to map_likes_path(post.id), remote: true, method: :post, class: "clear-button" do %>
+            <i class="fas fa-heart fa-lg heart_white"></i>
+          <% end %>
+      <% end %>
+  <% else %>
+    <div>
+      <i class="fas fa-heart heart_red"></i>
+      <p class="font-xs">your post!</p>
+    </div>
+  <% end %>
 <% else %>
-  <div>
-    <i class="fas fa-heart heart_red"></i>
-    <p class="font-xs">your post!</p>
-  </div>
+    <div>
+      <i class="fas fa-heart heart_red"></i>
+    </div>
 <% end %>
