@@ -28,7 +28,7 @@ Rails.application.configure do
   config.active_record.verbose_query_logs = true
   config.assets.debug = true
   config.assets.quiet = true
-  
+
   # deviseインストール設定１
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 

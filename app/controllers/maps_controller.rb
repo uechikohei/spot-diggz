@@ -17,6 +17,10 @@ class MapsController < ApplicationController
   # GET /maps/1.json
   def show
     @map = Map.find_by(id: params[:id])
+    # 入力フォームで使用するインスタンスを作成
+    @comment = Comment.new
+    # コメント一覧表示で使用するためのコメントデータを入れ
+    @comments = @map.comments.order(created_at: :desc)
     # いいね機能追加
     @like = Like.new
     gon.lat = @map.latitude
