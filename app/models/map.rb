@@ -21,8 +21,6 @@ class Map < ApplicationRecord
   has_many    :likes
   # 投稿が、どのユーザにいいねされているか取得
   has_many    :liked_users, through: :likes, source: :user
-  # 投稿削除で、コメントテーブルも削除
-  has_many    :comments, dependent: :destroy
   # 最近作成されたユーザーから表示
   default_scope -> { order(created_at: :desc) }
   # 一度に表示する投稿数

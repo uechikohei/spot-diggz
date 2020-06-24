@@ -39,26 +39,7 @@
               </div>
               <div class="Grid__c4"><div class="Grid__image"><%= image_tag @map.picture.thumb1080.url , class: "Grid__resize"%></div></div>
               <div class="Grid__c5">
-                <div class="Grid__like-button">
-                <% if user_signed_in? %>
-                  <% unless current_user == @map.user %>
-                      <% if current_user.already_liked?(@map) %>
-                            <%# likeはmapはネスト%>
-                        <%= button_to map_like_path(@map), method: :delete, class: "clear-button" do %>
-                          <i class="fas fa-heart fa-lg heart_red"></i>
-                        <% end %>
-                      <% else %>
-                            <%# likeはmapはネスト%>
-                        <%= button_to  map_likes_path(@map), class: "clear-button" do %>
-                          <i class="fas fa-heart fa-lg heart_grey"></i>
-                        <% end %>
-                      <% end %>
-                  <% else %>
-                    <i class="fas fa-heart heart_blk"></i>
-                  <% end %>
-                <% else %>
-                <% end %>
-                </div>
+                  <%= render partial: '/likes/likes_btn_map'%>
               </div>
               <div class="Grid__c6"><div class="Grid__like-msg"><p class="Grid__font-s">ｲｲﾈ!したユーザーは<%= @map.likes.count %>人です。</p></div></div>
               <div class="Grid__c7"><p class="Grid__font-m">本文：<br><%= @map.content %></p></div>
@@ -73,21 +54,6 @@
     <% else %>
       <%= link_to 'Back', maps_path %>
     <% end %>
-
-
-
-<h4>コメント</h4>
-<!-- #① id="comments_area" をターゲットにして、このdiv内をAjaxで書き換えます。divの内側に、renderを使ってパーシャルを表示-->
-<div id="comments_area">
-  <!-- 投稿されたコメント一覧をブログの詳細ページに表示するためのrender -->
-  <%= render partial: 'comments/index', locals: { comments: @comments } %>
-</div>
-<% if user_signed_in? %>
-  <!-- コメント入力欄をブログの詳細ページに表示するためのrender -->
-  <%= render partial: 'comments/form', locals: { comment: @comment, map: @map } %>
-<% end %>
-
-
 
     <%# function initMap関数をコールバックして、#routesに挿入。サイズはclass="map"で指定 %>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5qtdZ0_IRKciy41eDwLL9fTQzwR_7BAI&callback=initMap" async defer></script>

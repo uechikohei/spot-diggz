@@ -15,8 +15,6 @@ class User < ApplicationRecord
   has_many :maps, dependent: :destroy
   # likeテーブルと1対多になる。ユーザが削除＝投稿も削除
   has_many :likes, dependent: :destroy
-  # commentテーブルと1対多になる。ユーザが削除＝投稿も削除
-  has_many :comments, dependent: :destroy
   # ユーザが、どの投稿をいいねしているか取得
   has_many :liked_maps, through: :likes, source: :map
 
