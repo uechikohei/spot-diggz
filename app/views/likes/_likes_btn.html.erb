@@ -3,17 +3,19 @@
   <%# unless: 現在ログインしているユーザーが投稿しているコンテンツには、いいねボタン非表示 %>
   <% unless current_user == post.user %>
       <%# if: いいねがついている状態のボタン %>
-      <% if Like.find_by(user_id: current_user.id, map_id: post.id) %>
-          <%= button_to map_like_path(post.id, @maps), method: :delete, class: "clear-button" do %>
-            <i class="fas fa-heart fa-lg heart_red"></i>
-            <p class="font-xs">ｲｲﾈ!!</p>
-          <% end %>
-      <%# if: いいねがついていない状態のボタン %>
-      <% else %>
-          <%= button_to map_likes_path(post.id), method: :post, class: "clear-button" do %>
-            <i class="fas fa-heart fa-lg heart_white"></i>
-          <% end %>
-      <% end %>
+      <div id="request_ajax_update" >
+        <% if Like.find_by(user_id: current_user.id, map_id: post.id) %>
+            <%= button_to map_like_path(post.id, @maps), remote: true, method: :delete, class: "clear-button" do %>
+              <i class="fas fa-heart fa-lg heart_red"></i>
+              <p class="font-xs">ｲｲﾈ!!</p>
+            <% end %>
+        <%# if: いいねがついていない状態のボタン %>
+        <% else %>
+            <%= button_to map_likes_path(post.id), remote: true, method: :post, class: "clear-button" do %>
+              <i class="fas fa-heart fa-lg heart_white"></i>
+            <% end %>
+        <% end %>
+      </div>
   <% else %>
     <div>
       <i class="fas fa-heart heart_red"></i>

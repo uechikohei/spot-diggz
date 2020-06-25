@@ -34,6 +34,7 @@ gem 'ransack', '~> 2.3', '>= 2.3.2'
 gem 'faker', '~> 2.11'
 gem 'gon', '~> 6.3', '>= 6.3.2'
 gem 'kaminari'
+gem 'jquery-rails'
 
 group :test do
   gem "capybara", ">= 2.15"
