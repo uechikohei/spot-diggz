@@ -1,0 +1,64 @@
+<div class="show_card" id="drawer-menu">
+  <div class="card-image">
+    <div class="map" id='routes'></div>
+  </div>
+  <div class="card-body">
+    <div class="controls">
+      <div class="controls__c1">
+        <a class="drawer">
+          <p class="up"><i class="far fa-hand-point-up fa-lg"></i></p>
+          <p class="down"><i class="far fa-hand-point-down fa-lg"></i></p>
+        </a>
+      </div>
+      <div class="controls__c2">
+        <p class="font-md">
+          <i class="fas fa-car"></i><span id="msg_d"></span>
+          /
+          <i class="far fa-clock"></i><span id="msg_t"></span>
+        </p>
+      </div>
+    </div>
+      <div class="Grid">
+          <div class="Grid__c1"><h1 class="Grid__font-l"><%= post.title %></h1></div>
+          <div class="Grid__c2">
+            <% if post.spot_style? %>
+              <i class="fas fa-store-alt"></i> <span class="Grid__font-m">スケートパーク</span>
+            <% else%>
+              <i class="fas fa-street-view"></i> <span class="Grid__font-m">ストリート</span>
+            <% end %>
+          </div>
+          <div class="Grid__c3">
+            <% if post.helmet? %>
+            　<span class="Grid__font-m">ヘルメット着用</span>
+            <% else %>
+              <span class="Grid__font-m">ヘルメット不要</span>
+            <% end %>
+          </div>
+          <div class="Grid__c4"><div class="Grid__image"><%= image_tag post.picture.thumb1080.url , class: "Grid__resize"%></div></div>
+          <div class="Grid__c5">
+            <%# 挿入：いいねボタン %>
+            <div id="likes_buttons_<%= post.id %>">
+              <%= render partial: '/likes/likes_btn', locals: {post: post} %>
+            </div>
+          </div>
+          <div class="Grid__c6">
+            <div class="Grid__like-msg">
+              <p class="Grid__font-s" id="likes_count_<%= post.id %>">
+                <%= render partial: '/likes/likes_count', locals: {post: post} %>
+              </p>
+            </div>
+          </div>
+          <div class="Grid__c7"><p class="Grid__font-m">本文：<br><%= post.content %></p></div>
+          <div class="Grid__c8"><p class="Grid__font-m">目的地の住所：<br><%= post.address %></p></div>
+      </div>
+  </div>
+</div>
+<% if user_signed_in? %>
+  <%= link_to 'Edit', edit_map_path(post) %> |
+  <%= link_to 'Back', maps_path %> | 
+  <%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %>
+<% else %>
+  <%= link_to 'Back', maps_path %>
+<% end %>
+<%# function initMap関数をコールバックして、#routesに挿入。サイズはclass="map"で指定 %>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5qtdZ0_IRKciy41eDwLL9fTQzwR_7BAI&callback=initMap" async defer></script>
