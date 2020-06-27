@@ -11,6 +11,10 @@ input {
   width: 300px;
 }
 
+.red {
+  color: $cRed;
+}
+
 .map{
   height: 450px;
 }
@@ -31,11 +35,11 @@ input {
 }
 
 .font-lr {
-  font-size: 17px;
+  font-size: 20px;
 }
 
 .font-lg {
-  font-size: 25px;
+  font-size: 24px;
 }
 
 //margin-bottom

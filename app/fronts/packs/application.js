@@ -1,5 +1,5 @@
 require("@rails/activestorage").start()
-require("turbolinks").start()
+
 require.context('../images', true)
 global.$ = require('jquery')
 import Rails from '@rails/ujs';
