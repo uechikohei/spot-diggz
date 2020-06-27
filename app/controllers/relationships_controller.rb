@@ -1,4 +1,5 @@
 class RelationshipsController < ApplicationController
+
   def follow
     current_user.follow(params[:id])
     redirect_back(fallback_location: root_path)
