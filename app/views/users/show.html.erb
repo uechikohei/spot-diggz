@@ -1,6 +1,7 @@
 <main>
   <div class="first-content">
     <% if user_signed_in? && current_user.id.to_s == params[:id] %>
+    <!--?????-->
       <h2>@ <%= current_user.name %></h2>
       <%= link_to edit_user_registration_path do %>
         <i class="fas fa-edit"></i>
@@ -9,7 +10,7 @@
       <%= image_tag current_user.image.url %>
       <%= render partial: "users/tab_card", locals: {feed: @user} %>
     <% else %>
-
+    <!--???????-->
       <h2>@ <%= @user.name %></h2>
       <%= image_tag @user.image.url %>
       <%= render partial: "users/tab_card", locals: {feed: @user} %>
