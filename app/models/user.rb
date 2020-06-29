@@ -35,8 +35,8 @@ class User < ApplicationRecord
   end
 
   # フォローしていればtrueを返す
-  def following?(user)
-    following_user.include?(user)
+  def following?(user_id)
+    following_user.include?(user_id)
   end
 
   # 最近作成されたユーザーから表示

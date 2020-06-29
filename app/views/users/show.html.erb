@@ -8,13 +8,13 @@
       <% end %>
       <%= image_tag current_user.image.url %>
         <!--挿入：コンテンツタブバー-->
-        <%= render partial: "users/tab_card", locals: {feed: @user} %>
+        <%= render partial: "users/content-tab", locals: {feed: @user} %>
     <% else %>
     <!--その他ユーザー-->
       <h2>@ <%= @user.name %></h2>
       <%= image_tag @user.image.url %>
         <!--挿入：コンテンツタブバー-->
-        <%= render partial: "users/tab_card", locals: {feed: @user} %>
+        <%= render partial: "users/content-tab", locals: {feed: @user} %>
     <% end %>
   </div>
 </main>

@@ -1,1 +1,4 @@
-$("#follow-button_<%= @user.id %>").html("<%= j(render partial: 'relationships/follow_button', locals: { feed: @user }) %>");
+$("#follow-button_<%= @user.id %>").html    ("<%= j(render partial: 'relationships/follow_button',      locals: { feed: @user }) %>");
+$("#follow-count_<%= @user.id %>").html     ("<%= j(render partial: 'relationships/follow-bar-count',   locals: { feed: @user }) %>");
+$("#follower-count_<%= @user.id %>").html   ("<%= j(render partial: 'relationships/follower-bar-count', locals: { feed: @user }) %>");
+$("#add-follower_<%= @user.id %>").html     ("<%= j(render partial: 'relationships/add-follower',       locals: { feed: @user }) %>");

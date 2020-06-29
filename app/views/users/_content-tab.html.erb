@@ -1,0 +1,38 @@
+<div id="follow-button_<%= feed.id %>">
+  <%= render partial: '/relationships/follow_button', locals: {feed: feed} %>
+</div>
+
+<div class="tab-wrap">
+    <input id="TAB-01" type="radio" name="TAB" class="tab-switch" checked="checked" /><label class="tab-label" for="TAB-01">SPOT</label>
+    <div class="tab-content">
+      <h1>投稿したSPOT</h1>
+          <div class="map_card_container">
+            <%= render partial: "users/maps-bar", locals: {post: @map} %>
+          </div>
+    </div>
+    <input id="TAB-02" type="radio" name="TAB" class="tab-switch" /><label class="tab-label" for="TAB-02">いいね</label>
+      <div class="tab-content">
+        <h1>いいね！した投稿</h1>
+            <div class="map_card_container">
+              <%= render partial: "users/likes-bar", locals: {post: @map} %>
+            </div>
+      </div>
+    <input id="TAB-03" type="radio" name="TAB" class="tab-switch" /><label class="tab-label" for="TAB-03">フォロー中</label>
+      <div class="tab-content">
+        <div id="follow-count_<%= @user.id %>">
+          <%= render partial: "relationships/follow-bar-count", locals: {feed: @user}%>
+        </div>
+      </div>
+    <input id="TAB-04" type="radio" name="TAB" class="tab-switch" /><label class="tab-label" for="TAB-04">フォロワー</label>
+      <div class="tab-content">
+        <div id="follower-count_<%= @user.id %>">
+          <%= render partial: "relationships/follower-bar-count", locals: {feed: @user} %>
+        </div>
+      </div>
+</div>
+
+
+
+
+
+

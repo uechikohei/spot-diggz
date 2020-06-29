@@ -6,11 +6,15 @@
     </div>
     <div class="more-info">
       <ul>
-        <li id='follow-button_<%= feed.id %>'><%= render partial: '/relationships/follow_button', locals: {feed: feed} %></li>
+        <li id='follow-button_<%= feed.id %>'>
+          <%= render partial: '/relationships/follow_button', locals: {feed: feed} %>
+        </li>
         <li><span class="font-xs">投稿した件数</span> <%= feed.maps.count %></li>
-        <li><span class="font-xs">いいね総数</span>　<%= feed.likes.count %></li>
-        <li><span class="font-xs">フォロー数</span>　<%= feed.follower.count %></li>
-        <li><span class="font-xs">フォロワー数</span> <%= feed.followed.count %></li>
+        <li><span class="font-xs">いいね総数</span>　 <%= feed.likes.count %></li>
+        <li><span class="font-xs">フォロー数</span>　 <%= feed.follower.count %></li>
+        <li id="add-follower_<%= feed.id %>">
+          <%= render partial: "/relationships/add-follower", locals: {feed: feed} %>
+        </li>
         <%= link_to "詳細ページへ", user_path(feed), class: "font-xs" %>
       </ul>
     </div>
