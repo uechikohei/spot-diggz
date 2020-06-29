@@ -1,4 +1,11 @@
+<!--ajax：フォローボタンのアイコンを変更-->
 $("#follow-button_<%= @user.id %>").html    ("<%= j(render partial: 'relationships/follow_button',      locals: { feed: @user }) %>");
+
+<!--ajax：タブバー内のフォロー中人数を変更-->
 $("#follow-count_<%= @user.id %>").html     ("<%= j(render partial: 'relationships/follow-bar-count',   locals: { feed: @user }) %>");
+
+<!--ajax：タブバー内のフォロワー人数を変更-->
 $("#follower-count_<%= @user.id %>").html   ("<%= j(render partial: 'relationships/follower-bar-count', locals: { feed: @user }) %>");
+
+<!--ajax：ユーザ一覧ページにて、フォロワー人数を変更-->
 $("#add-follower_<%= @user.id %>").html     ("<%= j(render partial: 'relationships/add-follower',       locals: { feed: @user }) %>");

@@ -1,3 +1,4 @@
+<!--ajax：フォローボタンのアイコンを変更-->
 <div id="follow-button_<%= feed.id %>">
   <%= render partial: '/relationships/follow_button', locals: {feed: feed} %>
 </div>
@@ -19,12 +20,14 @@
       </div>
     <input id="TAB-03" type="radio" name="TAB" class="tab-switch" /><label class="tab-label" for="TAB-03">フォロー中</label>
       <div class="tab-content">
+        <!--ajax：タブバー内のフォロー中人数を変更-->
         <div id="follow-count_<%= @user.id %>">
           <%= render partial: "relationships/follow-bar-count", locals: {feed: @user}%>
         </div>
       </div>
     <input id="TAB-04" type="radio" name="TAB" class="tab-switch" /><label class="tab-label" for="TAB-04">フォロワー</label>
       <div class="tab-content">
+        <!--ajax：タブバー内のフォロワー人数を変更-->
         <div id="follower-count_<%= @user.id %>">
           <%= render partial: "relationships/follower-bar-count", locals: {feed: @user} %>
         </div>
