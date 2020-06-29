@@ -10,7 +10,7 @@
             <%= link_to image_tag(map.user.image.url, size:"45x45", class: "window") %>
             <p class="font-xs name-aria"><%= link_to map.user.name, map.user ,class: "link_to_text_wh"%></p>
             <p>ä½œæˆ�æ—¥<br><%= map.created_at.strftime("%m/%d") %></p>
-            <%= render partial: '/likes/likes_btn_map', locals: {map: map} %>
+            <%= render partial: '/likes/likes_btn', locals: {map: map} %>
           </ul>
         </div>
     </div>

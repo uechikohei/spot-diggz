@@ -7,13 +7,12 @@
         編集
       <% end %>
       <%= image_tag current_user.image.url %>
-      <%= render partial: "users/tab_card" %>
+      <%= render partial: "users/tab_card", locals: {feed: @user} %>
     <% else %>
 
       <h2>@ <%= @user.name %></h2>
       <%= image_tag @user.image.url %>
-
-      <%= render partial: "users/tab_card" %>
+      <%= render partial: "users/tab_card", locals: {feed: @user} %>
     <% end %>
   </div>
 </main>
