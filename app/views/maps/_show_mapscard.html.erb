@@ -59,10 +59,6 @@
       </div>
   </div>
 </div>
-<% if user_signed_in? %>
-  <%= link_to 'Edit', edit_map_path(post) %> | 
-  <%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %>
-<% end %>
 
 <%# function initMap関数をコールバックして、#routesに挿入。サイズはclass="map"で指定 %>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5qtdZ0_IRKciy41eDwLL9fTQzwR_7BAI&callback=initMap" async defer></script>
