@@ -18,6 +18,9 @@ class User < ApplicationRecord
   # ユーザが、どの投稿をいいねしているか取得
   has_many :liked_maps, through: :likes, source: :map
 
+  # commentテーブルと1対多になる。ユーザが削除＝投稿も削除
+  has_many :comments, dependent: :destroy
+
   has_many :follower, class_name: "Relationship", foreign_key: "follower_id", dependent: :destroy # フォロー取得
   has_many :followed, class_name: "Relationship", foreign_key: "followed_id", dependent: :destroy # フォロワー取得
 

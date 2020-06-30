@@ -1,0 +1,2 @@
+$('#comment-text-field').val("");
+$('#comments-list').html("<%= j(render partial: '/comments/comment-list', collection: @map.comments.order(created_at: :desc), as: "comment") %>");

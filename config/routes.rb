@@ -17,7 +17,7 @@ Rails.application.routes.draw do
 
   # ブロック関数を使用
   resources :maps do
+    resources :comments, only: [:create, :destroy]
     resources :likes, only: [:create, :destroy]
   end
-
 end

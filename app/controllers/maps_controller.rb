@@ -16,11 +16,15 @@ class MapsController < ApplicationController
   # GET /maps/1
   # GET /maps/1.json
   def show
-    @map = Map.find_by(id: params[:id])
+    @map = Map.find(params[:id])
     # いいね機能追加
     @like = Like.new
     gon.lat = @map.latitude
     gon.lng = @map.longitude
+    # コメント投稿
+    @comment = Comment.new
+    # 新着順で表示
+    @comments = @map.comments.order(created_at: :desc)
   end
 
   # GET /maps/new

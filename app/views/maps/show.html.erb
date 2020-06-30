@@ -4,5 +4,19 @@
     <h1>ROUTE MAP</h1>
       <%# 挿入：投稿詳細カード %>
       <%= render "maps/show_mapscard", post: @map %>
+      <%# 挿入：コメントゾーン %>
+        <div>
+            <div id="comment-count">
+                <span>コメント&nbsp;<%= @map.comments.count %>件</span>
+            </div>
+            <div id="comments-list">
+                <% if @comments.any? %>
+                    <%= render partial: '/comments/comment-list', collection: @comments, as: 'comment' %>
+                <% else %>
+                    <span>コメントはまだありません</span>
+                <% end %>
+            </div>
+            <%= render '/comments/comment-form' %>
+        </div>
   </div>
 </main>

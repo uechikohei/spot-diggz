@@ -1,0 +1,7 @@
+<!--form_forで作成する。jsリクエストが送られる。ajaxが起動。destory.js.erbを見つけることができる-->
+<% if user_signed_in? %>
+  <%= form_for @comment, url: map_comments_path(@map), remote: true do |f| %>
+  <%= f.text_field :content, id:"comment-text-field" %>
+  <%= f.submit "コメントする" %>
+  <% end %>
+<% end %>

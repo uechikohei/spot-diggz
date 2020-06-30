@@ -1,0 +1,8 @@
+<div>
+    <%= link_to comment.user.name, comment.user %>&ensp;<%= comment.content %>
+    <% if comment.user == current_user %>
+        <%= link_to map_comment_path(comment.map_id, comment.id), method: :delete, remote: true do %>
+            <i class="fas fa-trash-alt"></i>
+        <% end %>
+    <% end %>
+</div>
