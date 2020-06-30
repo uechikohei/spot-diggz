@@ -4,8 +4,8 @@
   background-color: $cWhite;
   border: 1px solid $cBlack;
   font-weight: 600;
-  padding: 10px 40px;
-  margin: 10px auto;
+  padding: 6px 20px;
+  margin: 6px auto;
   cursor: pointer;
   transition: all 0.3s;
   color: $cBlack;
@@ -223,6 +223,13 @@
 .clear-button{
   background-color:rgba(0, 0, 0, 0);
   border: none;
+}
+
+//コメント投稿ボタン
+.comment-button{
+  background-color: $cBlack;
+  color: $cWhite;
+  border-radius: 30px;
 }
 
 .heart_grey {
