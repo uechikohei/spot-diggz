@@ -24,7 +24,7 @@ class MapsController < ApplicationController
     # コメント投稿
     @comment = Comment.new
     # 新着順で表示
-    @comments = @map.comments.order(created_at: :desc)
+    @comments = @map.comments.order(created_at: :desc).page(params[:page]).per(10)
   end
 
   # GET /maps/new

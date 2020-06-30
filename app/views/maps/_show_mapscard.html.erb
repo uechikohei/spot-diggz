@@ -60,11 +60,8 @@
   </div>
 </div>
 <% if user_signed_in? %>
-  <%= link_to 'Edit', edit_map_path(post) %> |
-  <%= link_to 'Back', maps_path %> | 
+  <%= link_to 'Edit', edit_map_path(post) %> | 
   <%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %>
-<% else %>
-  <%= link_to 'Back', maps_path %>
 <% end %>
 
 <%# function initMap関数をコールバックして、#routesに挿入。サイズはclass="map"で指定 %>

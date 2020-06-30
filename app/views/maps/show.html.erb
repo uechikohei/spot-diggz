@@ -16,6 +16,7 @@
                     <span>コメントはまだありません</span>
                 <% end %>
             </div>
+            <%= link_to_next_page @comments, 'つづきを見る', remote: true, id: 'view_more' %>
             <%= render '/comments/comment-form' %>
         </div>
   </div>
