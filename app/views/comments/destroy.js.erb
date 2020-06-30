@@ -1,1 +1,2 @@
+$('#comment-count').html("<span>コメント&nbsp;<%= @map.comments.count %>件</span>");
 $('#comments-list').html("<%= j(render partial: '/comments/comment-list', collection: @map.comments.order(created_at: :desc), as: "comment") %>");
