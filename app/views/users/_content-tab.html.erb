@@ -15,7 +15,7 @@
       <div class="tab-content">
         <h1>いいね！した投稿</h1>
             <div class="map_card_container">
-              <%= render partial: "users/likes-bar", locals: {post: @map} %>
+              <%= render partial: "users/likes-bar", locals: {post: @map, feed: @user} %>
             </div>
       </div>
     <input id="TAB-03" type="radio" name="TAB" class="tab-switch" /><label class="tab-label" for="TAB-03">フォロー中</label>

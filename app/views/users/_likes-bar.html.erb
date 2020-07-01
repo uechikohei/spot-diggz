@@ -1,5 +1,5 @@
 <% @user.liked_maps.each do |map| %>
-    <div class="card">
+    <div class="mini__card">
       <div class="image"><%= link_to image_tag(map.picture.url, size: "275x275"),map_path(map) %></div>
         <div class="info">
           <div class="title"><%= link_to map.title, map_path(map), class: "link_to_text_wh" %></div>
