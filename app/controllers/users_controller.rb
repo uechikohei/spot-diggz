@@ -16,8 +16,7 @@ class UsersController < ApplicationController
   def destroy
     @map.destroy
     respond_to do |format|
-      format.html { redirect_to maps_url, notice: 'Map was successfully destroyed.' }
-      format.json { head :no_content }
+      format.html { redirect_to maps_url, notice: 'アカウントが無事削除されました！' }
     end
   end
 

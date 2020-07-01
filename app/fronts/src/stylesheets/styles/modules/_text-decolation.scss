@@ -27,3 +27,15 @@ h1:first-letter {
   font-size: 2em;
   color: $cBrunt;
 }
+//flashメッセージ
+.message {
+  color: $cWhite;
+  text-align: center;
+  .notice {
+    background-color: $cGrotto;
+  }
+
+  .alert {
+    background-color: $cRed;
+  }
+}

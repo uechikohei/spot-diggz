@@ -44,7 +44,7 @@ class MapsController < ApplicationController
     @map.save
     respond_to do |format|
       if @map.save
-        format.html { redirect_to @map, notice: 'Map was successfully created.' }
+        format.html { redirect_to @map, notice: '新しいスポットが無事登録されました！' }
       else
         format.html { render :new }
       end
@@ -56,7 +56,7 @@ class MapsController < ApplicationController
   def update
     respond_to do |format|
       if @map.update(map_params)
-        format.html { redirect_to @map, notice: 'Map was successfully updated.' }
+        format.html { redirect_to @map, notice: 'スポットが無事更新されました！' }
       else
         format.html { render :edit }
       end
@@ -68,7 +68,7 @@ class MapsController < ApplicationController
   def destroy
     @map.destroy
     respond_to do |format|
-      format.html { redirect_to maps_url, notice: 'Map was successfully destroyed.' }
+      format.html { redirect_to maps_url, notice: 'スポットが無事削除されました！' }
     end
   end
 

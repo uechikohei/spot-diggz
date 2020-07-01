@@ -12,7 +12,7 @@
           <li>
             <h3><span class="marker-brunt">アカウント情報を入力</span></h3>
               <%= f.text_field :name, autofocus: true,
-                  placeholder: "名前" %> <br><br>
+                  placeholder: "名前 (2文字以上)" %> <br><br>
               <%= f.email_field :email,
                   placeholder: "メールアドレス" %> <br><br>
               <%= f.password_field :password, autocomplete: "new-password",
