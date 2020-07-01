@@ -6,7 +6,7 @@
       <%= link_to edit_user_registration_path do %>
         <i class="fas fa-edit"></i>
       <% end %>
-      <%= image_tag current_user.image.url %>
+      <%= image_tag current_user.image.url , class: "user-image-window" %>
         <!--挿入：コンテンツタブバー-->
         <%= render partial: "users/content-tab", locals: {feed: @user} %>
     <% else %>
