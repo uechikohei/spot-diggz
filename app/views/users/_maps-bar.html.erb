@@ -10,6 +10,15 @@
               <%= link_to image_tag(map.user.image.url, size:"45x45", class: "window") %>
               <p class="font-xs name-aria"><%= link_to map.user.name, map.user ,class: "link_to_text_wh"%></p>
               <p>作成日<br><%= map.created_at.strftime("%m/%d") %></p>
+            <%# 挿入：いいねボタン %>
+              <% if user_signed_in? && current_user.id.to_s == params[:id] %>
+                <!--ログイン中ユーザー-->
+              <% else %>
+                <!--その他ユーザー-->
+                  <div id="likes_buttons_<%= post.id %>">
+                      <%= render partial: '/likes/likes_btn', locals: {post: post} %>
+                  </div>
+              <% end %>
           </ul>
         </div>
     </div>
