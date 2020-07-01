@@ -7,13 +7,9 @@
         </div>
         <div class="social">
           <ul>
-            <%= link_to image_tag(map.user.image.url, size:"45x45", class: "window") %>
-            <p class="font-xs name-aria"><%= link_to map.user.name, map.user ,class: "link_to_text_wh"%></p>
-            <p>作成日<br><%= map.created_at.strftime("%m/%d") %></p>
-              <%# 挿入：いいねボタン %>
-              <div id="likes_buttons_<%= post.id %>">
-                <%= render partial: '/likes/likes_btn', locals: {post: post} %>
-              </div>
+              <%= link_to image_tag(map.user.image.url, size:"45x45", class: "window") %>
+              <p class="font-xs name-aria"><%= link_to map.user.name, map.user ,class: "link_to_text_wh"%></p>
+              <p>作成日<br><%= map.created_at.strftime("%m/%d") %></p>
           </ul>
         </div>
     </div>
