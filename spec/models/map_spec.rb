@@ -41,7 +41,7 @@ RSpec.describe Map, type: :model do
     expect(map).to be_valid
   end
 
-  it 'titleが301文字以上の場合、エラー' do
+  it 'contentが301文字以上の場合、エラー' do
     map.content = 'a' * 301
     map.valid?
     expect(map.errors).to be_added(:content, :too_long, count: 300)
