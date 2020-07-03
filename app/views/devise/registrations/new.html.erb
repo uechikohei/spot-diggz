@@ -16,8 +16,8 @@
               <%= f.email_field :email,
                   placeholder: "メールアドレス" %> <br><br>
               <%= f.password_field :password, autocomplete: "new-password",
-                placeholder: "パスワード (#{@minimum_password_length}文字以上)" %> <br><br>
-              <%= button_tag type: 'submit', class: "btn-cubic" do %>
+                placeholder: "パスワード（４文字以上）" %> <br><br>
+              <%= button_tag type: 'submit', class: "btn-cubic", value: "btn" do %>
                 <span class="hovering">
                   <i class="fas fa-user-plus"></i>
                 </span>
