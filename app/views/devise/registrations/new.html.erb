@@ -7,7 +7,7 @@
           <li>
               <h3><span class="marker-brunt">プロフ画像を設定</span></h3>
               <p>※「未選択」で、デフォルト画像が設定されます</p>
-              <%= f.file_field :image, accept: 'image/jpeg,image/gif,image/png', class: "btn slide-bg" do %><% end %>
+              <%= f.file_field :image, accept: 'image/jpeg,image/gif,image/png', class: "btn slide-bg", id: "image-default" do %><% end %>
           </li>
           <li>
             <h3><span class="marker-brunt">アカウント情報を入力</span></h3>

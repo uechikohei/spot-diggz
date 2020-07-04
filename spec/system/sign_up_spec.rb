@@ -9,6 +9,11 @@ RSpec.describe 'Sign_up', type: :system do
     expect(page).to have_selector 'h1', text: 'ようこそ！アカウントを作成しよう'
     expect(page).to have_selector 'h3', text: 'プロフ画像を設定'
     expect(page).to have_selector 'h3', text: 'アカウント情報を入力'
+    expect(page).to have_field '名前 (2文字以上)'
+    expect(page).to have_field 'メールアドレス'
+    expect(page).to have_field 'パスワード（４文字以上）'
+    expect(page).to have_field 'image-default'
+    expect(page).to have_button 'btn'
   end
 
   describe 'registrations#new' do
