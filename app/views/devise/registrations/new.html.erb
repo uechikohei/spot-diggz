@@ -23,6 +23,7 @@
                 </span>
                 <span class="default">登録</span>
               <% end %>
+              <%= link_to '簡単ログイン', users_guest_sign_in_path, method: :post %>
           </li> <br>
               <%= render "devise/shared/links" %>
         </ul>

@@ -57,7 +57,7 @@
           <span class="sub-title">ログインはこちら！</span>
         </li>
         <li class="mobile-menu__item">
-          <%= link_to users_guest_sign_in_path , class: "btn filled" do %>
+          <%= link_to users_guest_sign_in_path, method: :post, class: "btn filled" do %>
             <i class="fas fa-sign-in-alt"></i>
             guest_log_in
           <% end %>
