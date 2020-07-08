@@ -16,6 +16,7 @@ RSpec.describe 'Sign_up', type: :system do
     expect(page).to have_button 'btn'
   end
 
+
   describe 'registrations#new' do
     it 'ユーザーを新規登録可能' do
       # ページにアクセスする
