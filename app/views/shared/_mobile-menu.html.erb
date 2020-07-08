@@ -1,0 +1,68 @@
+<nav class="mobile-menu">
+    <div class="logo">
+      <span><%= link_to image_pack_tag("media/images/logo.svg", size: "50"), root_path, class: "logo__img" %></span>
+      <span><%= link_to "skate_" , root_path , class: "logo__skate" %></span>
+      <span class="logo__spot"><%= link_to "spot_" , root_path , class: "logo__spot" %></span>
+      <span class="logo__search"><%= link_to "search" , root_path , class: "logo__search" %></span>
+    </div>
+    <ul class="mobile-menu__main">
+      <% if user_signed_in? %>
+        <li class="mobile-menu__item">
+          <%= link_to maps_path , class: "mobile-menu__link" do %>
+            <i class="fab fa-searchengin fa-lg"></i>
+            <span class="main-title">view spot</span>
+            <span class="sub-title">スケートスポットを見る</span>
+          <% end %>
+        </li>
+        <li class="mobile-menu__item">
+          <%= link_to new_map_path, class: "mobile-menu__link" do %>
+            <i class="fas fa-map-pin fa-lg"></i>
+            <span class="main-title">new</span>
+            <span class="sub-title">スポットを投稿する</span>
+          <% end %>
+        </li>
+        <li class="mobile-menu__item">
+          <%= link_to users_path, class: "mobile-menu__link" do %>
+            <i class="fas fa-users fa-lg"></i>
+            <span class="main-title">lists</span>
+            <span class="sub-title">登録ユーザーを閲覧</span>
+          <% end %>
+        </li>
+        <li class="mobile-menu__item">
+          <%= link_to user_path(id: current_user), class: "mobile-menu__link" do %>
+            <i class="fas fa-user-circle fa-lg"></i>
+            <span class="main-title">profile</span>
+            <span class="sub-title">ログインユーザーのプロフィールを閲覧</span>
+          <% end %>
+        </li>
+        <li class="mobile-menu__item">
+          <%= link_to destroy_user_session_path, method: :delete , class: "btn filled" do %>
+            <i class="fas fa-sign-out-alt"></i>
+            log_out
+          <% end %>
+        </li>
+      <% else %>
+        <li class="mobile-menu__item">
+          <%= link_to new_user_registration_path , class: "btn filled" do %>
+            <i class="fas fa-user-plus"></i>
+            new user
+          <% end %>
+          <span class="sub-title">新規登録して、サービスを利用しよう！</span>
+        </li>
+        <li class="mobile-menu__item">
+          <%= link_to new_user_session_path , class: "btn filled" do %>
+            <i class="fas fa-sign-in-alt"></i>
+            sign in
+          <% end %>
+          <span class="sub-title">ログインはこちら！</span>
+        </li>
+        <li class="mobile-menu__item">
+          <%= link_to users_guest_sign_in_path, method: :post, class: "btn filled" do %>
+            <i class="fas fa-sign-in-alt"></i>
+            guest_log_in
+          <% end %>
+          <span class="sub-title">ポートフォリオ閲覧の方はこちら！</span>
+        </li>
+      <% end %>
+    </ul>
+</nav>

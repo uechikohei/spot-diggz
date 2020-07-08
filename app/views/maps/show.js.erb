@@ -1,0 +1,5 @@
+$('#comments-list').append("<%= escape_javascript(
+  render partial: '/comments/comment-list', collection: @comments, as: 'comment') %>");
+
+$("#view_more").replaceWith("<%= escape_javascript(
+  link_to_next_page(@comments, 'つづきを見る', remote: true, id: 'view_more')) %>");

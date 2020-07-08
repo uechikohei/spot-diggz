@@ -1,0 +1,16 @@
+# models: モデル名の翻訳
+# attributes: モデルの attribute の翻訳
+ja:
+  activerecord:
+    models:
+      user: ユーザー
+    attributes:
+      user:
+        id: ID
+        created_at: 登録日時
+        updated_at: 更新日時
+        birthday: 生年月日
+        email: メールアドレス
+        name: 名前
+        user_id: ユーザーID
+        password: パスワード

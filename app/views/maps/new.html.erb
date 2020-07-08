@@ -1,0 +1,14 @@
+<main>
+  <div class="first-content">
+    <h1>新しく投稿する</h1> <br>
+      <form onsubmit="return false;">
+          <input type="text" maxlength="20" value="東京　スケートパーク" id="address">
+            <%= button_tag type: 'submit', id: "map_button", class: "btn-mini slide-bg" do %>
+              <i class="fas fa-search-location"></i>
+            <% end %>
+      </form>
+      <p class="font-xs">検索バー　or　地図上を移動してクリック<br>マーカーを落として、登録しよう！</p>
+    <%= render "/maps/form", map: @map %> <br>
+    <%= link_to 'Back', maps_path %>
+  </div>
+</main>

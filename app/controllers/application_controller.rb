@@ -1,6 +1,31 @@
 class ApplicationController < ActionController::Base
-        # エラークラスを定義する
-    class Forbidden < ActionController::ActionControllerError; end
+    protect_from_forgery with: :exception
+    before_action :configure_permitted_parameters, if: :devise_controller?
+    before_action :set_search
+
+    def set_search
+      @maps = Map.all
+      @map_key = Map.ransack(params[:q])
+      @search_maps = @map_key.result(distinct: true).page(params[:page])
+      @users = User.all
+      @user_key = User.ransack(params[:q])
+      @search_feeds = @user_key.result(distinct: true).page(params[:page])
+    end
+
+    protected
+
+    def after_sign_up_path_for(resource)
+        edit_user_registration_path
+    end
+
+    def configure_permitted_parameters
+        devise_parameter_sanitizer.permit(:sign_up,        keys: [:name])
+        devise_parameter_sanitizer.permit(:sign_up,        keys: [:image])
+        devise_parameter_sanitizer.permit(:account_update, keys: [:name])
+        devise_parameter_sanitizer.permit(:account_update, keys: [:image])
+    end
+    # エラークラスを定義する
+    class Forbidden         < ActionController::ActionControllerError; end
     class IpAddressRejected < ActionController::ActionControllerError; end
 
     # rescue_formは定義順番が大事。親クラスを先に指定。
@@ -25,5 +50,4 @@ class ApplicationController < ActionController::Base
         logger.error e.backtrace.join("\n")
         render "errors/internal_server_error", status: 500
     end
-
 end

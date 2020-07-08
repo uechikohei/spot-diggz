@@ -1,0 +1,20 @@
+<main>
+  <div class="first-content">
+    <h1>投稿一覧検索</h1>
+    <%# any?: 検索キーワード１つでも該当すれかどうかで分岐　%>
+    <% if @search_maps.any? %>
+          <div>
+            <%= render partial: "/shared/search_form/map_title_cont" %>
+              <div class="map_card_container" id="items">
+                <%= render partial: "maps/mapscard", collection: @search_maps, as: "post" %>
+              </div>
+            <%= link_to_next_page @search_maps, 'つづきを見る', remote: true, class: "btn filled", id: 'more_link' %>
+          </div>
+    <% else %>
+          <div>
+            <%= render'/shared/search_form/map_title_cont' %>
+            <p>エラー</p>
+          </div>
+    <% end %>
+  </div>
+</main>

@@ -1,0 +1,5 @@
+$("#items").append("<%= j(
+  render partial: 'users/users_card', collection: @search_feeds, as: "feed") %>");
+
+$("#more_link").replaceWith("<%= j(
+  link_to_next_page(@search_feeds, 'つづきを見る', remote: true, class: "btn filled", id: 'more_link')) %>");

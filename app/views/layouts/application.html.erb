@@ -1,23 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
   <head>
     <title><%= document_title %></title>
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-
-    <%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
-    <%= favicon_link_tag '/favicon.ico' %>
+      <%= csrf_meta_tags %>
+      <%= csp_meta_tag %>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=devise-width, initial-scale=1.0" />
+      <%= stylesheet_pack_tag 'application',  'data-turbolinks-track': 'reload' %>
+      <%= include_gon %>
+      <%= javascript_pack_tag 'application',  'data-turbolinks-track': 'reload' %>
+      <%= javascript_pack_tag 'google',       'data-turbolinks-track': 'reload' %>
+      <%= javascript_pack_tag 'card_action',  'data-turbolinks-track': 'reload' %>
+      <%= javascript_pack_tag 'header',       'data-turbolinks-track': 'reload' %>
+      <%= favicon_link_tag '/favicon.ico' %>
     <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico" />
   </head>
-
-  <body>
-    <div id="wrapper">
-      <%= render "shared/header" %>
+    <body>
+      <div id="global-container">
         <div id="container">
-          <%= yield %>
+          <%= render "shared/header" %>
+            <div id="main-content">
+              <%= render "layouts/flash" %>
+              <%= yield %>
+            </div>
+          <%= render "shared/footer" %>
         </div>
-      <%= render "shared/footer" %>
-    </div>
-  </body>
+        <%= render "shared/mobile-menu"%>
+      </div>
+    </body>
 </html>

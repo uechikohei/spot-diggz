@@ -1,0 +1,46 @@
+@import 'modules/variables';
+@import 'modules/button';
+@import 'modules/mixin';
+@import 'modules/text-animation';
+@import 'modules/text-decolation';
+@import 'modules/maps_card';
+@import 'modules/users_card';
+@import 'modules/show_card';
+@import 'modules/mobile-menu';
+@import 'modules/search-form';
+@import 'modules/tab_bar';
+
+//上から順にscssが適用される
+//モバイルファースト
+@import "breakpoints/base";
+
+//スマホ横向け(ランドスケープ)
+@media (min-width: 480px) {
+  @import "breakpoints/480up";
+}
+
+@media (min-width: 600px) {
+  @import "breakpoints/600up";
+}
+
+//タブレット(ランドスケープ)
+@media (min-width: 960px) {
+  @import "breakpoints/960up";
+}
+
+//通常デスクトップ
+@media (min-width: 1280px) {
+  @import "breakpoints/1280up";
+}
+
+//retinaディスプレイ
+@media (min-resolution: 192dpi),
+      (-webkit-min-devise-pixel-ratio: 2) {
+  @import "breakpoints/2x";
+}
+
+//印刷時
+@media print {
+  @import "breakpoints/print";
+}
+

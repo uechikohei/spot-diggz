@@ -1,0 +1,43 @@
+.animate-title,
+.tween-animate-title {
+  opacity: 0;
+
+  &.inview {
+    opacity: 1;
+
+    & .char {
+      display: inline-block;
+    }
+  }
+
+  & .char {
+    opacity: 0;
+  }
+}
+
+.animate-title.inview .char {
+  @include animation(
+    $name: kf-animate-chars,
+    $duration: 0.5s,
+    $timing-function: cubic-bezier(0.39, 1.57, 0.58, 1),
+    $fill-mode: both
+  );
+
+  @for $i from 1 through 30 {
+    &:nth-child(#{$i}) {
+      animation-delay: $i * 0.04s;
+    }
+  }
+}
+
+@keyframes kf-animate-chars {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

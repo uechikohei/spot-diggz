@@ -1,0 +1,18 @@
+<div class="card">
+  <div class="image"><%= link_to image_tag(post.picture.url, size: "275x275"),map_path(post) %></div>
+    <div class="info">
+      <div class="title"><%= link_to post.title, map_path(post), class: "link_to_text_wh" %></div>
+      <div class="detail"><%= link_to post.content, map_path(post), class: "link_to_text_wh" %></div>
+    </div>
+    <div class="social">
+      <ul>
+          <%= link_to image_tag(post.user.image.url, size:"45x45", class: "window") %>
+          <p class="font-s name-aria"><%= link_to post.user.name, post.user ,class: "link_to_text_bk"%></p>
+          <p class="font-xs">作成日<br><%= post.created_at.strftime("%m/%d") %></p>
+        <%# 挿入：いいねボタン %>
+          <div id="likes_buttons_<%= post.id %>">
+            <%= render partial: '/likes/likes_btn', locals: {post: post} %>
+          </div>
+      </ul>
+    </div>
+</div>

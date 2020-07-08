@@ -1,0 +1,17 @@
+<main>
+  <div class="first-content">
+    <h1>ユーザー検索</h1>
+      <% if @search_feeds.any? %>
+        <%= render "/shared/search_form/user_name_cont" %>
+          <div class="user_card_content" id="items">
+            <%= render partial: 'users/users_card', collection: @search_feeds, as: "feed" %>
+          </div>
+        <%= link_to_next_page @search_feeds, 'つづきを見る', remote: true, class: "btn filled", id: 'more_link' %>
+      <% else %>
+        <div>
+          <%= render '/shared/search_form/user_name_cont' %>
+          <p>エラー</p>
+        </div>
+      <% end %>
+  </div>
+</main>

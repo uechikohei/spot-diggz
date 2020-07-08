@@ -1,0 +1,211 @@
+//投稿一覧カード
+.map_card_container {
+  position: relative;
+  flex-wrap: wrap;
+  display: flex;
+  justify-content: space-around;
+  align-items: auto;
+  overflow: hidden;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  & .card {
+    min-width: 275px;
+    width: 275px;
+    position: relative;
+    margin: 15px 15px;
+    height: 350px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    box-shadow: 5px 5px 10px 1px rgba(0, 0, 0, 0.3);
+    transition: 0.2s all linear;
+    box-sizing: border-box;
+    &:hover{
+      box-shadow: 10px 10px 10px 1px rgba(0, 0, 0, 0.3);
+      & .info .title{
+        box-shadow: 10px 10px 10px 1px rgba(0, 0, 0, 0.3);
+        transition: 0.3s all linear;
+      }
+      & .info .detail{
+        opacity: 1;
+        box-shadow: 10px 10px 10px 1px rgba(0, 0, 0, 0.3);
+        transition: 0.35s all linear;
+        transition-delay: 0.1s;
+        transform: scaleY(1);
+      }
+    }
+    & .image{
+      width: 100%;
+      height: 275px;
+      position: relative;
+      border-top-right-radius: 5px;
+      border-top-left-radius: 5px;
+    }
+    & .info{
+      position: relative;
+      width: 100%;
+      height: 35px;
+      line-height: 35px;
+      top: -275px;
+      border-top-right-radius: 5px;
+      border-top-left-radius: 5px;
+      color: rgba(255, 255, 255, 0.85);
+      & .title {
+        line-height: 35px;
+        height: 35px;
+        position: relative;
+        top: 0px;
+        font-size: 25px;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.6);
+        box-shadow: 5px 5px 10px 2px rgba(0, 0, 0, 0.3);
+      }
+      & .detail{
+        line-height: 1.5em;
+        font-size: 1em;
+        height: 100px;
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.6);
+        position: relative;
+        top: 5px;
+        padding: 5px 20px 0px 20px;
+        opacity: 0;
+        transform: scaleY(0);
+        transform-origin: center top;
+        box-shadow: 5px 5px 10px 2px rgba(0, 0, 0, 0.3);
+      }
+    }
+    & .social{
+      position: absolute;
+      height: 75px;
+      width: 100%;
+      overflow: hidden;
+      border-bottom-right-radius: 10px;
+      border-bottom-left-radius: 10px;
+      background: rgba(255,255,255,0.8);
+      box-shadow: 2px 2px 10px 0px rgba(0, 0, 0, 0.5);
+      top: 275px;
+      & ul{
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: space-around;
+        align-content: center;
+        margin-top: 10px;
+        margin-bottom: 5px;
+        & .window{
+          border-radius: 100px;
+        }
+        & .name-aria{
+          width: 30%;
+        }
+      }
+    }
+  }
+
+
+
+  & .min-card {
+    min-width: 275px;
+    width: 275px;
+    position: relative;
+    margin: 15px 15px;
+    height: 295px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    box-shadow: 5px 5px 10px 1px rgba(0, 0, 0, 0.3);
+    transition: 0.2s all linear;
+    box-sizing: border-box;
+    &:hover{
+      box-shadow: 10px 10px 10px 1px rgba(0, 0, 0, 0.3);
+      & .min-info .min-title{
+        box-shadow: 10px 10px 10px 1px rgba(0, 0, 0, 0.3);
+        transition: 0.3s all linear;
+      }
+      & .min-info .min-detail{
+        opacity: 1;
+        box-shadow: 10px 10px 10px 1px rgba(0, 0, 0, 0.3);
+        transition: 0.35s all linear;
+        transition-delay: 0.1s;
+        transform: scaleY(1);
+      }
+    }
+    & .min-image{
+      width: 100%;
+      height: 275px;
+      position: relative;
+      border-top-right-radius: 5px;
+      border-top-left-radius: 5px;
+    }
+    & .min-info{
+      position: relative;
+      width: 100%;
+      height: 35px;
+      line-height: 35px;
+      top: -275px;
+      border-top-right-radius: 5px;
+      border-top-left-radius: 5px;
+      color: rgba(255, 255, 255, 0.85);
+      & .min-title {
+        line-height: 35px;
+        height: 35px;
+        position: relative;
+        top: 0px;
+        font-size: 25px;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.6);
+        box-shadow: 5px 5px 10px 2px rgba(0, 0, 0, 0.3);
+      }
+      & .min-detail{
+        line-height: 1.5em;
+        font-size: 1em;
+        height: 100px;
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.6);
+        position: relative;
+        top: 5px;
+        padding: 5px 20px 0px 20px;
+        opacity: 0;
+        transform: scaleY(0);
+        transform-origin: center top;
+        box-shadow: 5px 5px 10px 2px rgba(0, 0, 0, 0.3);
+      }
+    }
+    & .min-social{
+      position: absolute;
+      height: 20px;
+      width: 100%;
+      overflow: hidden;
+      border-bottom-right-radius: 10px;
+      border-bottom-left-radius: 10px;
+      background: rgba(255,255,255,0.8);
+      box-shadow: 2px 2px 10px 0px rgba(0, 0, 0, 0.5);
+      top: 275px;
+      & ul{
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: space-around;
+        align-content: center;
+        margin-top: 10px;
+        margin-bottom: 5px;
+        & .window{
+          border-radius: 100px;
+        }
+        & .name-aria{
+          width: 30%;
+        }
+      }
+    }
+  }
+
+
+
+}

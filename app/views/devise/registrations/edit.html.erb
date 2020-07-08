@@ -1,0 +1,47 @@
+<main>
+  <div class="first-content">
+    <h1>ようこそ！編集ページへ</h1> <br>
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name),
+                    html: { method: :put }) do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+        <ul>
+          <li> <h3><span class="marker-brunt">プロフィール画像の変更</span></h3>
+              <%= link_to image_tag(@user.image.url, size:"150x150", class: "user-window"), user_path(id: current_user.id) %> <br>
+              <%= link_to @user.name, user_path(id: current_user.id) %> <br>
+              <%= f.file_field :image, class: "btn slide-bg" do %><% end %>
+          </li> <br>
+          <li> <h3><span class="marker-brunt">名前とメールアドレスの変更</span></h3>
+              <%= f.text_field :name %>
+              <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+              <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+                <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+              <% end %>
+          </li> <br>
+          <li> <h3><span class="marker-brunt">新しくパスワードを設定する方</span></h3>
+              <%= f.password_field :password, placeholder: "新しいパスワード　(4文字以上)"%>
+              <%= f.password_field :password_confirmation, autocomplete: "new-password",
+                                    placeholder: "新しいパスワード　(確認用)"%> <br><br>
+              <%= f.password_field :current_password, autocomplete: "current-password",
+                                    placeholder: "現在のパスワードを入力" %> <br>
+              <%= button_tag type: 'submit', class: "btn-cubic" do %>
+                <span class="hovering">
+                  <i class="fas fa-edit"></i>
+                </span>
+                <span class="default">更新</span>
+              <% end %>
+          </li>
+        </ul>
+      <% end %>
+        <ul>
+          <li> <h3><span class="marker-brunt">アカウントを削除したい方</span></h3>
+              <%= button_to registration_path(resource_name),
+                data: { confirm: "本当に、消去してもよろしいですか？" }, method: :delete, class: "btn-cubic" do %>
+                <span class="hovering-danger">
+                  <i class="fas fa-user-slash"></i>
+                </span>
+                <span class="default">削除</span>
+              <% end %>
+          </li>
+        </ul>
+  </div>
+</main>

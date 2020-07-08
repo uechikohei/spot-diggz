@@ -1,0 +1,213 @@
+.show_card {
+  @extend .content-width;
+  display: block;
+  position: relative;
+  height: 500px;
+  border-radius: 2px;
+  background: #FAFAFA;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+.show_card .card-image {
+  display: block;
+  position: relative;
+  height: 450px;
+  background-position: 50% 20%;
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+.show_card .card-image h1 {
+  position: absolute;
+  bottom: 5px;
+  left: 10px;
+  margin: 0;
+  padding: 0 10px;
+  color: black;
+  font-weight: 300;
+  transition: all 0.4s cubic-bezier(.25,.8,.25,1);
+}
+.show_card .card-body {
+  @extend .content-width;
+  position: absolute;
+  display: block;
+  bottom: -450px;
+  left: 0;
+  height: 500px;
+  background: rgba(255,255,255,0.8);
+  margin: 0 10px;
+  box-sizing: border-box;
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+.show_card .card-body h1 {
+  display: block;
+  padding: 0;
+  margin: 0 0 20px 0;
+  color: #323232;
+}
+.show_card .card-body p {
+  display: block;
+  overflow: hidden;
+  margin: 0;
+  color: black;
+  text-align: left;
+  opacity: 0;
+  padding: 0px;
+  font-weight: 400;
+
+  transition: padding 0.4s cubic-bezier(.25,.8,.25,1), opacity 0.5s cubic-bezier(.25,.8,.25,1);
+  transition-delay: 0.1s;
+}
+.show_card .card-body .controls {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  width: 100%;
+  height: 50px;
+  background: rgba(0,128,128,0.7);
+  &__c1 {
+    grid-column: 1 span;
+  }
+  &__c2 {
+    grid-column: 11 span;
+  }
+  & p {
+    text-align: center;
+    align-items: center;
+    line-height: 50px;
+  }
+}
+
+.show_card .card-body .Grid {
+  width: 100%;
+  height: 450px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  &__c1{
+    grid-column: 12 span;
+    grid-row: 1 span;
+  }
+  &__c2{
+    grid-column: 6 span;
+    grid-row: 1 span;
+    text-align: center;
+  }
+  &__c3{
+    grid-column: 6 span;
+    grid-row: 1 span;
+  }
+  &__c4{
+    grid-column: 12 span;
+    grid-row: 3 span;
+  }
+  &__c5{
+    grid-column: 4 span;
+    grid-row: 1 span;
+  }
+  &__c6{
+    grid-column: 8 span;
+    grid-row: 1 span;
+  }
+  &__c7{
+    grid-column: 12 span;
+    grid-row: 2 span;
+  }
+  &__c8{
+    grid-column: 12 span;
+    grid-row: 1 span;
+    border-top: double black;
+  }
+  &__box-layout {
+    height:100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  &__text-layout {
+    height:100%;
+    display: flex;
+    justify-content: start;
+  }
+  &__font-s {
+    font-size: 8px;
+  }
+  &__font-m {
+    font-size: 10px;
+  }
+  &__font-l {
+    font-size: 14px;
+  }
+  &__image {
+    overflow: hidden;
+    }
+  &__resize {
+      width: 233px;
+      height: 139px;
+  }
+}
+
+.center {
+  width: 100%;
+  text-align: center;
+}
+
+
+.show_card .card-body .controls p {
+  opacity: 1;
+}
+
+.show_card .card-body .controls a {
+  position: relative;
+  display: block;
+  float: right;
+  height: 50px;
+  width: 50px;
+  color: black;
+  line-height: 50px;
+  text-align: center;
+  font-size: 20px;
+
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+.show_card .card-body .controls a.drawer {
+  float: left;
+}
+.show_card .card-body .controls a.drawer p {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
+  transition: opacity 0.32s ease, transform 0.32s ease, color 0.22s ease;
+}
+.show_card .card-body .controls a.drawer p.down {
+  opacity: 0;
+  transform: translateX(-50%) rotate(180deg);
+}
+.show_card .card-body .controls a.drawer p.up {
+  opacity: 1;
+  color: $cWhite;
+  transform: translateX(-50%) rotate(0deg);
+}
+
+
+
+
+.show_card.active .card-image {
+  background-position: 50% 50%;
+}
+.show_card.active .card-image h1 {
+  bottom: 100px;
+}
+.show_card.active .card-body {
+  bottom: 0;
+}
+.show_card.active .card-body .controls a.drawer p.down {
+  opacity: 1;
+  color: $cWhite;
+  transform: translateX(-50%) rotate(0deg);
+}
+.show_card.active .card-body .controls a.drawer p.up {
+  opacity: 0;
+  transform: translateX(-50%) rotate(180deg);
+}
+.show_card.active .card-body p {
+  opacity: 1;
+}

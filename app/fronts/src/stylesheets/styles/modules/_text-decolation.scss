@@ -1,0 +1,41 @@
+.link_to_text_wh {
+  color: $cWhite;
+  &:hover{
+    color: $cMimosa;
+  }
+}
+
+.link_to_text_bk {
+  color: $cBlack;
+  &:hover{
+    color: $cGrotto;
+  }
+}
+
+.text_danger{
+  color: $cRed;
+}
+.text_info{
+  color: $cTeal;
+}
+
+.marker-brunt {
+  background: linear-gradient(transparent 70%, $cBrunt 0%);
+}
+
+h1:first-letter {
+  font-size: 2em;
+  color: $cBrunt;
+}
+//flashメッセージ
+.message {
+  color: $cWhite;
+  text-align: center;
+  .notice {
+    background-color: $cGrotto;
+  }
+
+  .alert {
+    background-color: $cRed;
+  }
+}

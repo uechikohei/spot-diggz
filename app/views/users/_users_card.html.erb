@@ -1,0 +1,25 @@
+<div class="card">
+  <div class="additional">
+    <div class="info">
+      <%= link_to feed.name, user_path(feed), class: "link_to_text_bk font-xs" %><br> <hr>
+      <%= link_to image_tag(feed.image.url, size: "110x110", class: "user-image-window" ), user_path(feed) %>
+    </div>
+    <div class="more-info">
+      <ul>
+        <!--ajax：フォローボタンのアイコンを変更-->
+        <li id='follow-button_<%= feed.id %>'>
+          <%= render partial: '/relationships/follow_button', locals: {feed: feed} %>
+        </li>
+        <li><span class="font-xs">投稿した件数</span> <%= feed.maps.count %></li>
+        <li><span class="font-xs">いいね総数</span>　 <%= feed.likes.count %></li>
+        <li><span class="font-xs">フォロー数</span>　 <%= feed.follower.count %></li>
+        <!--ajax：ユーザ一覧ページにて、フォロワー人数を変更-->
+        <li id="add-follower_<%= feed.id %>">
+          <%= render partial: "/relationships/add-follower", locals: {feed: feed} %>
+        </li>
+        <%= link_to "詳細ページへ", user_path(feed), class: "font-xs" %>
+      </ul>
+    </div>
+  </div>
+  <div class="general"><h2> user <br> info <br> card</h2></div>
+</div>

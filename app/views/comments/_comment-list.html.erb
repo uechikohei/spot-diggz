@@ -1,0 +1,10 @@
+<div>
+    <%= link_to image_tag(comment.user.image.url, size:"45x45", class: "window") %>
+    <%= link_to comment.user.name, comment.user , class: "font-xs link_to_text_bk" %>&ensp;
+    <%= comment.content %>
+    <% if comment.user == current_user %>
+        <%= link_to map_comment_path(comment.map_id, comment.id), method: :delete, remote: true do %>
+            <i class="fas fa-trash-alt link_to_text_bk"></i>
+        <% end %>
+    <% end %>
+</div>

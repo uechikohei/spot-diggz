@@ -1,0 +1,17 @@
+<main>
+  <div class="first-content">
+    <% if @search_maps.any? %>
+          <div>
+            <%= render partial: "/shared/search_form/map_title_cont" %>
+              <div class="map_card_container" id="items">
+                <%= render partial: "maps/mapscard", collection: @search_maps, as: "post" %>
+              </div>
+          </div>
+    <% else %>
+          <div>
+            <%= render'/shared/search_form/map_title_cont' %>
+            <p>エラー</p>
+          </div>
+    <% end %>
+  </div>
+</main>
