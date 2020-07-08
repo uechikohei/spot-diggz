@@ -5,4 +5,11 @@ FactoryBot.define do
     password                { 'password' }
     password_confirmation   { 'password' }
   end
+
+  trait :guest do
+    name     { 'guest_user' }
+    email    { 'guest@example.com' }
+    password { 'password' }
+  end
+
 end
