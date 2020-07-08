@@ -10,12 +10,17 @@
               <%= f.password_field :password, autocomplete: "current-password", placeholder: "Password" %>
           </li> <br>
           <li>
-              <%= button_tag type: 'submit', class: "btn-cubic" do %>
+              <%= button_tag type: 'submit', class: "btn-cubic", id: "btn" do %>
                 <span class="hovering">
                   <i class="fas fa-sign-in-alt"></i>
                 </span>
                 <span class="default">ログイン</span>
               <% end %> <br><br>
+              <%= link_to users_guest_sign_in_path, method: :post, class: "btn filled", id: "btn-guest" do %>
+                <i class="fas fa-sign-in-alt"></i>
+                GUEST_LOG_IN
+              <% end %>
+                <span class="sub-title">ポートフォリオ閲覧の方はこちら！</span> <br><br>
               <%= render 'devise/shared/links' %>
           </li>
         </ul>
