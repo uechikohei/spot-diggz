@@ -25,6 +25,35 @@ RSpec.describe 'Maps', type: :system do
         expect(page).to have_selector 'h3',text: '写真をアップロード'
         expect(page).to have_button 'btn'
       end
+
+      it '新規投稿、投稿削除が可能' do
+        visit '/maps/new'
+
+        # スポットを検索する
+        fill_in 'address', with: "大阪　スケートパーク"
+        click_button 'map_button'
+        # スポットのタイトルと本文を入力
+        select  'スケートパーク', from: 'map_spot_style'
+        select  '有り', from: 'map_helmet'
+        fill_in 'map_title', with: "サンプルスケートパーク"
+        fill_in 'map_content', with: "サンプルテキスト"
+        attach_file 'map_picture',"#{Rails.root}/spec/fixtures/test.png", visible: false
+        find('#lat', visible: false).set('34.654568')
+        find('#lng', visible: false).set('135.537042')
+        # 投稿
+        click_button 'btn'
+        # 投稿showページへリダイレクトしている。
+        @map = Map.first
+        expect(page).to have_current_path "/maps/#{@map.id}"
+        # 成功メッセージ
+        expect(page).to have_content '新しいスポットが無事登録されました！'
+        expect(page).to have_selector 'h1', text: 'ROUTE MAP'
+
+        # 投稿が保存されているか
+        expect(@map.title).to   eq("サンプルスケートパーク")
+        expect(@map.content).to eq("サンプルテキスト")
+      end
+
     end
   end
 end
