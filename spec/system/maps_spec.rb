@@ -26,7 +26,7 @@ RSpec.describe 'Maps', type: :system do
         expect(page).to have_button 'btn'
       end
 
-      it '新規投稿、投稿削除が可能' do
+      it '新規投稿、投稿削除が可能' ,js: true do
         visit '/maps/new'
 
         # スポットを検索する
@@ -38,8 +38,6 @@ RSpec.describe 'Maps', type: :system do
         fill_in 'map_title', with: "サンプルスケートパーク"
         fill_in 'map_content', with: "サンプルテキスト"
         attach_file 'map_picture',"#{Rails.root}/spec/fixtures/test.png", visible: false
-        find('#lat', visible: false).set('34.654568')
-        find('#lng', visible: false).set('135.537042')
         # 投稿
         click_button 'btn'
         # 投稿showページへリダイレクトしている。
@@ -52,6 +50,13 @@ RSpec.describe 'Maps', type: :system do
         # 投稿が保存されているか
         expect(@map.title).to   eq("サンプルスケートパーク")
         expect(@map.content).to eq("サンプルテキスト")
+        # 削除ボタンを押し出現するダイアログをOKとする
+        page.accept_confirm('本当に削除してもよろしいですか?') do
+          click_on :delete_btn
+        end
+        # 投稿が削除されているか
+        expect(Map.where(id: @user.id).count).to eq 0
+        # 削除ボタンを押し出現するダイアログを閉じる
       end
 
     end
