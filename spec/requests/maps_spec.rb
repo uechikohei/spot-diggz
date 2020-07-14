@@ -41,7 +41,8 @@ RSpec.describe "/maps", type: :request do
 
   describe "GET /new" do
     it "renders a successful response" do
-      get new_map_url
+      map = Map.create! valid_attributes
+      get new_map_url(map)
       expect(response).to be_successful
     end
   end
