@@ -6,15 +6,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.pro
+    ports:
+      - "3000:3000"
+    tty: true
+    stdin_open: true
     environment:
     # .envファイルの環境変数を呼び出す。
       - NODE_ENV=$NODE_ENV
       - RAILS_ENV=$RAILS_ENV
       - RAILS_MASTER_KEY=$RAILS_MASTER_KEY
-    ports:
-      - "3000:3000"
-    tty: true
-    stdin_open: true
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
     volumes:
       - .:/app
@@ -22,6 +22,7 @@ services:
       - /var/tmp
     depends_on:
       - db
+      - webpacker
 
   db:
     image: mysql:8.0.16
@@ -55,6 +56,20 @@ services:
       - public-data:/app/public
     depends_on:
       - app
+
+  webpacker:
+    build:
+      context: .
+      dockerfile: Dockerfile.pro
+    environment:
+      - RAILS_ENV=$RAILS_ENV
+    command: ./bin/webpack-dev-server
+    volumes:
+      - .:/app
+      # up時、node_modulesエラー解消
+      - /app/node_modules
+    ports:
+      - "3035:3035"
 
 volumes:
   bundle:
