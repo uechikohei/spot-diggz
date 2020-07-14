@@ -13,7 +13,7 @@
     <!-- 地図を表示させる要素 -->
     <div class="map" id='newpost'></div> <br>
     <li><h3><span class="marker-brunt">どんなスポット？</span></h3>
-              <%= form.select :spot_style, [['スケートパーク', true], ['ストリートスポット', false]], class: "clear-button" %>
+              <%= form.select :spot_style, [['スケートパーク', true], ['ストリートスポット', false]], class: "clear-button"%>
     </li> <br>
     <li><h3><span class="marker-brunt">ヘルメットの着用義務は？</span></h3>
               <%= form.select :helmet, [['有り', true],['無し', false]] %>
@@ -30,7 +30,7 @@
     </li> <br>
               <%= form.hidden_field :latitude, {id: "lat"} %>
               <%= form.hidden_field :longitude, {id: "lng"} %>
-    <%= button_tag type: 'submit', class: "btn-cubic" do %>
+    <%= button_tag type: 'submit', class: "btn-cubic", id: 'btn' do %>
       <span class="hovering-submit">
         <i class="fas fa-paper-plane"></i>
       </span>

@@ -32,7 +32,7 @@
                   <i class="fas fa-edit link_to_text_bk"></i>
                   | 
                 <% end %>
-                <%= link_to @map, method: :delete, data: { confirm: '本当に削除してもよろしいですか?' } do %>
+                <%= link_to @map, method: :delete, id: "delete_btn", data: { confirm: '本当に削除してもよろしいですか?' } do %>
                   <i class="fas fa-trash-alt link_to_text_bk"></i>
                 <% end %>
               <% end %>
