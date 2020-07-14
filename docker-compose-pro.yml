@@ -22,7 +22,6 @@ services:
       - /var/tmp
     depends_on:
       - db
-      - webpacker
 
   db:
     image: mysql:8.0.16
@@ -56,20 +55,6 @@ services:
       - public-data:/app/public
     depends_on:
       - app
-
-  webpacker:
-    build:
-      context: .
-      dockerfile: Dockerfile.pro
-    environment:
-      - RAILS_ENV=$RAILS_ENV
-    command: ./bin/webpack-dev-server
-    volumes:
-      - .:/app
-      # up時、node_modulesエラー解消
-      - /app/node_modules
-    ports:
-      - "3035:3035"
 
 volumes:
   bundle:
