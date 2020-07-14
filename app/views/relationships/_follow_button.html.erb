@@ -5,13 +5,13 @@
       <%#フォローしている%>
       <span class="font-xs">フォロー中　</span>
       <%= link_to unfollow_path(feed.id), method: :POST, remote: true, class: "clear-button" do %>
-        <i class="fas fa-handshake fa-lg follow_green"></i>
+        <i class="fas fa-handshake fa-lg follow_green", id="yes-follow"></i>
       <% end %>
     <% else %>
       <%#まだフォローしてない%>
       <span class="font-xs">フォローは → </span>
       <%= link_to follow_path(feed.id), method: :POST, remote: true, class: "clear-button" do %>
-        <i class="far fa-handshake fa-lg unfollow_grey"></i>
+        <i class="far fa-handshake fa-lg unfollow_grey", id="no-follow"></i>
       <% end %>
     <% end %>
 <% else %>

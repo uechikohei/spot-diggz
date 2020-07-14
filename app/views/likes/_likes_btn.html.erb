@@ -6,12 +6,12 @@
       <div id="request_ajax_update" >
         <% if Like.find_by(user_id: current_user.id, map_id: post.id) %>
             <%= button_to map_like_path(post.id, @maps), remote: true, method: :delete, class: "clear-button" do %>
-              <i class="fas fa-heart fa-lg heart_red"></i>
+              <i class="fas fa-heart fa-lg heart_red", id="liking-btn"></i>
             <% end %>
         <%# if: いいねがついていない状態のボタン %>
         <% else %>
             <%= button_to map_likes_path(post.id), remote: true, method: :post, class: "clear-button" do %>
-              <i class="far fa-heart fa-lg"></i>
+              <i class="far fa-heart fa-lg", id="nolike-btn"></i>
             <% end %>
         <% end %>
       </div>
