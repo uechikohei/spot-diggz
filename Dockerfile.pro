@@ -24,7 +24,7 @@ COPY Gemfile $APP_ROOT
 COPY Gemfile.lock $APP_ROOT
 RUN bundle install
 RUN yarn install --check-files
-RUN /bin/sh -c yarn webpack --config ./config/webpack/development.js
+RUN bundle exec rails assets:precompile
 
 COPY . $APP_ROOT
 
