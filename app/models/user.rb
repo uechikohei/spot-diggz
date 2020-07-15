@@ -54,7 +54,7 @@ class User < ApplicationRecord
 
   # 簡単ログインユーザー作成
   def self.guest
-    image_path = open("./db/fixtures/faker_user_image.png")
+    image_path = open("./db/fixtures/guest/user.png")
     find_or_create_by!(email: 'guest@example.com') do |user|
       user.password = SecureRandom.urlsafe_base64
       user.name = "guest_user"
