@@ -19,5 +19,4 @@ class UsersController < ApplicationController
       format.html { redirect_to maps_url, notice: 'アカウントが無事削除されました！' }
     end
   end
-
 end

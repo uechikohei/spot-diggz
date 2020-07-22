@@ -53,90 +53,90 @@
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: around, only_before
-Layout/EmptyLinesAroundAccessModifier:
-  Exclude:
-    - 'app/controllers/relationships_controller.rb'
-    - 'app/controllers/users/registrations_controller.rb'
+# Layout/EmptyLinesAroundAccessModifier:
+#   Exclude:
+#     - 'app/controllers/relationships_controller.rb'
+#     - 'app/controllers/users/registrations_controller.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: empty_lines, no_empty_lines
-Layout/EmptyLinesAroundBlockBody:
-  Exclude:
-    - 'Gemfile'
+# Layout/EmptyLinesAroundBlockBody:
+#   Exclude:
+#     - 'Gemfile'
 
 # Offense count: 6
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: empty_lines, empty_lines_except_namespace, empty_lines_special, no_empty_lines, beginning_only, ending_only
-Layout/EmptyLinesAroundClassBody:
-  Exclude:
-    - 'app/controllers/home_controller.rb'
-    - 'app/controllers/likes_controller.rb'
-    - 'app/controllers/relationships_controller.rb'
-    - 'app/controllers/users_controller.rb'
-    - 'app/models/map.rb'
+# Layout/EmptyLinesAroundClassBody:
+#   Exclude:
+#     - 'app/controllers/home_controller.rb'
+#     - 'app/controllers/likes_controller.rb'
+#     - 'app/controllers/relationships_controller.rb'
+#     - 'app/controllers/users_controller.rb'
+#     - 'app/models/map.rb'
 
 # Offense count: 3
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: normal, indented_internal_methods
-Layout/IndentationConsistency:
-  Exclude:
-    - 'app/controllers/likes_controller.rb'
-    - 'app/controllers/relationships_controller.rb'
+# Layout/IndentationConsistency:
+#   Exclude:
+#     - 'app/controllers/likes_controller.rb'
+#     - 'app/controllers/relationships_controller.rb'
 
 # Offense count: 24
 # Cop supports --auto-correct.
 # Configuration parameters: Width, IgnoredPatterns.
-Layout/IndentationWidth:
-  Exclude:
-    - 'app/controllers/application_controller.rb'
-    - 'app/controllers/likes_controller.rb'
-    - 'app/controllers/relationships_controller.rb'
-    - 'app/helpers/application_helper.rb'
+# Layout/IndentationWidth:
+#   Exclude:
+#     - 'app/controllers/application_controller.rb'
+#     - 'app/controllers/likes_controller.rb'
+#     - 'app/controllers/relationships_controller.rb'
+#     - 'app/helpers/application_helper.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: AllowDoxygenCommentStyle, AllowGemfileRubyComment.
-Layout/LeadingCommentSpace:
-  Exclude:
-    - 'app/models/comment.rb'
+# Layout/LeadingCommentSpace:
+#   Exclude:
+#     - 'app/models/comment.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.
-Layout/SpaceAfterComma:
-  Exclude:
-    - 'app/models/user.rb'
+# Layout/SpaceAfterComma:
+#   Exclude:
+#     - 'app/models/user.rb'
 
 # Offense count: 3
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces.
 # SupportedStyles: space, no_space, compact
 # SupportedStylesForEmptyBraces: space, no_space
-Layout/SpaceInsideHashLiteralBraces:
-  Exclude:
-    - 'app/models/map.rb'
-    - 'app/models/user.rb'
+# Layout/SpaceInsideHashLiteralBraces:
+#   Exclude:
+#     - 'app/models/map.rb'
+#     - 'app/models/user.rb'
 
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: space, no_space
-Layout/SpaceInsideParens:
-  Exclude:
-    - 'app/controllers/maps_controller.rb'
+# Layout/SpaceInsideParens:
+#   Exclude:
+#     - 'app/controllers/maps_controller.rb'
 
 # Offense count: 3
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: final_newline, final_blank_line
-Layout/TrailingEmptyLines:
-  Exclude:
-    - 'app/controllers/home_controller.rb'
-    - 'app/controllers/maps_controller.rb'
-    - 'app/models/map.rb'
+# Layout/TrailingEmptyLines:
+#   Exclude:
+#     - 'app/controllers/home_controller.rb'
+#     - 'app/controllers/maps_controller.rb'
+#     - 'app/models/map.rb'
 
 # Offense count: 2
 # Configuration parameters: MinNameLength, AllowNamesEndingInNumbers, AllowedNames, ForbiddenNames.

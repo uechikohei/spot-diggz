@@ -6,7 +6,7 @@ class User < ApplicationRecord
 
   mount_uploader :image, ImageUploader
   validates :name,  presence: true, uniqueness: { case_sensitive: true },
-                    length: { minimum: 2,maximum: 20}
+                    length: { minimum: 2, maximum: 20 }
 
   validates :email, presence: true, uniqueness: { case_sensitive: true },
                     length: { maximum: 255 }

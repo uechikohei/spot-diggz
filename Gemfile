@@ -46,7 +46,6 @@ group :development, :test do
   gem 'rubocop', require: false
   gem 'rubocop-rails'
   gem 'spring-commands-rspec'
-
 end
 
 group :development do

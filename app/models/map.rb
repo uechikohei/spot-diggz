@@ -6,10 +6,10 @@ class Map < ApplicationRecord
 
   validates :user_id,     presence: true
   validates :title,       presence: true,
-                          length: { maximum: 20}
+                          length: { maximum: 20 }
 
   validates :content,     presence: true,
-                          length: { maximum: 300}
+                          length: { maximum: 300 }
 
   validates :latitude,    presence: true
   validates :longitude,   presence: true
@@ -40,5 +40,4 @@ class Map < ApplicationRecord
   def kill_whitespace
     self.title = title.gsub(/[[:space:]]/, '') if self.title.present?
   end
-
 end
