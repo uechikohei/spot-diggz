@@ -31,23 +31,23 @@
 #     - 'app/models/user.rb'
 
 # Offense count: 2
-# Cop supports --auto-correct.
-Layout/CommentIndentation:
-  Exclude:
-    - 'app/uploaders/image_uploader.rb'
+# # Cop supports --auto-correct.
+# Layout/CommentIndentation:
+#   Exclude:
+#     - 'app/uploaders/image_uploader.rb'
 
 # Offense count: 1
-# Cop supports --auto-correct.
-Layout/EmptyLineAfterGuardClause:
-  Exclude:
-    - 'app/models/map.rb'
+# # Cop supports --auto-correct.
+# Layout/EmptyLineAfterGuardClause:
+#   Exclude:
+#     - 'app/models/map.rb'
 
 # Offense count: 5
 # Cop supports --auto-correct.
-Layout/EmptyLines:
-  Exclude:
-    - 'app/controllers/home_controller.rb'
-    - 'app/models/map.rb'
+# Layout/EmptyLines:
+#   Exclude:
+#     - 'app/controllers/home_controller.rb'
+#     - 'app/models/map.rb'
 
 # Offense count: 2
 # Cop supports --auto-correct.

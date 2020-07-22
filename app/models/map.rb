@@ -28,14 +28,11 @@ class Map < ApplicationRecord
   # 一度に表示する投稿数
   paginates_per 6
 
-
-
   def self.search(address)
     return Map.all unless address
+
     Map.where(['content LIKE ?', "%#{address}%"])
   end
-
-
 
   private
 
