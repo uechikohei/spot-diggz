@@ -18,17 +18,17 @@
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
 # SupportedStyles: outdent, indent
-Layout/AccessModifierIndentation:
-  Exclude:
-    - 'app/controllers/application_controller.rb'
+# Layout/AccessModifierIndentation:
+#   Exclude:
+#     - 'app/controllers/application_controller.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
 # SupportedStyles: with_first_argument, with_fixed_indentation
-Layout/ArgumentAlignment:
-  Exclude:
-    - 'app/models/user.rb'
+# Layout/ArgumentAlignment:
+#   Exclude:
+#     - 'app/models/user.rb'
 
 # Offense count: 2
 # Cop supports --auto-correct.
