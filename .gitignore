@@ -31,5 +31,3 @@ yarn-debug.log*
 /db/fixtures/
 
 /nginx/log/
-
-bin/

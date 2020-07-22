@@ -49,9 +49,11 @@
           </div>
           <div class="Grid__c6">
             <div class="Grid__box-layout">
+              <%# 挿入：いいねカウント %>
               <p class="Grid__font-s" id="likes_count_<%= post.id %>">
                 <%= render partial: '/likes/likes_count', locals: {post: post} %>
               </p>
+              <span class="Grid__font-s">人が、ｲｲﾈ!しています。</span>
             </div>
           </div>
           <div class="Grid__c7"><p class="Grid__text-layout Grid__font-s">本文：<br><%= post.content %></p></div>

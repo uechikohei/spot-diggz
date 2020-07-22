@@ -10,9 +10,13 @@
           <p class="font-s name-aria"><%= link_to post.user.name, post.user ,class: "link_to_text_bk"%></p>
           <p class="font-xs">作成日<br><%= post.created_at.strftime("%m/%d") %></p>
         <%# 挿入：いいねボタン %>
-          <div id="likes_buttons_<%= post.id %>">
+          <span id="likes_buttons_<%= post.id %>">
             <%= render partial: '/likes/likes_btn', locals: {post: post} %>
-          </div>
+          </span>
+        <%# 挿入：いいねカウント %>
+          <span class="Grid__font-s" id="likes_count_<%= post.id %>">
+            <%= render partial: '/likes/likes_count', locals: {post: post} %>
+          </span>
       </ul>
     </div>
 </div>
