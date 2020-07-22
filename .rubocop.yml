@@ -1,1 +1,38 @@
 inherit_from: .rubocop_todo.yml
+require:
+    - rubocop-rails
+AllCops:
+    TargetRubyVersion: 2.6.5
+    # 除外
+    Exclude:
+        - 'config.ru'
+        - 'bin/**'
+        - 'lib/**'
+        - 'db/**/*'
+        - 'config/**/*'
+        - 'webpacker/**/*'
+        - 'node_modules/**/*'
+        - 'spec/**/*'
+
+# 日本語でのコメントを許可
+AsciiComments:
+  Enabled: false
+
+# モジュール名::クラス名の定義を許可
+ClassAndModuleChildren:
+  Enabled: false
+
+# メソッド名のprefixに「set_」「get_」を許可
+AccessorMethodName:
+  Enabled: false
+
+# クラスにコメントを残さない
+Documentation:
+  Enabled: false
+
+Lint/UnusedMethodArgument:
+  Enabled: false
+
+# abcメトリクスサイズを、デフォルトの15より緩和
+Metrics/AbcSize:
+  Max: 20
