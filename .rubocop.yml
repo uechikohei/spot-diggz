@@ -36,3 +36,11 @@ Lint/UnusedMethodArgument:
 # abcメトリクスサイズを、デフォルトの15より緩和
 Metrics/AbcSize:
   Max: 20
+
+# private/protected は一段深くインデントする
+Layout/IndentationConsistency:
+  EnforcedStyle: indented_internal_methods
+
+# application_controller内で使用されている、(e)を許可
+Naming/MethodParameterName:
+  AllowedNames: [e]

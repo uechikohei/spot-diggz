@@ -36,8 +36,8 @@ class Map < ApplicationRecord
 
   private
 
-  # 投稿時のタイトルに入力されるスペースを削除する
-  def kill_whitespace
-    self.title = title.gsub(/[[:space:]]/, '') if self.title.present?
-  end
+    # 投稿時のタイトルに入力されるスペースを削除する
+    def kill_whitespace
+      self.title = title.gsub(/[[:space:]]/, '') if self.title.present?
+    end
 end

@@ -74,13 +74,13 @@ class MapsController < ApplicationController
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
-  def set_map
-    @map = Map.find(params[:id])
-  end
+    # Use callbacks to share common setup or constraints between actions.
+    def set_map
+      @map = Map.find(params[:id])
+    end
 
-  # Only allow a list of trusted parameters through.
-  def map_params
-    params.require(:map).permit(:latitude, :longitude, :picture, :content, :title)
-  end
+    # Only allow a list of trusted parameters through.
+    def map_params
+      params.require(:map).permit(:latitude, :longitude, :picture, :content, :title)
+    end
 end
