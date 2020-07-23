@@ -21,8 +21,10 @@ class User < ApplicationRecord
   # commentテーブルと1対多になる。ユーザが削除＝投稿も削除
   has_many :comments, dependent: :destroy
 
-  has_many :follower, class_name: "Relationship", foreign_key: "follower_id", dependent: :destroy # フォロー取得
-  has_many :followed, class_name: "Relationship", foreign_key: "followed_id", dependent: :destroy # フォロワー取得
+  # フォロー取得
+  has_many :follower, class_name: "Relationship", inverse_of: :follower, foreign_key: "follower_id", dependent: :destroy
+  # フォロワー取得
+  has_many :followed, class_name: "Relationship", inverse_of: :followed, foreign_key: "followed_id", dependent: :destroy
 
   has_many :following_user, through: :follower, source: :followed # 自分がフォローしている人
   has_many :follower_user, through: :followed, source: :follower # 自分をフォローしている人

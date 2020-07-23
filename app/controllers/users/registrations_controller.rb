@@ -11,6 +11,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
 
+  def destroy; end
+
   protected
 
     # アカウント編集後、プロフィール画面に移動する

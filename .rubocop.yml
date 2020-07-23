@@ -49,5 +49,9 @@ Naming/MethodParameterName:
 Rails/HelperInstanceVariable:
   Enabled: false
 
+# Httpステータスコードでは数字を指定
 Rails/HttpStatus:
   EnforcedStyle: numeric
+
+Rails/UniqueValidationWithoutIndex:
+  Enabled: false
