@@ -44,3 +44,10 @@ Layout/IndentationConsistency:
 # application_controller内で使用されている、(e)を許可
 Naming/MethodParameterName:
   AllowedNames: [e]
+
+# helper methodでインスタンス変数使用を許可
+Rails/HelperInstanceVariable:
+  Enabled: false
+
+Rails/HttpStatus:
+  EnforcedStyle: numeric

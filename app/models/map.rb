@@ -17,7 +17,7 @@ class Map < ApplicationRecord
   # user.rbのhas_manyに対応する
   belongs_to  :user
   # likeテーブルと1対多になる
-  has_many    :likes
+  has_many    :likes, dependent: :destroy
   # 投稿が、どのユーザにいいねされているか取得
   has_many    :liked_users, through: :likes, source: :user
   # commentテーブルと1対多になる
