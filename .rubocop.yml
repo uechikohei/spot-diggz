@@ -58,3 +58,6 @@ Rails/UniqueValidationWithoutIndex:
 
 Style/AccessModifierDeclarations:
   Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
