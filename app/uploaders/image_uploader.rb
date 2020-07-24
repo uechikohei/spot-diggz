@@ -6,7 +6,7 @@ class ImageUploader < CarrierWave::Uploader::Base
   storage :file
 
   # 保存形式をJPGにする
-  process :convert => 'jpg'
+  process convert: 'jpg'
 
   # サムネイルを生成する設定
   process resize_to_fit: [110, 110]
