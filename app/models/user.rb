@@ -22,9 +22,9 @@ class User < ApplicationRecord
   has_many :comments, dependent: :destroy
 
   # フォロー取得
-  has_many :follower, class_name: "Relationship", inverse_of: :follower, foreign_key: "follower_id", dependent: :destroy
+  has_many :follower, class_name: 'Relationship', inverse_of: :follower, foreign_key: 'follower_id', dependent: :destroy
   # フォロワー取得
-  has_many :followed, class_name: "Relationship", inverse_of: :followed, foreign_key: "followed_id", dependent: :destroy
+  has_many :followed, class_name: 'Relationship', inverse_of: :followed, foreign_key: 'followed_id', dependent: :destroy
 
   has_many :following_user, through: :follower, source: :followed # 自分がフォローしている人
   has_many :follower_user, through: :followed, source: :follower # 自分をフォローしている人
@@ -56,10 +56,10 @@ class User < ApplicationRecord
 
   # 簡単ログインユーザー作成
   def self.guest
-    image_path = open("./db/fixtures/guest/user.png")
+    image_path = open('./db/fixtures/guest/user.png')
     find_or_create_by!(email: 'guest@example.com') do |user|
       user.password = SecureRandom.urlsafe_base64
-      user.name = "guest_user"
+      user.name = 'guest_user'
       user.image = image_path
       # user.confirmed_at = Time.now  # Confirmable を使用している場合は必要
     end

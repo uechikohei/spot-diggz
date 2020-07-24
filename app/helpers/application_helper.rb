@@ -4,7 +4,7 @@ module ApplicationHelper
     if @title.present?
       "#{@title} - SkateSpotSearch"
     else
-      "SkateSpotSearch"
+      'SkateSpotSearch'
     end
   end
 

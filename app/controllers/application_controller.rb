@@ -41,13 +41,13 @@ class ApplicationController < ActionController::Base
       @exception = e
       logger.error "error_404: #{e.message}"
       logger.error e.backtrace.join("\n")
-      render "errors/forbidden", status: 403
+      render 'errors/forbidden', status: 403
     end
     # StandartErrorが会った場合、rescue500メソッドで呼び出される内容
     private def rescue500(e)
       # viewsのerrors/interval_server_errorページを返すよ
       logger.error "error_404: #{e.message}"
       logger.error e.backtrace.join("\n")
-      render "errors/internal_server_error", status: 500
+      render 'errors/internal_server_error', status: 500
     end
 end

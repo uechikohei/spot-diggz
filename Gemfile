@@ -3,18 +3,18 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.6.5'
 
-gem "bcrypt"
+gem 'bcrypt'
 gem 'bootsnap', '>= 1.4.2', require: false
-gem "date_validator"
+gem 'date_validator'
 gem 'jbuilder', '~> 2.7'
 gem 'mysql2', '>= 0.4.4'
-gem "nokogiri"
+gem 'nokogiri'
 gem 'puma', '~> 4.3'
 gem 'rails', '~> 6.0.2', '>= 6.0.2.1'
-gem "rails-i18n"
+gem 'rails-i18n'
 gem 'sass-rails', '>= 6'
 gem 'turbolinks', '~> 5'
-gem "valid_email2"
+gem 'valid_email2'
 gem 'webpacker', '~> 4.0'
 # ユーザー認証
 gem 'devise', '~> 4.7', '>= 4.7.1'
@@ -34,8 +34,8 @@ gem 'ransack', '~> 2.3', '>= 2.3.2'
 gem 'rmagick', '~> 4.1', '>= 4.1.1'
 
 group :test do
-  gem "capybara", ">= 2.15"
-  gem "selenium-webdriver"
+  gem 'capybara', '>= 2.15'
+  gem 'selenium-webdriver'
 end
 
 group :development, :test do
