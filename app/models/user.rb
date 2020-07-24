@@ -51,7 +51,7 @@ class User < ApplicationRecord
 
   # ユーザが投稿に対し、いいね済かcheckするメソッドを定義
   def already_liked?(map)
-    self.likes.exists?(map_id: map.id)
+    likes.exists?(map_id: map.id)
   end
 
   # 簡単ログインユーザー作成

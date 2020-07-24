@@ -38,6 +38,6 @@ class Map < ApplicationRecord
 
     # 投稿時のタイトルに入力されるスペースを削除する
     def kill_whitespace
-      self.title = title.gsub(/[[:space:]]/, '') if self.title.present?
+      self.title = title.gsub(/[[:space:]]/, '') if title.present?
     end
 end
