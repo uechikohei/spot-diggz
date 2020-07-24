@@ -53,14 +53,13 @@ Rails/HelperInstanceVariable:
 Rails/HttpStatus:
   EnforcedStyle: numeric
 
+# Uniquness:trueをつける。falseを追加
 Rails/UniqueValidationWithoutIndex:
   Enabled: false
 
 Style/AccessModifierDeclarations:
   Enabled: false
 
+# ruby3.0からデフォルトになる予定の# ... マジックコメント関係。falseを追加
 Style/FrozenStringLiteralComment:
-  Enabled: false
-
-Style/GuardClause:
   Enabled: false
