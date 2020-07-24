@@ -25,9 +25,9 @@
 
 # Offense count: 1
 # Configuration parameters: MinBodyLength.
-Style/GuardClause:
-  Exclude:
-    - 'app/controllers/users/registrations_controller.rb'
+# Style/GuardClause:
+#   Exclude:
+#     - 'app/controllers/users/registrations_controller.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.
