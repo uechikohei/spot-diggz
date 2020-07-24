@@ -10,8 +10,7 @@ class UsersController < ApplicationController
     @map = Map.find_by(id: params[:id])
   end
 
-  def edit
-  end
+  def edit; end
 
   def destroy
     @map.destroy

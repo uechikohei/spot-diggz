@@ -2,19 +2,19 @@
 # Offense count: 2
 # Configuration parameters: EnforcedStyle, AllowModifiersOnSymbols.
 # SupportedStyles: inline, group
-Style/AccessModifierDeclarations:
-  Exclude:
-    - 'app/controllers/application_controller.rb'
+# Style/AccessModifierDeclarations:
+#   Exclude:
+#     - 'app/controllers/application_controller.rb'
 
 # Offense count: 3
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: compact, expanded
-Style/EmptyMethod:
-  Exclude:
-    - 'app/controllers/home_controller.rb'
-    - 'app/controllers/maps_controller.rb'
-    - 'app/controllers/users_controller.rb'
+# Style/EmptyMethod:
+#   Exclude:
+#     - 'app/controllers/home_controller.rb'
+#     - 'app/controllers/maps_controller.rb'
+#     - 'app/controllers/users_controller.rb'
 
 # Offense count: 23
 # Cop supports --auto-correct.

@@ -55,3 +55,6 @@ Rails/HttpStatus:
 
 Rails/UniqueValidationWithoutIndex:
   Enabled: false
+
+Style/AccessModifierDeclarations:
+  Enabled: false

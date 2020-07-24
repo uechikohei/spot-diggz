@@ -33,8 +33,7 @@ class MapsController < ApplicationController
   end
 
   # GET /maps/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /maps
   # POST /maps.json
