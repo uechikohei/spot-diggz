@@ -1,9 +1,8 @@
-version: 2.1
-
-orbs:
-    hello: circleci/hello-build@0.0.7 # circleci/buildpack-deps Docker イメージを使います
-
-workflows:
-    "Hello Workflow":
-        jobs:
-          - hello/hello-build
+version: 2
+jobs:
+  build:
+    docker: # Executor タイプです。他に machine、macOS という実行タイプを指定できます
+      - image: circleci/node:4.8.2 # プライマリコンテナです。このなかでジョブコマンドが実行されます
+    steps:
+      - checkout # プロジェクトのディレクトリにあるコードをチェックアウトします
+      - run: echo "hello world" # 「echo」コマンドを実行します
