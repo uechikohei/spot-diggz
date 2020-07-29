@@ -19,7 +19,13 @@ jobs:
           command: |
             set -x
             docker-compose up --build -d
-            docker-compose exec app bundle exec rails db:create RAILS_ENV=test && rails db:migrate:reset RAILS_ENV=test && rails db:seed RAILS_ENV=test
+      - run:
+          name: database set up
+          command: |
+            set -x
+            docker-compose exec app bundle exec rails db:create RAILS_ENV=test
+            docker-compose exec app bundle exec rails db:migrate:reset RAILS_ENV=test
+            docker-compose exec app bundle exec rails db:seed RAILS_ENV=test
       - run:
           name: docker-compose stop
           command: |
