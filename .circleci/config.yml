@@ -5,14 +5,25 @@ jobs:
   build:
     machine:
       image: circleci/classic:edge
+    working_directory: ~/sss
     steps:
       - checkout
       - run:
-          name: Dockerコンテナのビルド
-          command: docker-compose build
+          name: Install Docker Compose
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - run:
-          name: Dockerコンテナの起動
-          command: docker-compose up
+          name: docker-compose up
+          command: |
+            set -x
+            docker-compose up --build -d
+      - run:
+          name: docker-compose stop
+          command: |
+            set -x
+            docker-compose stop
 
 # version: 2
 # jobs:
