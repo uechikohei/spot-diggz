@@ -1,8 +1,84 @@
+# docker-compose.ymlファイルを使用して簡潔にcircleciを導入してみる
+
 version: 2
 jobs:
   build:
-    docker: # Executor タイプです。他に machine、macOS という実行タイプを指定できます
-      - image: circleci/node:4.8.2 # プライマリコンテナです。このなかでジョブコマンドが実行されます
+    machine:
+      image: circleci/classic:edge
     steps:
-      - checkout # プロジェクトのディレクトリにあるコードをチェックアウトします
-      - run: echo "hello world" # 「echo」コマンドを実行します
+      - checkout
+      - run:
+          name: Dockerコンテナのビルド
+          command: docker-compose build
+      - run:
+          name: Dockerコンテナの起動
+          command: docker-compose up
+
+# version: 2
+# jobs:
+#   build:
+#     docker:
+
+#       # Ruby
+#       - image: circleci/ruby:2.6.5-node-browsers
+#         environment:
+#           BUNDLER_VERSION: 2.1.4
+#           RAILS_ENV: test
+#           DB_USER: root
+#           DB_PASSWORD: root
+#           DB_HOST: 127.0.0.1
+
+#       # Mysql
+#       - image: circleci/mysql:8.0.16
+#         command: |
+#           mysqld --default-authentication-plugin=mysql_native_password
+#         environment:
+#           MYSQL_PASSWORD: root
+#           MYSQL_DATABASE: app_test
+#           MYSQL_USER: root
+#           MYSQL_HOST: 127.0.0.1
+#           MYSQL_ROOT_HOST: '%'
+
+#     steps:
+#       - checkout
+
+#       - restore_cache:
+#           keys:
+#             - v1-dependencies-{{ checksum "Gemfile.lock" }}-{{ checksum "yarn.lock" }}
+#             - v1-dependencies-
+
+#       # node.jsのアップデート
+#       - run:
+#           name: update node v12.13.0
+#           command: |
+#             curl -sSL "https://nodejs.org/dist/v11.10.0/node-v11.10.0-linux-x64.tar.xz" | sudo tar --strip-components=2 -xJ -C /usr/local/bin/ node-v11.10.0-linux-x64/bin/node
+#             curl https://www.npmjs.com/install.sh | sudo bash
+
+#       # bundle install
+#       - run:
+#           name: install dependencies
+#           command: |
+#             gem install bundler && \
+#             bundle install --jobs=4 --retry=3 --path vendor/bundle
+
+#       - run:
+#           name: install dependencies
+#           command: yarn install
+
+#       - save_cache:
+#           paths:
+#             - ./vendor/bundle
+#             - ./node_modules
+#           key: v1-dependencies-{{ checksum "Gemfile.lock" }}-{{ checksum "yarn.lock" }}
+
+#     # Database setup
+#       - run: bundle exec rake db:create
+#       - run: bundle exec rake db:schema:load
+
+#       # 静的ファイルセットアップ
+#       - run: bundle exec bin/webpack
+
+#       #rubocop
+#       - run:
+#           name: Rubocop
+#           command: bundle exec rubocop
