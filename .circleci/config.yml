@@ -9,26 +9,36 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Docker Compose
+          name: docker-composeをインストール
           command: |
             curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
             chmod +x ~/docker-compose
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - run:
-          name: docker-compose up
+          name: ビルド
           command: |
             set -x
             docker-compose up --build -d
       - run:
-          name: docker-compose stop
+          name: 一旦停止
           command: |
             set -x
             docker-compose stop
       - run:
-          name: docker-compose up
+          name: 再起動
           command: |
             set -x
             docker-compose up -d
+      - run:
+          name: データベースを作成
+          command: |
+            set -x
+            docker-compose exec app bundle exec rails db:create RAILS_ENV=test
+      - run:
+          name: マイグレーションファイルを読み込む
+          command: |
+            set -x
+            docker-compose exec app bundle exec rails db:migrate:reset RAILS_ENV=test
       - run:
           name: test
           command: |
