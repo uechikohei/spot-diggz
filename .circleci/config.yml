@@ -20,6 +20,9 @@ jobs:
             set -x
             docker-compose up --build -d
       - run:
+          name: db接続を待機
+          command: sleep 10
+      - run:
           name: データベースを作成
           command: |
             set -x
