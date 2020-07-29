@@ -40,11 +40,6 @@ jobs:
             set -x
             docker-compose exec app bundle exec rails db:migrate:reset RAILS_ENV=test
       - run:
-          name: シードデータを読み込む
-          command: |
-            set -x
-            docker-compose exec app bundle exec rails db:seed RAILS_ENV=test
-      - run:
           name: webpackerビルド
           command: |
             set -x
