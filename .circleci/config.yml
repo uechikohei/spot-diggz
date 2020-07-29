@@ -43,7 +43,7 @@ jobs:
           name: webpackerビルド
           command: |
             set -x
-            docker-compose exec app bundle exec app bin/webpack
+            docker-compose exec app bundle exec bin/webpack
       - run:
           name: 一旦停止
           command: |
