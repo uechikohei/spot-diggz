@@ -19,12 +19,29 @@ jobs:
           command: |
             set -x
             docker-compose up --build -d
+            docker-compose exec app bundle exec rails db:create RAILS_ENV=test && rails db:migrate:reset RAILS_ENV=test && rails db:seed RAILS_ENV=test
       - run:
           name: docker-compose stop
           command: |
             set -x
             docker-compose stop
-
+      - run:
+          name: docker-compose up
+          command: |
+            set -x
+            docker-compose up -d
+      - run:
+          name: test
+          command: |
+            mkdir /tmp/test-results
+            TEST_FILES="$(circleci tests glob 'spec/**/*_spec.rb' | circleci tests split --split-by=timings)"
+            docker-compose exec rails_api bin/rspec --format progress \
+                                                                  --format RspecJunitFormatter \
+                                                                  --out /tmp/test-results/rspec.xml \
+                                                                  $TEST_FILES
+      - run:
+          name: docker-compose down
+          command: docker-compose down
 # version: 2
 # jobs:
 #   build:
