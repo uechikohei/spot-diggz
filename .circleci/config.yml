@@ -35,27 +35,13 @@ jobs:
             docker-compose up -d
 
       - run:
-          name: データベースを作成
-          command: |
-            set -x
-            docker-compose exec app bundle exec rails db:create RAILS_ENV=test
-
-      - run:
-          name: マイグレーションファイルを読み込む
-          command: |
-            set -x
-            docker-compose exec app bundle exec rails db:migrate:reset RAILS_ENV=test
-
-      - run:
-          name: シードデータを読み込む
-          command: |
-            set -x
-            docker-compose exec app bundle exec rails db:seed RAILS_ENV=test
-
-      - run:
           name: Rspecテスト実行
           command: |
             mkdir /tmp/test-results
+            docker-compose exec app bundle exec rails db:create RAILS_ENV=test
+            docker-compose exec app bundle exec rails db:migrate RAILS_ENV=test
+            docker-compose exec app bundle exec rails db:seed RAILS_ENV=test
+
             TEST_FILES="$(circleci tests glob 'spec/**/*_spec.rb' | circleci tests split --split-by=timings)"
             docker-compose exec app bin/rspec --format progress \
                                                                   --format RspecJunitFormatter \
