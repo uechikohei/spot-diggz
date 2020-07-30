@@ -2,7 +2,7 @@
 
 version: 2
 jobs:
-  build:
+  deploy_job:
     machine:
       image: circleci/classic:edge
     working_directory: ~/sss
@@ -17,7 +17,7 @@ jobs:
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
 
       - run:
-          name: コンテナをビルド。起動。停止と削除。
+          name: コンテナをビルド & 起動 & 停止と削除
           command: |
             set -x
             docker-compose up --build -d
@@ -52,3 +52,14 @@ jobs:
           command: |
             docker-compose exec app bundle exec rubocop
             docker-compose down
+
+
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - deploy_job:
+          filters:
+            branches:
+              only:
+                - master
