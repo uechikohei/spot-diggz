@@ -33,6 +33,7 @@ jobs:
           command: |
             set -x
             docker-compose up -d
+            docker-compose exec app yarn upgrade
             docker-compose exec app bundle exec rails webpacker:compile RAILS_ENV=test
           no_output_timeout: 20m
 
