@@ -29,10 +29,12 @@ jobs:
             docker-compose down
 
       - run:
-          name: 再起動
+          name: 再起動 && webpackerビルド
           command: |
             set -x
             docker-compose up -d
+            docker-compose exec app bash
+            RAILS_ENV=test bundle exec rails webpacker:compile
 
       - run:
           name: Rspecテスト実行
