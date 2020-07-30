@@ -35,9 +35,9 @@ gem 'rmagick', '~> 4.1', '>= 4.1.1'
 
 group :test do
   gem 'capybara', '>= 2.15'
+  gem 'rspec'
+  gem 'rspec_junit_formatter'
   gem 'selenium-webdriver'
-  gem "rspec"
-  gem "rspec_junit_formatter"
 end
 
 group :development, :test do
