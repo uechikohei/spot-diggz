@@ -8,5 +8,5 @@
         password: password,
         password_confirmation: password,
         image: image_path,
-    )
+  )
 end
