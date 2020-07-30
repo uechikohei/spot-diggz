@@ -33,17 +33,22 @@ jobs:
           name: データベースを作成
           command: |
             set -x
-            docker-compose exec app bundle exec rails db:create RAILS_ENV=test
+            docker-compose exec app bundle exec rails db:create
       - run:
           name: マイグレーションファイルを読み込む
           command: |
             set -x
-            docker-compose exec app bundle exec rails db:migrate:reset RAILS_ENV=test
+            docker-compose exec app bundle exec rails db:migrate:reset
       - run:
           name: シードデータを読み込む
           command: |
             set -x
             docker-compose exec app bundle exec rails db:seed RAILS_ENV=test
+      - run:
+          name: RAILS_ENV=test bin/webpack
+          command: |
+            set -x
+            docker-compose exec app RAILS_ENV=test bundle exec rails webpacker:compile
       - run:
           name: 一旦停止
           command: |
@@ -66,6 +71,7 @@ jobs:
       - run:
           name: docker-compose down
           command: docker-compose down
+
 # version: 2
 # jobs:
 #   build:

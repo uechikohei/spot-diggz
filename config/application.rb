@@ -19,6 +19,8 @@ Bundler.require(*Rails.groups)
 module App
   class Application < Rails::Application
     config.load_defaults 6.0
+    # 取り除くと、Zeitwerkモードで起動
+    config.autoloader = :classic
     config.time_zone = "Tokyo"
 
     #　#　以下の記述を追記する(設定必須)
