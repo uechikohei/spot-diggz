@@ -17,19 +17,14 @@ jobs:
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
 
       - run:
-          name: コンテナをビルドしてバックグラウンドで起動
+          name: コンテナをビルド。起動。停止と削除。
           command: |
             set -x
             docker-compose up --build -d
-
-      - run:
-          name: コンテナを停止して削除
-          command: |
-            set -x
             docker-compose down
 
       - run:
-          name: 再起動 && packs-test/manifestを作成
+          name: yarnアップグレード & webpacker_compile & db-create-migrate
           command: |
             set -x
             docker-compose up -d
@@ -40,7 +35,7 @@ jobs:
             docker-compose down
 
       - run:
-          name: Rspecテスト実行
+          name: シードデータ導入 & Rspecを実行
           command: |
             mkdir /tmp/test-results
             docker-compose up -d
@@ -53,10 +48,7 @@ jobs:
                                                                   $TEST_FILES
 
       - run:
-          name: Rubocopコマンド実行
+          name: Rubocopを実行 & コンテナの停止、削除
           command: |
             docker-compose exec app bundle exec rubocop
-
-      - run:
-          name: コンテナを停止して削除
-          command: docker-compose down
+            docker-compose down
