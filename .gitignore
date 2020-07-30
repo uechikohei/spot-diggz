@@ -28,6 +28,4 @@ yarn-debug.log*
 
 .DS_Store
 
-/db/fixtures/
-
 /nginx/log/
