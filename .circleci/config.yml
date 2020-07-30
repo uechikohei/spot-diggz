@@ -38,13 +38,13 @@ jobs:
           name: データベースを作成
           command: |
             set -x
-            docker-compose exec app bundle exec rails db:create
+            docker-compose exec app bundle exec rails db:create RAILS_ENV=test
 
       - run:
           name: マイグレーションファイルを読み込む
           command: |
             set -x
-            docker-compose exec app bundle exec rails db:migrate
+            docker-compose exec app bundle exec rails db:migrate:reset RAILS_ENV=test
 
       - run:
           name: シードデータを読み込む
