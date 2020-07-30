@@ -76,18 +76,8 @@ RSpec.describe 'Sessions', type: :system do
           visit root_path
         end
 
-        it 'ユーザー詳細ページにアクセスできない' do
-          visit '/users/1'
-          expect(page).to have_content 'アカウント登録もしくはログインしてください。'
-        end
-
         it '新規投稿ページにアクセスできない' do
           visit '/maps/new'
-          expect(page).to have_content 'アカウント登録もしくはログインしてください。'
-        end
-
-        it 'ユーザー検索ページにアクセスできない' do
-          visit '/users'
           expect(page).to have_content 'アカウント登録もしくはログインしてください。'
         end
 
