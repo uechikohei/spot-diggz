@@ -35,13 +35,15 @@ jobs:
             docker-compose up -d
             docker-compose exec app yarn upgrade
             docker-compose exec app bundle exec rails webpacker:compile RAILS_ENV=test
+            docker-compose exec app bundle exec rails db:create RAILS_ENV=test
+            docker-compose exec app bundle exec rails db:migrate:reset RAILS_ENV=test
+            docker-compose down
 
       - run:
           name: Rspecテスト実行
           command: |
             mkdir /tmp/test-results
-            docker-compose exec app bundle exec rails db:create RAILS_ENV=test
-            docker-compose exec app bundle exec rails db:migrate:reset RAILS_ENV=test
+            docker-compose up -d
             docker-compose exec app bundle exec rails db:seed RAILS_ENV=test
 
             TEST_FILES="$(circleci tests glob 'spec/**/*_spec.rb' | circleci tests split --split-by=timings)"
