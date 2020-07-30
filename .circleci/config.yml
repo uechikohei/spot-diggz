@@ -53,12 +53,6 @@ jobs:
             docker-compose exec app bundle exec rails db:seed RAILS_ENV=test
 
       - run:
-          name: RAILS_ENV=test bin/webpack
-          command: |
-            set -x
-            docker-compose exec app RAILS_ENV=test bundle exec rails webpacker:compile
-
-      - run:
           name: 一旦停止
           command: |
             set -x
@@ -69,6 +63,12 @@ jobs:
           command: |
             set -x
             docker-compose up -d
+
+      - run:
+          name: RAILS_ENV=test bin/webpack
+          command: |
+            set -x
+            docker-compose exec app RAILS_ENV=test bundle exec rails webpacker:compile
 
       - run:
           name: Rspecテスト実行
