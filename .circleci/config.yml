@@ -33,6 +33,9 @@ jobs:
           command: |
             set -x
             docker-compose up -d
+            docker-compose exec app bash
+            RAILS_ENV=test bundle exec rails webpacker:compile
+          no_output_timeout: 20m
 
       - run:
           name: Rspecテスト実行
