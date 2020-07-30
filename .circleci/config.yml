@@ -53,7 +53,7 @@ jobs:
             docker-compose exec app bundle exec rubocop
             docker-compose down
 
-
+# masterブランチへpushされた時、deploy_jobが実行される。
 workflows:
   version: 2
   deploy:
