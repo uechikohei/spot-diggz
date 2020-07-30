@@ -38,25 +38,19 @@ jobs:
           name: データベースを作成
           command: |
             set -x
-            docker-compose exec app bundle exec rails db:create
+            docker-compose exec app bundle exec rails db:create RAILS_ENV=test
 
       - run:
           name: マイグレーションファイルを読み込む
           command: |
             set -x
-            docker-compose exec app bundle exec rails db:migrate:reset
+            docker-compose exec app bundle exec rails db:migrate:reset RAILS_ENV=test
 
       - run:
           name: シードデータを読み込む
           command: |
             set -x
             docker-compose exec app bundle exec rails db:seed RAILS_ENV=test
-
-      - run:
-          name: テスト環境 webpackerをビルド
-          command: |
-            set -x
-            docker-compose exec app RAILS_ENV=test bundle exec rails webpacker:compile
 
       - run:
           name: Rspecテスト実行
