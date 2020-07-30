@@ -50,13 +50,6 @@ jobs:
                                                                   --out /tmp/test-results/rspec.xml \
                                                                   $TEST_FILES
 
-      # テストリザルト
-      - store_test_results:
-          path: /tmp/test-results
-      - store_artifacts:
-          path: /tmp/test-results
-          destination: test-results
-
       - run:
           name: Rubocopコマンド実行
           command: |
