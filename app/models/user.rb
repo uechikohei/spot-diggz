@@ -5,7 +5,7 @@ class User < ApplicationRecord
           :recoverable, :rememberable, :validatable
 
   mount_uploader :image, ImageUploader
-  validates :name,  presence: true, uniqueness: true,
+  validates :name,  presence: true, uniqueness: { case_sensitive: false },
                     length: { minimum: 2, maximum: 20 }
 
   validates :email, presence: true, uniqueness: { case_sensitive: true },
