@@ -6,6 +6,7 @@ ruby '2.6.5'
 gem 'bcrypt'
 gem 'bootsnap', '>= 1.4.2', require: false
 gem 'date_validator'
+gem 'dotenv-rails'
 gem 'jbuilder', '~> 2.7'
 gem 'mysql2', '>= 0.4.4'
 gem 'nokogiri'

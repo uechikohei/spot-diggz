@@ -30,10 +30,10 @@ services:
     environment:
       NODE_ENV: $NODE_ENV
       RAILS_ENV: $RAILS_ENV
-      MYSQL_HOST: $MYSQL_HOST
-      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
-      MYSQL_DATABASE: $MYSQL_DATABASE
-      MYSQL_USERNAME: $MYSQL_USERNAME
+      MYSQL_HOST: <%= ENV['DB_HOST'] %>
+      MYSQL_ROOT_PASSWORD: <%= ENV['DB_PASSWORD'] %>
+      MYSQL_DATABASE: <%= ENV['DB_DATABASE'] %>
+      MYSQL_USERNAME: <%= ENV['DB_USERNAME'] %>
     security_opt:
       - seccomp:unconfined
     ports:
