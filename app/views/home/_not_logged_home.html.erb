@@ -1,6 +1,29 @@
 <main>
   <div class="first-content">
-    <h1>投稿一覧検索</h1>
+    <h1>ようこそ！</h1>
+    <div class="box17">
+      <p>スケートボードを買ったけど練習する場所が、ない！<br>
+      始めてみたいけど、練習できる所ってどこ？</p>
+      <h1>skatespotsearch なら</h1>
+      <h2 class="text_info">スケートボードパークから、ストリートスポットでも<br>
+      googlemap上なら、どこでもスポット登録可能！</h2>
+      <h3 class="text_danger">どんどんシェアして、みんなでスケートボードを楽しもう！</h3>
+      <br>
+      <div>
+        <%= link_to new_user_session_path , class: "btn filled" do %>
+          <i class="fas fa-sign-in-alt"></i>
+          ログインはこちら！
+        <% end %>
+      </div>
+      <br>
+      <div>
+        <%= link_to users_guest_sign_in_path , method: :post , class: "btn filled" do %>
+          <i class="fas fa-sign-in-alt"></i>
+          ポートフォリオ閲覧の方はこちらから！
+        <% end %>
+      </div>
+    </div>
+    <h2>投稿一覧を検索</h2>
       <%# any?: 検索キーワード１つでも該当すれかどうかで分岐　%>
       <% if @search_maps.any? %>
             <div>
