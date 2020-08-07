@@ -11,7 +11,7 @@ RSpec.describe 'Maps', type: :system do
         fill_in 'パスワード', with: @user.password
         click_button 'btn'
         expect(page).to have_content 'ログインしました。'
-        expect(page).to have_selector 'h1', text: '投稿一覧検索'
+        expect(page).to have_selector 'h2', text: '投稿一覧を検索'
       end
 
       it '新規投稿ページの要素が正しく表示される' do

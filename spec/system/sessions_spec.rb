@@ -38,7 +38,7 @@ RSpec.describe 'Sessions', type: :system do
           fill_in 'パスワード', with: @user.password
           click_button 'btn'
           expect(page).to have_content 'ログインしました。'
-          expect(page).to have_selector 'h1', text: '投稿一覧検索'
+          expect(page).to have_selector 'h2', text: '投稿一覧を検索'
         end
 
         it '簡単ログインリンクを押すとゲストユーザーとしてログイン可能' do
@@ -46,7 +46,7 @@ RSpec.describe 'Sessions', type: :system do
           visit 'users/sign_in'
           click_link 'btn-guest'
           expect(page).to have_content 'ログインしました。'
-          expect(page).to have_selector 'h1', text: '投稿一覧検索'
+          expect(page).to have_selector 'h2', text: '投稿一覧を検索'
         end
       end
     end
@@ -60,7 +60,7 @@ RSpec.describe 'Sessions', type: :system do
           fill_in 'パスワード',with: @user.password
           click_button 'btn'
           expect(page).to have_content 'ログインしました。'
-          expect(page).to have_selector 'h1', text: '投稿一覧検索'
+          expect(page).to have_selector 'h2', text: '投稿一覧を検索'
 
           # ヘッダーのドロップダウンを開く
           click_link 'logout'
@@ -94,17 +94,17 @@ RSpec.describe 'Sessions', type: :system do
           fill_in 'パスワード', with: @user.password
           click_button 'btn'
           expect(page).to have_content 'ログインしました。'
-          expect(page).to have_selector 'h1', text: '投稿一覧検索'
+          expect(page).to have_selector 'h2', text: '投稿一覧を検索'
 
           visit '/users/sign_in'
           expect(current_path).to eq root_path(@user)
           expect(page).to have_content 'すでにログインしています。'
-          expect(page).to have_selector 'h1', text: '投稿一覧検索'
+          expect(page).to have_selector 'h2', text: '投稿一覧を検索'
 
           visit '/users/sign_up'
           expect(current_path).to eq root_path(@user)
           expect(page).to have_content 'すでにログインしています。'
-          expect(page).to have_selector 'h1', text: '投稿一覧検索'
+          expect(page).to have_selector 'h2', text: '投稿一覧を検索'
         end
       end
     end

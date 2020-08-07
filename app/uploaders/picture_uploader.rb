@@ -9,7 +9,6 @@ class PictureUploader < CarrierWave::Uploader::Base
     storage :file
   end
 
-
   process convert: 'jpg'
 
   # 画像リサイズと分類
