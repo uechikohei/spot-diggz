@@ -22,12 +22,12 @@
           <!--コメントのコンテントを送信するフォーム-->
             <%= render '/comments/comment-form' %>
           <!--投稿作成者、日時情報-->
-            <span>by:</span>
-            <%= link_to image_tag(@map.user.image.url, size:"45x45", class: "window") %>
+            <br><span>投稿者:</span>
+            <%= link_to image_tag(@map.user.image.url, size:"45x45", class: "user-image-window") %>
             <%= link_to @map.user.name, @map.user, class: "link_to_text_bk" %>
             <%= @map.created_at.strftime("%Y-%m/%d %H:%M") %>
             <!--編集アイコンと削除アイコン-->
-              <% if user_signed_in? %>
+              <% if current_user.id == @map.user_id %>
                 <%= link_to edit_map_path(@map) do %>
                   <i class="fas fa-edit link_to_text_bk"></i>
                   | 

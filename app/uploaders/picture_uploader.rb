@@ -2,8 +2,13 @@ class PictureUploader < CarrierWave::Uploader::Base
   # Include RMagick or MiniMagick support:
   include CarrierWave::MiniMagick
 
-  # Choose what kind of storage to use for this uploader:
-  storage :file
+  # 本番と開発環境では、ストレージとしてs3を使用
+  if Rails.env.production? || Rails.env.development?
+    storage :fog
+  else
+    storage :file
+  end
+
 
   process convert: 'jpg'
 

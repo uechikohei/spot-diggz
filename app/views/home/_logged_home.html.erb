@@ -1,6 +1,16 @@
 <main>
   <div class="first-content">
-    <h1>投稿一覧検索</h1>
+    <div class="box17">
+      <h3><span class="markerB">スケートボードスポットを登録する！</span></h3>
+      <br>
+      <div>
+        <%= link_to new_map_path , class: "btn filled" do %>
+          <i class="fas fa-map-pin"></i>
+          NEW
+        <% end %>
+      </div>
+    </div>
+    <h2><span class="markerY">投稿一覧を検索</span></h2>
     <%# any?: 検索キーワード１つでも該当すれかどうかで分岐　%>
     <% if @search_maps.any? %>
           <div>
