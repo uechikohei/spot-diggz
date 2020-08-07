@@ -19,8 +19,16 @@
   color: $cGrotto;
 }
 
-.marker-brunt {
-  background: linear-gradient(transparent 70%, $cBrunt 0%);
+/* マーカー線・青 */
+.markerB{
+  background: linear-gradient(transparent 75%, #c1e0ff 75%);
+  font-weight: bold;
+}
+
+/* マーカー線・黄色 */
+.markerY{
+  background:linear-gradient(transparent 75%, #fff799 75%);
+  font-weight:bold;
 }
 
 h1:first-letter {

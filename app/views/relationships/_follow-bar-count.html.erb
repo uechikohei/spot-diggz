@@ -1,4 +1,5 @@
 <h2><%= "フォロー数: #{@user.follower.count}" %></h2>
     <% @user.following_user.each do |user| %>
-      <%= link_to "@#{user.name}", user_path(user) %> <br>
+      <%= link_to image_tag(user.image.url, size:"45x45", class: "user-image-window") %>
+      <%= link_to "@#{user.name}", user_path(user), class: "link_to_text_bk" %> <br><br>
     <% end %>

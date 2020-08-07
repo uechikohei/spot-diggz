@@ -19,7 +19,7 @@
       </div>
     </div>
       <div class="Grid">
-          <div class="Grid__c1"><div class="Grid__text-layout"><h2 class="red">title: <%= post.title %></h2></div></div>
+          <div class="Grid__c1"><div class="Grid__text-layout"><h2 class="red"><%= post.title %></h2></div></div>
           <div class="Grid__c2">
             <div class="Grid__box-layout">
               <% if post.spot_style? %>
@@ -38,7 +38,11 @@
               <% end %>
             </div>
           </div>
-          <div class="Grid__c4"><div class="Grid__image Grid__box-layout"><%= image_tag post.picture.thumb1080.url , class: "Grid__resize"%></div></div>
+          <div class="Grid__c4">
+            <div class="Grid__image Grid__box-layout">
+              <%= image_tag post.picture.thumb1080.url , class: "Grid__resize"%>
+            </div>
+          </div>
           <div class="Grid__c5">
             <div class="Grid__box-layout">
               <%# 挿入：いいねボタン %>
