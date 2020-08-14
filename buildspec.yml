@@ -3,27 +3,34 @@ version: 0.2
 phases:
   pre_build:
     commands:
+      - echo Logging in to Amazon ECR...
+      - pip install awscli --upgrade
+      - aws --version
       ## ECRにログイン
-      - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+      - $(aws ecr get-login --no-include-email --region ${AWS_DEFAULT_REGION})
 
       ## Dockerイメージのタグとして使用するため、Gitのコミットハッシュを取得
-      - IMAGE_TAG=$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION}
 
   build:
     commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
       ## Rspecテスト
       ## Rubocopテスト
       ## Dockerイメージのビルド
       - docker-compose -f docker-compose-pro.yml up --build
-      - docker tag sss_app:latest ${AWS_ACCOUNT_ID}.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/sss_app:$IMAGE_TAG
-      - docker tag sss_nginx:latest ${AWS_ACCOUNT_ID}.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/sss_nginx:$IMAGE_TAG
+      - docker tag sss_app:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/sss_app:$IMAGE_TAG
+      - docker tag sss_nginx:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/sss_nginx:$IMAGE_TAG
 
   post_build:
     commands:
-    ## DockerイメージのECRへのプッシュ
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      ## DockerイメージのECRへのプッシュ
       - docker push sss_app:$IMAGE_TAG
       - docker push sss_nginx:$IMAGE_TAG
-
+      - echo Writing image detail file...
     ## ECS+CodeDeployにどのイメージを使用するか指示するためのファイルを作成
       - printf '{"Version":"1.0","ImageURI":"%s"}' sss_app,sss_nginx:$IMAGE_TAG > imageDetail.json
 
