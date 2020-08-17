@@ -14,27 +14,28 @@ phases:
 
   build:
     commands:
-      - echo Build started on `date`
-      - echo Building the Docker image...
       ## Rspecテスト
       ## Rubocopテスト
       ## Dockerイメージのビルド
+      - echo dockerビルド
       - docker-compose -f docker-compose-pro.yml up --build -d
-      - docker tag sss_app:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/sss_app:$IMAGE_TAG
-      - docker tag sss_nginx:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/sss_nginx:$IMAGE_TAG
+      ## 前半でイメージ指定。後半でECRリポジトリ名を指定
+      - docker tag skatespotsearch_app:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/sss_app:${IMAGE_TAG}
+      - docker tag skatespotsearch_nginx:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/sss_nginx:${IMAGE_TAG}
 
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
       ## DockerイメージのECRへのプッシュ
-      - docker push sss_app:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/sss_app:$IMAGE_TAG
-      - docker push sss_nginx:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/sss_nginx:$IMAGE_TAG
+      - docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/sss_app:${IMAGE_TAG}
+      - docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/sss_nginx:${IMAGE_TAG}
 
       - echo Writing image detail file...
     ## ECS+CodeDeployにどのイメージを使用するか指示するためのファイルを作成
-      - printf '{"Version":"1.0","ImageURI":"%s"}' sss_app,sss_nginx:$IMAGE_TAG > imageDetail.json
+      - printf '{"Version":"1.0","ImageURI":"%s"}' skatespotsearch:${IMAGE_TAG} > imageDetail.json
 
 artifacts:
   ## buildの最後で作成したファイルをアーティファクトとして流す
-  files: imageDetail.json
+  files:
+    - imageDetail.json
