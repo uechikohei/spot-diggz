@@ -54,4 +54,3 @@ workflows:
             branches:
               only:
                 - develop
-# 結果はslackに通知
