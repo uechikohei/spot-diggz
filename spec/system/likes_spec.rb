@@ -15,7 +15,7 @@ RSpec.describe 'Likes', type: :system, js: true do
             expect(page).to have_content 'ログインしました。'
 
             # 投稿のページへ
-            visit "/maps/#{sippai.id}"
+            visit "/maps/#{post.id}"
             expect(page).to have_selector 'h1', text: 'ROUTE MAP'
 
             # upリンクをクリック。activeクラスが足されることを確認
