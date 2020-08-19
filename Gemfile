@@ -36,8 +36,6 @@ gem 'rmagick', '~> 4.1', '>= 4.1.1'
 
 group :test do
   gem 'capybara', '>= 2.15'
-  gem 'rspec'
-  gem 'rspec_junit_formatter'
   gem 'selenium-webdriver'
 end
 
@@ -45,7 +43,9 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'pry-byebug', '~> 3.9'
   gem 'pry-rails', '~> 0.3.9'
-  gem 'rspec-rails'
+  gem 'rspec'
+  gem 'rspec_junit_formatter'
+  gem 'rspec-rails', '~> 4.0', '>= 4.0.1'
   gem 'rubocop', require: false
   gem 'rubocop-rails'
   gem 'spring-commands-rspec'

@@ -5,53 +5,44 @@ jobs:
   rspec&rubocop_job:
     machine:
       image: circleci/classic:edge
-    working_directory: ~/sss
+    working_directory: /home/circleci/app
     steps:
       - checkout
-
       - run:
-          name: docker-composeをインストール
+          name: コンテナをビルド
           command: |
-            curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-            chmod +x ~/docker-compose
-            sudo mv ~/docker-compose /usr/local/bin/docker-compose
-
+            docker-compose build
       - run:
-          name: コンテナをビルド & 起動 & 停止と削除
+          name: 起動
           command: |
-            set -x
+            docker-compose up -d
+      - run:
+          name: sleep for waiting launch db
+          command: sleep 1
+      - run:
+          name: yarnアップグレード
+          command: docker-compose run app yarn upgrade
+      - run:
+          name: webpackerコンパイル
+          command: docker-compose run app bundle exec rails webpacker:compile RAILS_ENV=test
+      - run:
+          name: 再起動
+          command: |
+            docker-compose down
             docker-compose up --build -d
-            docker-compose down
-
       - run:
-          name: yarnアップグレード & webpacker_compile & db-create-migrate
-          command: |
-            set -x
-            docker-compose up -d
-            docker-compose exec app yarn upgrade
-            docker-compose exec app bundle exec rails webpacker:compile RAILS_ENV=test
-            docker-compose down
-
+          name: db:create&migrate
+          when: always
+          command: docker-compose run app bundle exec rails db:migrate:reset RAILS_ENV=test
       - run:
-          name: シードデータ導入 & Rspecを実行
-          command: |
-            mkdir -p ~/tmp/test-results
-            docker-compose up -d
-            docker-compose exec app bundle exec rails db:migrate:reset RAILS_ENV=test
-            TEST_FILES="$(circleci tests glob 'spec/**/*_spec.rb' | circleci tests split --split-by=timings)"
-            docker-compose exec app bin/rspec --format progress \
-                                                                  --format RspecJunitFormatter \
-                                                                  --out ~/tmp/test-results/rspec.xml \
-                                                                  $TEST_FILES
-
-      - store_test_results:
-          path: ~/tmp/test-results
-
+          name: Rubocop修正
+          command: docker-compose run app bundle exec rubocop --auto-correct
       - run:
-          name: Rubocopを実行 & コンテナの停止、削除
-          command: |
-            docker-compose exec app bundle exec rubocop
-            docker-compose down
+          name: Rspecテスト
+          command: docker-compose run app bin/rspec
+      - store_artifacts:
+          path: tmp/screenshots/
+          destination: screen-shots
 
 # developブランチへpushされた時、deploy_jobが実行される。
 workflows:
