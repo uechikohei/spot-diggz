@@ -1,10 +1,11 @@
 # SkateSpotSearch
-全国のスケートボードが練習できるスポットを共有するSNSです。
-投稿する画像の住所をGoogleMapで位置を取得できる。
+スケボー買ったけど練習場所がわからない方！初心者の方へ！
+SkateSpotSearchではスケボーができる場所を登録してシェアしたり、登録済みのスポットへは現在地からルートを取得できます！
+これで、どこで滑るか迷わずにすみます！enjoy,スケボー！
 
 
 # URL
-簡単ログイン可能
+https://sss.red-miso.work/
 
 # 使用技術
 * Ruby:2.6.5 , Rails:6.0.2
@@ -12,10 +13,9 @@
 * docker,docker-compose
 * nginx,puma
 * Rspec
-未定　* Google map api
-未定　*　terraform
-未定　*　circle ci
-予定　*　aws(vpc,ec2,rds,s3,route53,acm,alb)
+
+# インフラ構成
+![インフラ構成図](https://github.com/uechikohei/SkateSpotSearch/blob/images/skatespot.png)
 
 # 機能一覧
 * ユーザー管理機能（CRUD機能）

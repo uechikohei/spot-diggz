@@ -8,8 +8,6 @@ default: &default
 
 development:
   <<: *default
-  username: root
-  password: root
   database: app_development
 
 test:

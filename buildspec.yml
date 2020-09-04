@@ -1,41 +1,45 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      nodejs: 10
+      ruby: 2.6
+      docker: 18
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
+      - pip install --upgrade pip
       - pip install awscli --upgrade
       - aws --version
-      ## ECRにログイン
-      - $(aws ecr get-login --no-include-email --region ${AWS_DEFAULT_REGION})
-
-      ## Dockerイメージのタグとして使用するため、Gitのコミットハッシュを取得
-      - IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION}
-
+      - echo Login Amazon ECR...
+      - echo $AWS_DEFAULT_REGION
+      - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+      # Dockerイメージのタグとして使用するため、Gitのコミットハッシュを取得
+      - IMAGE_TAG=$CODEBUILD_BUILD_NUMBER
+      - REPOSITORY_URI_RAILS=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/sss_app
+      - REPOSITORY_URI_NGINX=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/sss_nginx
   build:
     commands:
-      ## Rspecテスト
-      ## Rubocopテスト
-      ## Dockerイメージのビルド
-      - echo dockerビルド
+      - echo image build...
       - docker-compose -f docker-compose-pro.yml up --build -d
-      ## 前半でイメージ指定。後半でECRリポジトリ名を指定
-      - docker tag skatespotsearch_app:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/sss_app:${IMAGE_TAG}
-      - docker tag skatespotsearch_nginx:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/sss_nginx:${IMAGE_TAG}
-
+      - echo check images
+      - docker images
+      - echo image tag...
+      # 前半でビルドしたイメージを指定。後半でECRリポジトリ名をタグとして指定
+      - docker tag src_app:latest $REPOSITORY_URI_RAILS:$IMAGE_TAG
+      - docker tag src_nginx:latest $REPOSITORY_URI_NGINX:$IMAGE_TAG
   post_build:
     commands:
-      - echo Build completed on `date`
-      - echo Pushing the Docker images...
-      ## DockerイメージのECRへのプッシュ
-      - docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/sss_app:${IMAGE_TAG}
-      - docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/sss_nginx:${IMAGE_TAG}
-
-      - echo Writing image detail file...
-    ## ECS+CodeDeployにどのイメージを使用するか指示するためのファイルを作成
-      - printf '{"Version":"1.0","ImageURI":"%s"}' skatespotsearch:${IMAGE_TAG} > imageDetail.json
-
+      - echo check images
+      - docker images
+      - echo Pushing the Docker images ECR...
+      ## ビルドしたsrc_appとsrc_nginxがECRリポジトリのsss_appとsss_nginxにプッシュされる。
+      - docker push $REPOSITORY_URI_RAILS:$IMAGE_TAG
+      - docker push $REPOSITORY_URI_NGINX:$IMAGE_TAG
+      - echo Writing imagedefinitions.json...
+      - printf '[{"name":"app","imageUri":"%s"},{"name":"nginx","imageUri":"%s"}]' $REPOSITORY_URI_RAILS:$IMAGE_TAG $REPOSITORY_URI_NGINX:$IMAGE_TAG > imagedefinitions.json # <container-definition> もお使いのコンテナ名に書き換え
 artifacts:
   ## buildの最後で作成したファイルをアーティファクトとして流す
   files:
-    - imageDetail.json
+    - imagedefinitions.json
