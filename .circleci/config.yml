@@ -9,11 +9,7 @@ jobs:
       - run:
           name: コンテナをビルド
           command: |
-            docker-compose build
-      - run:
-          name: 起動
-          command: |
-            docker-compose up -d
+            docker-compose up --build -d
       - run:
           name: sleep for waiting launch db
           command: sleep 1
@@ -24,12 +20,7 @@ jobs:
           name: webpackerコンパイル
           command: docker-compose run app bundle exec rails webpacker:compile RAILS_ENV=test
       - run:
-          name: 再起動
-          command: |
-            docker-compose down
-            docker-compose up --build -d
-      - run:
-          name: db:create&migrate
+          name: データベース作成
           when: always
           command: docker-compose run app bundle exec rails db:migrate:reset RAILS_ENV=test
       - run:
