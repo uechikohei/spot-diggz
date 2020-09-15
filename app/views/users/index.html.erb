@@ -1,6 +1,7 @@
 <main>
   <div class="first-content">
-    <h1>ユーザー検索</h1>
+    <h2 class="textORG">USER LISTS</h2><br>
+    <div class="item-center">
       <% if @search_feeds.any? %>
         <%= render "/shared/search_form/user_name_cont" %>
           <div class="user_card_content" id="items">
@@ -15,5 +16,6 @@
           <br><br>
         </div>
       <% end %>
+    </div>
   </div>
 </main>

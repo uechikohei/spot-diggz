@@ -9,22 +9,23 @@
         </ul>
     </div>
   <% end %>
+  <div class="map" id='newpost'></div>
   <ol>
     <!-- 地図を表示させる要素 -->
-    <div class="map" id='newpost'></div> <br>
-    <li><h3><span class="marker-brunt">どんなスポット？</span></h3>
+    <br>
+    <li><p><span class="markerB">どんなスポット？</span></p>
               <%= form.select :spot_style, [['スケートパーク', true], ['ストリートスポット', false]], class: "clear-button"%>
     </li> <br>
-    <li><h3><span class="marker-brunt">ヘルメットの着用義務は？</span></h3>
+    <li><p><span class="markerB">ヘルメットの着用義務は？</span></p>
               <%= form.select :helmet, [['有り', true],['無し', false]] %>
     </li> <br>
-    <li><h3><span class="marker-brunt">スケートパークやスポット名は？</span></h3>
+    <li><p><span class="markerB">スケートパークやスポット名は？</span></p>
               <%= form.text_field :title, placeholder: "20字以内で" %>
     </li> <br>
-    <li><h3><span class="marker-brunt">説明や備考などあれば</span></h3>
+    <li><p><span class="markerB">説明や備考などあれば</span></p>
               <%= form.text_area :content, size: "60x3", placeholder: "400字以内で" %>
     </li> <br>
-    <li><h3><span class="marker-brunt">写真をアップロード</span></h3>
+    <li><p><span class="markerB">写真をアップロード</span></p>
                 <p class="font-xs">（未設定でデフォルト画像がセットされます）</p>
                 <%= form.file_field :picture, class: "btn slide-grey"%>
     </li> <br>

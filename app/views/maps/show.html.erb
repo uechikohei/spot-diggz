@@ -1,15 +1,14 @@
 <main>
   <div class="first-content">
-    <h1>ROUTE MAP</h1>
-      <%# 挿入：投稿詳細カード %>
+    <h2 class="textORG"><%= @map.title %></h2>
       <%= render "maps/show_mapscard", post: @map %> <br><br>
-      <%# 挿入：コメントゾーン %>
-        <div>
-          <!--コメント件数-->
+        <!--コメント機能-->
+          <div>
+              <!--件数-->
             <div id="comment-count">
-                <span>コメント&nbsp;<%= @map.comments.count %>件</span>
+                <span>&nbsp;<%= @map.comments.count %>件</span>
             </div>
-          <!--コメント全内容-->
+              <!--内容-->
             <div id="comments-list">
                 <% if @comments.any? %>
                     <%= render partial: '/comments/comment-list', collection: @comments, as: 'comment' %>
@@ -17,16 +16,16 @@
                     <span>コメントはまだありません</span>
                 <% end %>
             </div>
-          <!--10件以上のコメント表示は、view_moreボタンで制限-->
+              <!--10件以上は、view_moreボタンで制限-->
             <%= link_to_next_page @comments, 'すべてのコメントを見る', remote: true, class: "btn filled", id: 'view_more' %>
-          <!--コメントのコンテントを送信するフォーム-->
+              <!--コメントのコンテントを送信するフォーム-->
             <%= render '/comments/comment-form' %>
-          <!--投稿作成者、日時情報-->
+              <!--投稿者情報-->
             <br><span>投稿者:</span>
             <%= link_to image_tag(@map.user.image.url, size:"45x45", class: "user-image-window") %>
             <%= link_to @map.user.name, @map.user, class: "link_to_text_bk" %>
             <%= @map.created_at.strftime("%Y-%m/%d %H:%M") %>
-            <!--編集アイコンと削除アイコン-->
+            <!--編集と削除アイコン-->
               <% if current_user.id == @map.user_id %>
                 <%= link_to edit_map_path(@map) do %>
                   <i class="fas fa-edit link_to_text_bk"></i>
@@ -36,6 +35,6 @@
                   <i class="fas fa-trash-alt link_to_text_bk"></i>
                 <% end %>
               <% end %>
-        </div>
+          </div>
   </div>
 </main>

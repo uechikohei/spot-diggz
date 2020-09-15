@@ -1,6 +1,7 @@
 <main>
   <div class="first-content">
-    <h1>VIEW SPOT</h1>
+    <h2 class="textORG">VIEW SPOT</h2><br>
+    <div class="item-center">
     <%# any?: 検索キーワード１つでも該当すれかどうかで分岐　%>
     <% if @search_maps.any? %>
           <div>
@@ -18,5 +19,6 @@
               <br><br>
           </div>
     <% end %>
+    </div>
   </div>
 </main>

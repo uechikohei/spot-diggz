@@ -9,6 +9,8 @@ default: &default
 development:
   <<: *default
   database: app_development
+  username: root
+  password: root
 
 test:
   <<: *default
