@@ -3,73 +3,36 @@
 Stylesheet: ベーススタイル[iphone 5,SE,6,7,8,PLUS]
 
 ******************************************************************/
+//共通Googleフォント
 body {
   font-family: 'Oswald', 'Sawarabi Gothic', sans-serif;
 }
 
+//共通入力ボックスレイアウト
 input {
   width: 200px;
 }
 textarea {
   width: 230px;
 }
+
+//共通横幅レイアウト
+.content-width {
+  width: 90%;
+  margin: 0 auto;
+  max-width: $contentMaxWidth;
+}
+.first-content {
+  @extend .content-width;
+}
+
+//共通レイアウトパーツ
+.item-center {
+  text-align: center;
+}
 .red {
   color: $cRed;
 }
-.item-center {
- text-align: center;
-}
-.map {
-  height: 400px;
-  border: groove 2px;
-  margin: 15px;
-}
-.route-map {
-  height: 450px;
-  border: groove 2px;
-}
-
-.font-xxs {
-  font-size: 9px;
-}
-
-.font-xs {
-  font-size: 11px;
-}
-.font-sm {
-  font-size: 14px;
-}
-
-.font-md {
-  font-size: 17px;
-}
-
-.font-lr {
-  font-size: 20px;
-}
-
-.font-lg {
-  font-size: 24px;
-}
-
-//margin-bottom
-.mb-sm {
-  margin-bottom: 16px !important;
-}
-
-.mb-lg {
-  margin-bottom: 80px !important;
-}
-
-//padding-bottom
-.pb-sm {
-  padding-bottom: 16px !important;
-}
-
-.pb-lg {
-  padding-bottom: 80px !important;
-}
-
 #container {
   background-color: $cWhite;
   z-index: 10;
@@ -77,7 +40,62 @@ textarea {
   padding-top: $navHeight;
   transition: transform 0.5s, box-shadow 0.5s;
 }
+.flex {
+  display: flex;
+  flex-direction: column;
+}
 
+//共通マップレイアウト
+.map {
+  height: 400px;
+  border: groove 2px;
+  margin: 15px;
+}
+//共通ルートマップレイアウト
+.route-map {
+  height: 450px;
+  border: groove 2px;
+}
+
+//共通フォントサイズ
+.font-xxs {
+  font-size: 9px;
+}
+.font-xs {
+  font-size: 11px;
+}
+.font-sm {
+  font-size: 14px;
+}
+.font-md {
+  font-size: 17px;
+}
+.font-lr {
+  font-size: 20px;
+}
+.font-lg {
+  font-size: 24px;
+}
+
+
+
+//共通マージン
+.mb-sm {
+  margin-bottom: 16px !important;
+}
+.mb-lg {
+  margin-bottom: 80px !important;
+}
+
+//共通パディング
+.pb-sm {
+  padding-bottom: 16px !important;
+}
+.pb-lg {
+  padding-bottom: 80px !important;
+}
+
+//ヘッダーレイアウト
 .header {
   position: fixed;
   top: 0;
@@ -120,23 +138,7 @@ textarea {
   }
 }
 
-.content-width {
-  width: 90%;
-  margin: 0 auto;
-  max-width: $contentMaxWidth;
-}
-
-.first-content {
-  @extend .content-width;
-}
-
-
-
-.flex {
-  display: flex;
-  flex-direction: column;
-}
-
+//共通ロゴレイアウト
 .logo {
   font-size: 42px;
   display: flex;
@@ -159,6 +161,7 @@ textarea {
   }
 }
 
+//フッターレイアウト
 .footer {
   padding: 60px 0;
   @extend .content-width;
@@ -204,8 +207,77 @@ textarea {
   }
 }
 
+//ハンバーガーメニュードロワーレイアウト
 .mobile-menu {
   &__main {
     text-transform: uppercase;
+  }
+}
+
+//投稿詳細カードドロワーのレイアウト
+.show_card .card-body .Grid {
+  width: 100%;
+  height: 450px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  &__c1{
+    grid-column: 4 span;
+    grid-row: 1 span;
+    text-align: center;
+  }
+  &__c2{
+    grid-column: 4 span;
+    grid-row: 1 span;
+    text-align: center;
+  }
+  &__c3{
+    grid-column: 4 span;
+    grid-row: 1 span;
+    text-align: center;
+  }
+  &__c4{
+    grid-column: 12 span;
+    grid-row: 5 span;
+  }
+  &__c5{
+    grid-column: 6 span;
+    grid-row: 1 span;
+  }
+  &__c6{
+    grid-column: 6 span;
+    grid-row: 1 span;
+  }
+  &__c7{
+    grid-column: 12 span;
+    grid-row: 2 span;
+  }
+  &__font-s {
+    font-size: 13px;
+  }
+  &__font-m {
+    font-size: 15px;
+  }
+  &__font-l {
+    font-size: 18px;
+  }
+  &__like-button {
+    line-height: 43.1px;
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+  &__like-msg {
+    line-height: 43.1px;
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+  &__image {
+    overflow: hidden;
+  }
+  &__resize {
+    width: 100%;
+    height: 100%;
   }
 }

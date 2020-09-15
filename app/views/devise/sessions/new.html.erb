@@ -1,29 +1,24 @@
 <main>
   <div class="first-content">
-    <h1>ログインページ</h1> <br>
+    <h1>ログインページ</h1>
       <%= form_for(resource, as: resource_name, url:session_path(resource_name)) do |f| %>
-        <ul>
-          <li> <h3><span class="marker-brunt"><%= f.label :email %></span></h3>
-              <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "Email" %>
-          </li> <br>
-          <li> <h3><span class="marker-brunt"><%= f.label :password %></span></h3>
-              <%= f.password_field :password, autocomplete: "current-password", placeholder: "Password" %>
-          </li> <br>
-          <li>
+        <div class="item-center">
+          <h3><span class="markerB"><%= f.label :email %></span></h3>
+            <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "Email" %>
+          <br><br>
+          <h3><span class="markerB"><%= f.label :password %></span></h3>
+            <%= f.password_field :password, autocomplete: "current-password", placeholder: "Password" %>
+          <br><br>
               <%= button_tag type: 'submit', class: "btn-cubic", id: "btn" do %>
                 <span class="hovering">
                   <i class="fas fa-sign-in-alt"></i>
                 </span>
                 <span class="default">ログイン</span>
-              <% end %> <br><br>
-              <%= link_to users_guest_sign_in_path, method: :post, class: "btn filled", id: "btn-guest" do %>
-                <i class="fas fa-sign-in-alt"></i>
-                GUEST_LOG_IN
+              <% end %><br><br>
+              <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
+                <%= link_to "パスワードをお忘れですか？", new_password_path(resource_name) %><br />
               <% end %>
-                <span class="sub-title">ポートフォリオ閲覧の方はこちら！</span> <br><br>
-              <%= render 'devise/shared/links' %>
-          </li>
-        </ul>
+        </div>
       <% end %>
   </div>
 </main>

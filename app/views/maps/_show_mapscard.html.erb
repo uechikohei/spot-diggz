@@ -18,9 +18,9 @@
         </p>
       </div>
     </div>
+
       <div class="Grid">
-          <div class="Grid__c1"><div class="Grid__text-layout"><h2 class="red"><%= post.title %></h2></div></div>
-          <div class="Grid__c2">
+          <div class="Grid__c1">
             <div class="Grid__box-layout">
               <% if post.spot_style? %>
                 <i class="fas fa-store-alt"></i> <span class="Grid__font-s">スケートパーク</span>
@@ -29,13 +29,21 @@
               <% end %>
             </div>
           </div>
-          <div class="Grid__c3">
+          <div class="Grid__c2">
             <div class="Grid__box-layout">
               <% if post.helmet? %>
               　<span class="Grid__font-s">ヘルメット着用</span>
               <% else %>
                 <span class="Grid__font-s">ヘルメット不要</span>
               <% end %>
+            </div>
+          </div>
+          <div class="Grid__c3">
+            <div class="Grid__box-layout">
+              <%# 挿入：いいねボタン %>
+              <div id="likes_buttons_<%= post.id %>">
+                <%= render partial: '/likes/likes_btn', locals: {post: post} %>
+              </div>
             </div>
           </div>
           <div class="Grid__c4">
@@ -45,14 +53,6 @@
           </div>
           <div class="Grid__c5">
             <div class="Grid__box-layout">
-              <%# 挿入：いいねボタン %>
-              <div id="likes_buttons_<%= post.id %>">
-                <%= render partial: '/likes/likes_btn', locals: {post: post} %>
-              </div>
-            </div>
-          </div>
-          <div class="Grid__c6">
-            <div class="Grid__box-layout">
               <%# 挿入：いいねカウント %>
               <p class="Grid__font-s" id="likes_count_<%= post.id %>">
                 <%= render partial: '/likes/likes_count', locals: {post: post} %>
@@ -60,8 +60,8 @@
               <span class="Grid__font-s">人が、ｲｲﾈ!しています。</span>
             </div>
           </div>
-          <div class="Grid__c7"><p class="Grid__text-layout Grid__font-s">本文：<br><%= post.content %></p></div>
-          <div class="Grid__c8"><p class="Grid__text-layout Grid__font-l">目的地の住所：<br><%= post.address %></p></div>
+          <div class="Grid__c6"><p class="Grid__text-layout Grid__font-s"><br><%= post.address %></p></div>
+          <div class="Grid__c7"><p class="Grid__text-layout Grid__font-s"><%= post.content %></p></div>
       </div>
   </div>
 </div>

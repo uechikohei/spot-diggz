@@ -3,7 +3,7 @@
     <h2 class="textORG"><%= @map.title %></h2>
       <%= render "maps/show_mapscard", post: @map %> <br><br>
         <!--コメント機能-->
-          <div>
+          <div class="item-center">
               <!--件数-->
             <div id="comment-count">
                 <span>&nbsp;<%= @map.comments.count %>件</span>
@@ -26,6 +26,7 @@
             <%= link_to @map.user.name, @map.user, class: "link_to_text_bk" %>
             <%= @map.created_at.strftime("%Y-%m/%d %H:%M") %>
             <!--編集と削除アイコン-->
+            <% if user_signed_in? %>
               <% if current_user.id == @map.user_id %>
                 <%= link_to edit_map_path(@map) do %>
                   <i class="fas fa-edit link_to_text_bk"></i>
@@ -35,6 +36,13 @@
                   <i class="fas fa-trash-alt link_to_text_bk"></i>
                 <% end %>
               <% end %>
+            <% else %>
+              <br>
+                <%= link_to new_user_registration_path , class: "btn filled" do %>
+                  <i class="fas fa-user-plus"></i>
+                  new user
+                <% end %>
+            <% end %>
           </div>
   </div>
 </main>

@@ -2,10 +2,10 @@
   <div class="first-content">
     <h1>WELLCOME！</h1>
     <div class="box17">
-      <p>せっかく、スケートボードを買ったけど！ <span class="markerB">練習する場所が、ない！</span><br>
-      始めてみたいけど、練習できる所ってどこ？</p>
+      <p>スケートボードを <span class="markerB">練習する場所が、ない！</span><br>
+      練習できる所ってどこ？</p>
       <h1>skatespotsearch なら</h1>
-      <h2><span class="markerY">スケートボードパーク</span>から、<span class="markerY">ストリートスポット</span>でも<br>
+      <h2><span class="markerY">スケートボードパーク</span>や、<span class="markerY">ストリートスポット</span>でも<br>
       googlemap上なら、<span class="markerY">どこでもスポット登録可能！</span></h2>
       <br>
       <h3><span class="markerB">どんどんシェアして、みんなでスケートボードを楽しもう！</span></h3>
@@ -24,7 +24,8 @@
         <% end %>
       </div>
     </div>
-    <h2><span class="markerY">投稿一覧を検索</span></h2>
+    <div class="item-center">
+      <h2><span class="markerY">投稿一覧を検索</span></h2>
       <%# any?: 検索キーワード１つでも該当すれかどうかで分岐　%>
       <% if @search_maps.any? %>
             <div>
@@ -42,5 +43,6 @@
                 <br><br>
             </div>
       <% end %>
+    </div>
   </div>
 </main>
