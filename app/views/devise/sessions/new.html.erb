@@ -15,6 +15,10 @@
                 </span>
                 <span class="default">ログイン</span>
               <% end %><br><br>
+              <%= link_to users_guest_sign_in_path , method: :post , class: "btn filled", id: "btn-guest" do %>
+                <i class="fas fa-sign-in-alt"></i>
+                ポートフォリオ閲覧の方はこちらから！
+              <% end %> <br><br>
                 <%= render "devise/shared/links" %>
         </div>
       <% end %>

@@ -12,8 +12,8 @@
       <%= javascript_pack_tag 'google',       'data-turbolinks-track': 'reload' %>
       <%= javascript_pack_tag 'card_action',  'data-turbolinks-track': 'reload' %>
       <%= javascript_pack_tag 'header',       'data-turbolinks-track': 'reload' %>
-      <%= favicon_link_tag '/favicon.ico' %>
-    <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico" />
+      <!--publi配下のfaviconを使用-->
+      <%= favicon_pack_tag('favicon.ico') %>
   </head>
     <body>
       <div id="global-container">

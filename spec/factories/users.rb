@@ -4,12 +4,14 @@ FactoryBot.define do
     sequence(:email)        { |n| "sample#{n}@sample.com" }
     password                { 'password' }
     password_confirmation   { 'password' }
+    confirmed_at            { Time.now }
   end
 
   trait :guest do
     name     { 'guest_user' }
-    email    { 'guest@example.com' }
+    email    { 'try.rhtme.ddr@gmail.com' }
     password { 'password' }
+    confirmed_at { Time.now }
   end
 
 end

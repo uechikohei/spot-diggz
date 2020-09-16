@@ -18,11 +18,12 @@ RSpec.describe 'Maps', type: :system do
         visit '/maps/new'
 
         expect(page).to have_selector '#newpost'
-        expect(page).to have_selector 'h3',text: 'どんなスポット？'
-        expect(page).to have_selector 'h3',text: 'ヘルメットの着用義務は？'
-        expect(page).to have_selector 'h3',text: 'スケートパークやスポット名は？'
-        expect(page).to have_selector 'h3',text: '説明や備考などあれば'
-        expect(page).to have_selector 'h3',text: '写真をアップロード'
+        expect(page).to have_selector 'h2',text: 'NEW POST'
+        expect(page).to have_selector 'li',text: 'どんなスポット？'
+        expect(page).to have_selector 'li',text: 'ヘルメットの着用義務は？'
+        expect(page).to have_selector 'li',text: 'スケートパークやスポット名は？'
+        expect(page).to have_selector 'li',text: '説明や備考などあれば'
+        expect(page).to have_selector 'li',text: '写真をアップロード'
         expect(page).to have_button 'btn'
       end
 
@@ -45,7 +46,7 @@ RSpec.describe 'Maps', type: :system do
         expect(page).to have_current_path "/maps/#{@map.id}"
         # 成功メッセージ
         expect(page).to have_content '新しいスポットが無事登録されました！'
-        expect(page).to have_selector 'h1', text: 'ROUTE MAP'
+        expect(page).to have_selector 'h2'
 
         # 投稿が保存されているか
         expect(@map.title).to   eq("サンプルスケートパーク")

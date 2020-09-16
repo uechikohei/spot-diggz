@@ -9,11 +9,11 @@ RSpec.describe 'Sessions', type: :system do
       visit 'users/sign_in'
 
       expect(page).to have_selector 'h1', text: 'ログインページ'
-      expect(page).to have_field 'メールアドレス'
-      expect(page).to have_field 'パスワード'
+      expect(page).to have_selector 'h3', text:'メールアドレス'
+      expect(page).to have_selector 'h3', text: 'パスワード'
       expect(page).to have_button 'btn'
-      expect(page).to have_link '新規登録ページへ'
       expect(page).to have_link 'パスワードをお忘れですか？'
+      expect(page).to have_link '本人確認メールが届いていませんか?'
     end
 
     describe '#new' do

@@ -5,7 +5,8 @@ RSpec.describe 'Likes', type: :system, js: true do
         it 'ユーザーが他の投稿をいいね、いいね解除できる' do
             markus = create(:user,
                             name:  'markus',
-                            email: 'markus@email.com')
+                            email: 'markus@sample.com',
+                            confirmed_at: Time.now)
             post   = create(:map)
 
             visit 'users/sign_in'
@@ -16,7 +17,7 @@ RSpec.describe 'Likes', type: :system, js: true do
 
             # 投稿のページへ
             visit "/maps/#{post.id}"
-            expect(page).to have_selector 'h1', text: 'ROUTE MAP'
+            expect(page).to have_selector 'h2'
 
             # upリンクをクリック。activeクラスが足されることを確認
             find('.drawer').click
