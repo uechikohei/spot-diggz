@@ -1,23 +1,17 @@
-<div class="row">
-  <div class="col-md-6 offset-md-3">
-    <div class="jumbotron">
-      <h5 class="card-title text-center">パスワードをお忘れですか？</h5>
-      <br>
-      <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
-        <%= render "devise/shared/error_messages", resource: resource %>
-          <div class="form-group row justify-content-center">
-            <label for=“inputEmail3” class="col-sm-4 col-form-label"><%= f.label :email %></label>
-            <div class="col-sm-5">
-              <%= f.email_field :email, autofocus: true, autocomplete: "email", id: "inputEmail3",class: "form-control",placeholder:"Email" %>
-            </div>
-          </div>
-        <br>
-          <div class="form-group">
-            <%= f.submit "パスワードをリセットする", class: 'btn btn-primary' %>
-          </div>
-        <br>
-      <% end %>
+<h1>パスワードをお忘れですか？</h1><br>
+  <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+    <div class="item-center">
+      <%= render "devise/shared/error_messages", resource: resource %>
+        <h2><span class="markerB">メールアドレス</span></h2><br>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", id: "inputEmail3",class: "form-control",placeholder:"Email" %>
+            <br><br>
+            <%= button_tag type: 'submit', class: "btn-cubic", id: 'btn' do %>
+              <span class="hovering-submit">
+                <i class="fas fa-paper-plane"></i>
+              </span>
+              <span class="default">パスワードリセット</span>
+            <% end %>
+            <br>
       <%= render "devise/shared/links" %>
     </div>
-  </div>
-</div>
+  <% end %>

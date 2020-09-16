@@ -15,9 +15,7 @@
                 </span>
                 <span class="default">ログイン</span>
               <% end %><br><br>
-              <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
-                <%= link_to "パスワードをお忘れですか？", new_password_path(resource_name) %><br />
-              <% end %>
+                <%= render "devise/shared/links" %>
         </div>
       <% end %>
   </div>

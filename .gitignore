@@ -21,8 +21,9 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
+/public/uploads
 /public/packs/*
-/public/packs-test/*
+/public/packs-test
 /node_modules
 /yarn-error.log
 yarn-debug.log*
@@ -33,6 +34,3 @@ yarn-debug.log*
 .DS_Store
 
 /nginx/log/
-config/settings.local.yml
-config/settings/*.local.yml
-config/environments/*.local.yml

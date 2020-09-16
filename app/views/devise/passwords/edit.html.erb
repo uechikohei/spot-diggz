@@ -1,25 +1,27 @@
-<h2>Change your password</h2>
-
+<h1>新規パスワードを設定する</h1><br>
 <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+  <div class="item-center">
   <%= render "devise/shared/error_messages", resource: resource %>
   <%= f.hidden_field :reset_password_token %>
-
-  <div class="field">
-    <%= f.label :password, "New password" %><br />
+    <h2><span class="markerB">新規パスワードを入力</span></h2><br>
     <% if @minimum_password_length %>
-      <em>(<%= @minimum_password_length %> characters minimum)</em><br />
+      <em>(<%= @minimum_password_length %> 字以内)</em><br />
     <% end %>
     <%= f.password_field :password, autofocus: true, autocomplete: "new-password" %>
-  </div>
 
-  <div class="field">
-    <%= f.label :password_confirmation, "Confirm new password" %><br />
+    <br><br>
+    <h2><span class="markerB">もう一度入力</span></h2><br>
     <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Change my password" %>
+    <br><br>
+      <%= button_tag type: 'submit', class: "btn-cubic", id: 'btn' do %>
+        <span class="hovering-submit">
+          <i class="fas fa-paper-plane"></i>
+        </span>
+        <span class="default">パスワードリセット</span>
+      <% end %>
+    <br>
+    <%= render "devise/shared/links" %>
   </div>
 <% end %>
 
-<%= render "devise/shared/links" %>
+
