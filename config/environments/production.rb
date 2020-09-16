@@ -34,4 +34,19 @@ Rails.application.configure do
 
   config.active_record.dump_schema_after_migration = false
   config.require_master_key = true
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.default_url_options = { host: 'sss.red-miso.work', :protocol => 'https' }
+  config.action_mailer.logger = Logger.new('log/production_mail.log', 'weekly')
+  config.action_mailer.raise_delivery_errors = true
+  host = 'sss.red-miso.work'
+  config.action_mailer.smtp_settings = {
+    :address => "smtp.gmail.com",
+    :port => '587',
+    :authentication => :plain,
+    :user_name => "SkateSpotSearch",
+    :password => ENV['GMAIL_SECURE_PASS'],
+    :domain => 'sss.red-miso.work',
+    :enable_starttls_auto => true
+}
 end
