@@ -6,7 +6,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   before_action :check_guest, only: %i[destroy]
 
   def check_guest
-    redirect_to root_path, alert: 'ゲストユーザーは削除できません。' if resource.email == 'guest@example.com'
+    redirect_to root_path, alert: 'ゲストユーザーは削除できません。' if resource.email == ENV['GUEST_EMAIL']
   end
 
   def destroy; end

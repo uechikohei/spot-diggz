@@ -29,9 +29,6 @@ Rails.application.configure do
   config.assets.debug = true
   config.assets.quiet = true
 
-  # deviseインストール設定１
-  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
-
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
   config.web_console.whitelisted_ips= '0.0.0.0/0'
 
@@ -44,14 +41,16 @@ Rails.application.configure do
   end
 
 
+  #devise本人認証
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    enable_starttls_auto: true,
-    address: "smtp.gmail.com",
-    port: 587,
-    user_name: mail_address,
-    password: password,
-    authentication: "plain"
+    :address => 'smtp.gmail.com',
+    :port => 587,
+    :user_name => ENV['GUEST_EMAIL'],
+    :password => ENV['GMAIL_SECURE_PASS'],
+    :authentication => :plain,
+    :enable_starttls_auto => true
   }
 end

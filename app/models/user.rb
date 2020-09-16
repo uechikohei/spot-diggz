@@ -2,7 +2,7 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise  :database_authenticatable, :registerable,
-          :recoverable, :rememberable, :validatable
+          :recoverable, :rememberable, :validatable, :confirmable
 
   mount_uploader :image, ImageUploader
   validates :name,  presence: true, uniqueness: { case_sensitive: true },
@@ -54,14 +54,14 @@ class User < ApplicationRecord
     likes.exists?(map_id: map.id)
   end
 
-  # 簡単ログインユーザー作成
+  # # 簡単ログイン：ユーザー作成
   def self.guest
     image_path = open('./db/fixtures/guest/user.png')
-    find_or_create_by!(email: 'guest@example.com') do |user|
+    find_or_create_by!(email: ENV['GUEST_EMAIL']) do |user|
       user.password = SecureRandom.urlsafe_base64
       user.name = 'guest_user'
       user.image = image_path
-      # user.confirmed_at = Time.now  # Confirmable を使用している場合は必要
+      user.confirmed_at = Time.now  # Confirmable を使用している場合は必要
     end
   end
 end

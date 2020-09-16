@@ -33,6 +33,7 @@ gem 'omniauth', '~> 1.9', '>= 1.9.1'
 gem 'omniauth-twitter', '~> 1.4'
 gem 'ransack', '~> 2.3', '>= 2.3.2'
 gem 'rmagick', '~> 4.1', '>= 4.1.1'
+gem 'config', '~> 2.2', '>= 2.2.1'
 
 group :test do
   gem 'capybara', '>= 2.15'
