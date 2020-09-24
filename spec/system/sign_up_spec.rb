@@ -17,15 +17,21 @@ RSpec.describe 'Sign_up', type: :system do
     expect(page).to have_button 'btn'
   end
 
-
   describe 'registrations#new' do
+
+    it '簡単ログインリンクを押すとゲストユーザーとしてログイン可能' do
+      visit 'users/sign_in'
+      click_on 'btn-guest'
+      expect(page).to have_content 'ゲストユーザーとしてログインしました。'
+    end
+
     it 'ユーザーを新規登録可能' do
       # ページにアクセスする
       visit '/users/sign_up'
       # formにテキストを入力する
       fill_in '名前 (2文字以上)',       with: 'tester'
-      fill_in 'メールアドレス',         with: 'tester@example.com'
-      fill_in 'パスワード（４文字以上）', with: '1234'
+      fill_in 'メールアドレス',         with: 'tester@sample.com'
+      fill_in 'パスワード（４文字以上）', with: 'password'
       # button_tag の　id: "btn"をクリックしてフォームを送信。
       click_button 'btn'
       # ページ内に、'テキスト'を含むものがあるかどうか確認する。

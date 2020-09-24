@@ -9,9 +9,8 @@ FactoryBot.define do
 
   trait :guest do
     name     { 'guest_user' }
-    email    { 'try.rhtme.ddr@gmail.com' }
+    email    { 'guest@sample.com' }
     password { 'password' }
-    confirmed_at { Time.now }
   end
 
 end

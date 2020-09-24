@@ -21,6 +21,7 @@ gem 'webpacker', '~> 4.0'
 gem 'devise', '~> 4.7', '>= 4.7.1'
 # google maps 検索移動
 gem 'carrierwave', '~> 2.1'
+gem 'config', '~> 2.2', '>= 2.2.1'
 gem 'faker', '~> 2.11'
 gem 'fog-aws', '~> 3.6', '>= 3.6.2'
 gem 'geocoder', '~> 1.6', '>= 1.6.2'
@@ -33,7 +34,6 @@ gem 'omniauth', '~> 1.9', '>= 1.9.1'
 gem 'omniauth-twitter', '~> 1.4'
 gem 'ransack', '~> 2.3', '>= 2.3.2'
 gem 'rmagick', '~> 4.1', '>= 4.1.1'
-gem 'config', '~> 2.2', '>= 2.2.1'
 
 group :test do
   gem 'capybara', '>= 2.15'
@@ -45,8 +45,8 @@ group :development, :test do
   gem 'pry-byebug', '~> 3.9'
   gem 'pry-rails', '~> 0.3.9'
   gem 'rspec'
-  gem 'rspec_junit_formatter'
   gem 'rspec-rails', '~> 4.0', '>= 4.0.1'
+  gem 'rspec_junit_formatter'
   gem 'rubocop', require: false
   gem 'rubocop-rails'
   gem 'spring-commands-rspec'

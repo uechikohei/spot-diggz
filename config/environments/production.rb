@@ -5,7 +5,7 @@ Rails.application.configure do
   config.consider_all_requests_local       = false
   config.action_controller.perform_caching = true
 
-  # trueでレイアウトが崩れない。
+  # public以下を静的ファイルとして取り扱う
   config.public_file_server.enabled = true
 
   config.assets.compile = true
@@ -32,21 +32,24 @@ Rails.application.configure do
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
   end
 
-  config.active_record.dump_schema_after_migration = false
+  #master.keyがない環境では起動エラーにする
   config.require_master_key = true
-  config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.default_url_options = { host: 'sss.red-miso.work', :protocol => 'https' }
+
+  #ログ出力
   config.action_mailer.logger = Logger.new('log/production_mail.log', 'weekly')
-  config.action_mailer.raise_delivery_errors = true
-  host = 'sss.red-miso.work'
+
+  # derault url
+  config.action_mailer.default_url_options = { protocol: 'https',host: 'sss.red-miso.work' }
+
+# Amazon SES smtp setting
+  config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    :address => "smtp.gmail.com",
-    :port => '587',
-    :authentication => :plain,
-    :user_name => "SkateSpotSearch",
-    :password => ENV['GMAIL_SECURE_PASS'],
-    :domain => 'sss.red-miso.work',
-    :enable_starttls_auto => true
-}
+      :address => 'email-smtp.ap-northeast-1.amazonaws.com',
+      :port => 587,
+      :authetication => :login,
+      :user_name => Rails.application.credentials.aws_ses[:user_name],
+      :domain => 'red-miso.work',
+      :password => Rails.application.credentials.aws_ses[:password],
+      :enable_starttls_auto => true
+  }
 end

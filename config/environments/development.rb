@@ -41,16 +41,16 @@ Rails.application.configure do
   end
 
 
-  #devise本人認証
+  #devise本人認証(Amazon SES smtp setting)
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    :address => 'smtp.gmail.com',
-    :port => 587,
-    :user_name => ENV['GUEST_EMAIL'],
-    :password => ENV['GMAIL_SECURE_PASS'],
-    :authentication => :plain,
-    :enable_starttls_auto => true
+      :address => 'email-smtp.ap-northeast-1.amazonaws.com',
+      :port => 587,
+      :authetication => :login,
+      :user_name => ENV['AWS_SES_KEY_ID'],
+      :password => ENV['AWS_SES_PASSWORD'],
+      :enable_starttls_auto => true
   }
 end

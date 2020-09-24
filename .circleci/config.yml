@@ -7,6 +7,17 @@ jobs:
     steps:
       - checkout
       - run:
+          name: 変数代入
+          command: |
+            echo 'AWS_SES_KEY_ID: '${AWS_SES_KEY_ID} >> .env
+            echo 'AWS_SES_PASSWORD: '${AWS_SES_PASSWORD} >> .env
+            echo 'AWS_ACCESS_KEY_ID: '${AWS_ACCESS_KEY_ID} >> .env
+            echo 'AWS_SECRET_ACCESS_KEY: '${AWS_SECRET_ACCESS_KEY} >> .env
+      - run:
+          name: 変数確認
+          command: |
+            cat .env
+      - run:
           name: コンテナをビルド
           command: |
             docker-compose up --build -d

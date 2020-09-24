@@ -40,14 +40,6 @@ RSpec.describe 'Sessions', type: :system do
           expect(page).to have_content 'ログインしました。'
           expect(page).to have_selector 'h2', text: '投稿一覧を検索'
         end
-
-        it '簡単ログインリンクを押すとゲストユーザーとしてログイン可能' do
-          guest = create(:user, :guest)
-          visit 'users/sign_in'
-          click_link 'btn-guest'
-          expect(page).to have_content 'ログインしました。'
-          expect(page).to have_selector 'h2', text: '投稿一覧を検索'
-        end
       end
     end
 
