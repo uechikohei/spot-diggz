@@ -18,8 +18,6 @@ https://sss.red-miso.work/
 #### スケートスポットの登録
 ![新規投稿](https://media.giphy.com/media/IflyP6yeKsaD55Qazk/giphy.gif)
 
-#### コメント投稿と削除
-![コメントテスト](https://media.giphy.com/media/JoCNcrn5CrK1jUifyW/giphy.gif)
 
 
 使用技術
