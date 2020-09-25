@@ -15,7 +15,7 @@ class PictureUploader < CarrierWave::Uploader::Base
   process resize_to_fill: [275, 275]
 
   version :thumb1080 do
-    process resize_to_fit: [1080, 720]
+    process resize_to_limit: [1080, 720]
   end
 
   def filename
