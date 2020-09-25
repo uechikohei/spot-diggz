@@ -53,17 +53,17 @@ https://sss.red-miso.work/
 
 工夫点
 ---
-- docker-compose環境では、webpackerコンテナを立てHMRを活用した。
+- docker-composeを活用し、必要なリソースは直接インストールせずにコンテナを立てて作業した。
+webpackerコンテナ(HMR設定の為)
+chromedriverコンテナ(systemspecブラウザを使用したテストの為)
 
-- フロントはwebpackerを採用。また、bootstrap臭くならないよう使用はreboot-cssのみ、scss/css/js/jqueryで一から構築。
+- フロントは、bootstrap臭くならないよう使用はreboot-cssのみを使用。その他はscss/css/js/jqueryで一から構築。
 
-- googlemap apiという外部APIを主な機能として活用。
-
-- Rspecのsystemspecにはmacへのインストールを避ける為、docker-composeにてchromedriverを含むコンテナを立てた。
+- googlemap外部APIを主な機能として活用。
 
 - nginxとpumaの連携には、sockets通信を採用。
 
-- codepipeline,codebuild,codedeployを用いたgitへのpushからデプロイまで一貫したCICD環境を構築。
+- gitへのpushからcodepipeline,codebuild,codedeployを用いたデプロイまで一貫したCICD環境を構築。
 
 
 インフラ構成
@@ -71,29 +71,23 @@ https://sss.red-miso.work/
 ![インフラ構成図](https://github.com/uechikohei/SkateSpotSearch/blob/images/SkateSpotSearch_drawio.png)
 
 
-# 改善、気になっている点
+改善、気になっている点
 ---
+
 #### アプリの機能が少ない。
 - 都道府県別や現在地から近い登録スポットを表示する機能
 - 登録スポットストック機能
-（導入予定）
+（実装予定）
+
+#### その他
+- Rspecテストが少ない。request specが書けていない。
+- git commit メッセージが重複していたり、簡潔でない内容になっている。
+- リファクタリングが不十分、コードに無駄がある。
 
 #### 不具合がみられる。
-- google chromeブラウザを使用すると、google maps api の現在地取得機能や画像のカメラ撮影アップロード機能などが動作しない場合がある。(safariやfirefoxブラウザで動作を確認済。調査中)
+- google chromeブラウザを使用すると、google maps api の現在地取得機能や画像のカメラ撮影アップロード機能などが動作しない場合がある。
+(safariやfirefoxブラウザでは、正常動作を確認済。引き続き調査中9/25~)
 
-#### circleci
-- ci上のビルドにdocker-composeを使用するためmachineを使用。よって、ローカルデバックではなくPUSHデバックとなってしまいciの無駄な稼働が増加した。
-
-#### webpackerコンパイルがローカルになってしまっている。
-- webpackerコンパイルをローカルで実行して、packsフォルダをgithubへpushしている。webpackerコンパイルをcodebuildで実行するべきだが導入に至っていない。（導入予定）
-
-#### git関連
-- git commit メッセージが重複していたり、簡潔でない内容になっている。
-
-#### Rspec
-- テストが少ない。request specが書けていない。
-
-#### リファクタリングが不十分、コードに無駄がある。
 ---
 
 
@@ -116,8 +110,11 @@ https://sss.red-miso.work/
 を開発することで新たに始めるスケボー人口の方達を、  
 適切な練習場所へと誘導できれば業界の改善の一歩となるのではと考え開発しました。  
 
-スケボーを愛するみんなのマナーや意識を向上させる場を提供したいと考えています。  
+スケボーを愛するみんなのマナーや意識を向上させる場を提供したいと考えています。    
 
-### 追記
-　私は、サーバーサイドエンジニアを目指しています。  
-ポートフォリオでは、codebuild,deploy,pipelineを用いたECS(EC2)への自動デプロイ環境を構築し、インフラ設計に力を入れた構成にしました。
+
+転職軸
+---
+
+　私は、現在27歳でサーバーサイドエンジニアを目指しています。  
+作成したポートフォリオでは、codebuild,deploy,pipelineを用いたECS(EC2)への自動ローリングアップデート環境を構築し、インフラ設計に力を入れた構成にしました。
