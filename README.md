@@ -18,7 +18,7 @@ https://sss.red-miso.work/
 
 操作画面GIF
 ---
-![新規投稿](https://media.giphy.com/media/IflyP6yeKsaD55Qazk/giphy.gif)
+![新規投稿](https://media.giphy.com/media/Qlpgdcb58od3Uxij5m/giphy.gif)
 
 ![コメント機能](https://media.giphy.com/media/WANPBs7hskMVqaN6ra/giphy.gif)
 
