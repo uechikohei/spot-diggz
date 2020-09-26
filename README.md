@@ -15,9 +15,12 @@ URL
 ---
 https://sss.red-miso.work/
 
-#### スケートスポットの登録
+
+操作画面GIF
+---
 ![新規投稿](https://media.giphy.com/media/IflyP6yeKsaD55Qazk/giphy.gif)
 
+![コメント機能](https://media.giphy.com/media/WANPBs7hskMVqaN6ra/giphy.gif)
 
 
 使用技術
@@ -56,10 +59,6 @@ webpackerコンテナ(HMR設定の為)
 chromedriverコンテナ(systemspecブラウザを使用したテストの為)
 
 - フロントは、bootstrap臭くならないよう使用はreboot-cssのみを使用。その他はscss/css/js/jqueryで一から構築。
-
-- googlemap外部APIを主な機能として活用。
-
-- nginxとpumaの連携には、sockets通信を採用。
 
 - gitへのpushからcodepipeline,codebuild,codedeployを用いたデプロイまで一貫したCICD環境を構築。
 

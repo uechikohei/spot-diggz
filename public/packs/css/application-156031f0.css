@@ -1466,11 +1466,11 @@ Stylesheet: 960px以上のモニタで適用[ipad pro]
       grid-column: 12 span;
       grid-row: 2 span; }
     .show_card .card-body .Grid__font-s {
-      font-size: 15px; }
+      font-size: 16px; }
     .show_card .card-body .Grid__font-m {
-      font-size: 17px; }
+      font-size: 19px; }
     .show_card .card-body .Grid__font-l {
-      font-size: 20px; }
+      font-size: 21px; }
     .show_card .card-body .Grid__like-button {
       line-height: 43.1px;
       width: 100%;
@@ -1484,8 +1484,8 @@ Stylesheet: 960px以上のモニタで適用[ipad pro]
     .show_card .card-body .Grid__image {
       overflow: hidden; }
     .show_card .card-body .Grid__resize {
-      width: 70%;
-      height: 90%; }
+      width: 60%;
+      height: 100%; }
   .font-sm {
     font-size: 16px; }
   .font-md {
@@ -1512,58 +1512,55 @@ Stylesheet: 1280px以上のモニタで適用[mac book]
 ******************************************************************/
   .show_card .card-body .Grid {
     width: 100%;
-    height: 350px;
+    height: 450px;
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: repeat(8, 1fr); }
+    grid-template-rows: repeat(9, 1fr); }
     .show_card .card-body .Grid__c1 {
-      grid-column: 8 span;
-      grid-row: 2 span; }
+      grid-column: 4 span;
+      grid-row: 1 span;
+      text-align: center; }
     .show_card .card-body .Grid__c2 {
       grid-column: 4 span;
-      grid-row: 1 span; }
+      grid-row: 1 span;
+      text-align: center; }
     .show_card .card-body .Grid__c3 {
       grid-column: 4 span;
-      grid-row: 1 span; }
+      grid-row: 1 span;
+      text-align: center; }
     .show_card .card-body .Grid__c4 {
-      grid-column: 6 span;
+      grid-column: 12 span;
       grid-row: 5 span; }
     .show_card .card-body .Grid__c5 {
-      grid-column: 1 span;
+      grid-column: 6 span;
       grid-row: 1 span; }
     .show_card .card-body .Grid__c6 {
-      grid-column: 5 span;
+      grid-column: 6 span;
       grid-row: 1 span; }
     .show_card .card-body .Grid__c7 {
-      grid-column: 6 span;
-      grid-row: 4 span; }
-    .show_card .card-body .Grid__c8 {
       grid-column: 12 span;
-      grid-row: 1 span; }
-    .show_card .card-body .Grid__c9 {
-      grid-column: 12 span;
-      grid-row: 1 span; }
+      grid-row: 2 span; }
     .show_card .card-body .Grid__font-s {
-      font-size: 13px; }
+      font-size: 18px; }
     .show_card .card-body .Grid__font-m {
-      font-size: 16px; }
+      font-size: 21px; }
     .show_card .card-body .Grid__font-l {
-      font-size: 20px; }
+      font-size: 23px; }
     .show_card .card-body .Grid__like-button {
-      line-height: 41.6px;
+      line-height: 43.1px;
       width: 100%;
       align-items: center;
       text-align: center; }
     .show_card .card-body .Grid__like-msg {
-      line-height: 41.6px;
+      line-height: 43.1px;
       width: 100%;
       align-items: center;
       text-align: center; }
     .show_card .card-body .Grid__image {
       overflow: hidden; }
     .show_card .card-body .Grid__resize {
-      width: 400px;
-      height: 210px; } }
+      width: 60%;
+      height: 100%; } }
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi), (-webkit-min-devise-pixel-ratio: 2) {
   /******************************************************************
 
@@ -4642,4 +4639,4 @@ readers do not read off random characters that represent icons */
   width: auto; }
 
 
-/*# sourceMappingURL=application-2c56dc8e.css.map*/
+/*# sourceMappingURL=application-156031f0.css.map*/

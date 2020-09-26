@@ -43,13 +43,13 @@ Stylesheet: 960px以上のモニタで適用[ipad pro]
     grid-row: 2 span;
   }
   &__font-s {
-    font-size: 15px;
+    font-size: 16px;
   }
   &__font-m {
-    font-size: 17px;
+    font-size: 19px;
   }
   &__font-l {
-    font-size: 20px;
+    font-size: 21px;
   }
   &__like-button {
     line-height: 43.1px;
@@ -67,8 +67,8 @@ Stylesheet: 960px以上のモニタで適用[ipad pro]
     overflow: hidden;
   }
   &__resize {
-    width: 70%;
-    height: 90%;
+    width: 60%;
+    height: 100%;
   }
 }
 
