@@ -60,6 +60,8 @@ chromedriverコンテナ(systemspecブラウザを使用したテストの為)
 
 - フロントは、bootstrap臭くならないよう使用はreboot-cssのみを使用。その他はscss/css/js/jqueryで一から構築。
 
+- google maps apiをポートフォリオのメイン機能として採用。ルート検索や現在地の取得などを
+
 - gitへのpushからcodepipeline,codebuild,codedeployを用いたデプロイまで一貫したCICD環境を構築。
 
 

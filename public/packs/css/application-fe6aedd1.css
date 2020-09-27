@@ -817,7 +817,7 @@ h1:first-letter {
 .map_card_container .min-card .min-social ul .name-aria {
           width: 30%; }
 .user-image-window {
-  border-radius: 30px; }
+  border-radius: 10px; }
 .user_card_content {
   position: relative;
   flex-wrap: wrap;
@@ -4639,4 +4639,4 @@ readers do not read off random characters that represent icons */
   width: auto; }
 
 
-/*# sourceMappingURL=application-156031f0.css.map*/
+/*# sourceMappingURL=application-fe6aedd1.css.map*/
