@@ -40,7 +40,6 @@ class MapsController < ApplicationController
   def create
     @map = Map.new(map_params)
     @map.user_id = current_user.id
-    @map.save
     respond_to do |format|
       if @map.save
         format.html { redirect_to @map, notice: '新しいスポットが無事登録されました！' }
@@ -80,6 +79,6 @@ class MapsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def map_params
-      params.require(:map).permit(:latitude, :longitude, :picture, :content, :title)
+      params.require(:map).permit(:spot_style, :helmet, :latitude, :longitude, :picture, :content, :title)
     end
 end
