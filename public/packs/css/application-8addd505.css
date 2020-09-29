@@ -1484,7 +1484,7 @@ Stylesheet: 960px以上のモニタで適用[ipad pro]
     .show_card .card-body .Grid__image {
       overflow: hidden; }
     .show_card .card-body .Grid__resize {
-      width: 55%;
+      width: 50%;
       height: 100%; }
   .font-sm {
     font-size: 16px; }
@@ -1559,7 +1559,7 @@ Stylesheet: 1280px以上のモニタで適用[mac book]
     .show_card .card-body .Grid__image {
       overflow: hidden; }
     .show_card .card-body .Grid__resize {
-      width: 55%;
+      width: 50%;
       height: 100%; } }
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi), (-webkit-min-devise-pixel-ratio: 2) {
   /******************************************************************
@@ -4639,4 +4639,4 @@ readers do not read off random characters that represent icons */
   width: auto; }
 
 
-/*# sourceMappingURL=application-cfcea661.css.map*/
+/*# sourceMappingURL=application-8addd505.css.map*/
