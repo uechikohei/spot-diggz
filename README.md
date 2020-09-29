@@ -1,6 +1,6 @@
 
 # SkateSpotSearch
-![sss.red-miso.work](https://github.com/uechikohei/SkateSpotSearch/blob/images/SkateSpotSearch_drawio.png)
+![sss.red-miso.work](https://github.com/uechikohei/SkateSpotSearch/blob/images/sss.png)
 スケボー初心者の方へ！練習場所をお探しですか？  
 このアプリでは、
   1. 練習できる場所を登録してみんなでシェア！
