@@ -24,6 +24,8 @@ phases:
     commands:
       - echo image build...
       - docker-compose -f docker-compose-pro.yml up --build -d
+      - docker-compose -f docker-compose-pro.yml run app yarn upgrade
+      - docker-compose -f docker-compose-pro.yml run app bundle exec rails webpacker:compile RAILS_ENV=production
       - docker-compose -f docker-compose-pro.yml run app ls /app/public/packs/
       - docker images
       # 前半でビルドしたイメージを指定。後半でECRリポジトリ名をタグとして指定
