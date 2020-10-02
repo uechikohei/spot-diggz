@@ -1,0 +1,54 @@
+{
+  "application.css": "/packs/css/application-8addd505.css",
+  "application.css.map": "/packs/css/application-8addd505.css.map",
+  "application.js": "/packs/application-52083a153fc49f773da0.js",
+  "application.js.map": "/packs/application-52083a153fc49f773da0.js.map",
+  "card_action.js": "/packs/card_action-52083a153fc49f773da0.js",
+  "card_action.js.map": "/packs/card_action-52083a153fc49f773da0.js.map",
+  "entrypoints": {
+    "application": {
+      "css": [
+        "/packs/css/application-8addd505.css"
+      ],
+      "js": [
+        "/packs/application-52083a153fc49f773da0.js"
+      ],
+      "css.map": [
+        "/packs/css/application-8addd505.css.map"
+      ],
+      "js.map": [
+        "/packs/application-52083a153fc49f773da0.js.map"
+      ]
+    },
+    "card_action": {
+      "js": [
+        "/packs/card_action-52083a153fc49f773da0.js"
+      ],
+      "js.map": [
+        "/packs/card_action-52083a153fc49f773da0.js.map"
+      ]
+    },
+    "google": {
+      "js": [
+        "/packs/google-52083a153fc49f773da0.js"
+      ],
+      "js.map": [
+        "/packs/google-52083a153fc49f773da0.js.map"
+      ]
+    },
+    "header": {
+      "js": [
+        "/packs/header-52083a153fc49f773da0.js"
+      ],
+      "js.map": [
+        "/packs/header-52083a153fc49f773da0.js.map"
+      ]
+    }
+  },
+  "google.js": "/packs/google-52083a153fc49f773da0.js",
+  "google.js.map": "/packs/google-52083a153fc49f773da0.js.map",
+  "header.js": "/packs/header-52083a153fc49f773da0.js",
+  "header.js.map": "/packs/header-52083a153fc49f773da0.js.map",
+  "media/images/favicon.ico": "/packs/media/images/favicon-88803cf40ce85b873a7fb2a981dffcf4.ico",
+  "media/images/logo.svg": "/packs/media/images/logo-bb0493b8c3a21ff85a36e0802324268b.svg"
+}
