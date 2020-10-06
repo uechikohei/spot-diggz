@@ -20,7 +20,6 @@ services:
       - .:/app
       - bundle:/usr/local/bundle
       - /var/tmp
-      - public-data:/app/public
     depends_on:
       - db
 
@@ -53,11 +52,9 @@ services:
       - 80:80
     volumes:
       - ./nginx/log:/var/log/nginx
-      - public-data:/app/public
     depends_on:
       - app
 
 volumes:
   bundle:
   mysql_data:
-  public-data:

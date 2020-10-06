@@ -1,5 +1,5 @@
 {
-  "application.css": "/packs/css/application-4b275593.css",
+  "application.css": "/packs/css/application-29d61a08.css",
   "application.js": "/packs/js/application-d338a6070b2d0d9c7b19.js",
   "application.js.map": "/packs/js/application-d338a6070b2d0d9c7b19.js.map",
   "card_action.js": "/packs/js/card_action-d32ba331bdf1b8bd1f70.js",
@@ -7,7 +7,7 @@
   "entrypoints": {
     "application": {
       "css": [
-        "/packs/css/application-4b275593.css"
+        "/packs/css/application-29d61a08.css"
       ],
       "js": [
         "/packs/js/application-d338a6070b2d0d9c7b19.js"
