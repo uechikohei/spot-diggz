@@ -15,7 +15,6 @@ services:
       - NODE_ENV=$NODE_ENV
       - RAILS_ENV=$RAILS_ENV
       - RAILS_MASTER_KEY=$RAILS_MASTER_KEY
-      - RAILS_SERVE_STATIC_FILES=$RAILS_SERVE_STATIC_FILES
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
     volumes:
       - .:/app
