@@ -3,10 +3,12 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   # before_action :configure_sign_up_params, only: [:create]
   # before_action :configure_account_update_params, only: [:update]
-  before_action :check_guest
+  before_action :check_guest, only: %i[destroy]
+
+  def destroy; end
 
   def check_guest
-    redirect_to root_path, alert: 'ゲストユーザーを編集することはできません。' if resource.email == 'guest@sample.com'
+    redirect_to root_path, alert: 'ゲストユーザーは削除できません。' if resource.email == 'guest@sample.com'
   end
 
   protected
