@@ -8,8 +8,12 @@
   </div>
   <nav class="footer__nav">
       <ul class="footer__ul">
-        <li class="footer__li">let's enjoy!</li>
-        <li class="footer__li">skateboard life!</li>
+        <li class="footer__li">
+          <%= link_to inquiry_path , method: :post , class: "header__link"  do %>
+            <i class="fas fa-sign-in-alt"></i>
+            問い合わせ & よくある質問
+          <% end %>
+        </li>
       </ul>
       <div class="footer__copyright">
         &copy; 2020 UechiKohei
