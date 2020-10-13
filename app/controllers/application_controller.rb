@@ -31,7 +31,7 @@ class ApplicationController < ActionController::Base
     # rescue_formは定義順番が大事。親クラスを先に指定。
     # StandartErrorがあったら、rescue500メソッドを呼び出す
     rescue_from StandardError, with: :rescue500
-    # Forbiddenエラーがあったら、resuvue403メソッドを呼び出す
+    # Forbiddenエラーがあったら、rescue403メソッドを呼び出す
     rescue_from Forbidden, with: :rescue403
     # IPアドレス制限によるアクセス拒否があれば、rescue403メソッドを呼び出す
     rescue_from IpAddressRejected, with: :rescue403

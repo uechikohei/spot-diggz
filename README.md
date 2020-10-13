@@ -1,5 +1,6 @@
 
 # SkateSpotSearch
+![sss.red-miso.work](https://github.com/uechikohei/SkateSpotSearch/blob/images/sss.png)
 スケボー初心者の方へ！練習場所をお探しですか？  
 このアプリでは、
   1. 練習できる場所を登録してみんなでシェア！
@@ -15,13 +16,12 @@ URL
 ---
 https://sss.red-miso.work/
 
-操作GIF
----
 
+操作画面GIF
+---
 ![新規投稿](https://media.giphy.com/media/Qlpgdcb58od3Uxij5m/giphy.gif)
 
-#### コメント投稿と削除
-![コメントテスト](https://media.giphy.com/media/JoCNcrn5CrK1jUifyW/giphy.gif)
+![コメント機能](https://media.giphy.com/media/WANPBs7hskMVqaN6ra/giphy.gif)
 
 
 使用技術
@@ -61,9 +61,7 @@ chromedriverコンテナ(systemspecブラウザを使用したテストの為)
 
 - フロントは、bootstrap臭くならないよう使用はreboot-cssのみを使用。その他はscss/css/js/jqueryで一から構築。
 
-- googlemap外部APIを主な機能として活用。
-
-- nginxとpumaの連携には、sockets通信を採用。
+- google maps apiをポートフォリオのメイン機能として採用。ルート検索や現在地の取得などを
 
 - gitへのpushからcodepipeline,codebuild,codedeployを用いたデプロイまで一貫したCICD環境を構築。
 
@@ -78,8 +76,7 @@ chromedriverコンテナ(systemspecブラウザを使用したテストの為)
 
 #### アプリの機能が少ない。
 - 都道府県別や現在地から近い登録スポットを表示する機能
-- 登録スポットストック機能
-（実装予定）
+(実装予定)
 
 #### その他
 - Rspecテストが少ない。request specが書けていない。

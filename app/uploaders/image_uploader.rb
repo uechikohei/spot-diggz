@@ -12,8 +12,13 @@ class ImageUploader < CarrierWave::Uploader::Base
   # 保存形式をJPGにする
   process convert: 'jpg'
 
-  # サムネイルを生成する設定
-  process resize_to_fit: [110, 110]
+
+  # 画像リサイズと分類
+  process resize_to_fill: [150, 150]
+
+  version :thumb do
+    process resize_to_limit: [110, 110]
+  end
 
   def filename
     super.chomp(File.extname(super)) + '.jpg' if original_filename.present?

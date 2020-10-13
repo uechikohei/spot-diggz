@@ -63,7 +63,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "8c197ac63acbd85808f5";
+/******/ 	var hotCurrentHash = "76c8b1f8f192c25dca84";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -156,7 +156,6 @@
 /******/ 			_declinedDependencies: {},
 /******/ 			_selfAccepted: false,
 /******/ 			_selfDeclined: false,
-/******/ 			_selfInvalidated: false,
 /******/ 			_disposeHandlers: [],
 /******/ 			_main: hotCurrentChildModule !== moduleId,
 /******/
@@ -186,29 +185,6 @@
 /******/ 			removeDisposeHandler: function(callback) {
 /******/ 				var idx = hot._disposeHandlers.indexOf(callback);
 /******/ 				if (idx >= 0) hot._disposeHandlers.splice(idx, 1);
-/******/ 			},
-/******/ 			invalidate: function() {
-/******/ 				this._selfInvalidated = true;
-/******/ 				switch (hotStatus) {
-/******/ 					case "idle":
-/******/ 						hotUpdate = {};
-/******/ 						hotUpdate[moduleId] = modules[moduleId];
-/******/ 						hotSetStatus("ready");
-/******/ 						break;
-/******/ 					case "ready":
-/******/ 						hotApplyInvalidatedModule(moduleId);
-/******/ 						break;
-/******/ 					case "prepare":
-/******/ 					case "check":
-/******/ 					case "dispose":
-/******/ 					case "apply":
-/******/ 						(hotQueuedInvalidatedModules =
-/******/ 							hotQueuedInvalidatedModules || []).push(moduleId);
-/******/ 						break;
-/******/ 					default:
-/******/ 						// ignore requests in error states
-/******/ 						break;
-/******/ 				}
 /******/ 			},
 /******/
 /******/ 			// Management API
@@ -251,7 +227,7 @@
 /******/ 	var hotDeferred;
 /******/
 /******/ 	// The update info
-/******/ 	var hotUpdate, hotUpdateNewHash, hotQueuedInvalidatedModules;
+/******/ 	var hotUpdate, hotUpdateNewHash;
 /******/
 /******/ 	function toModuleId(id) {
 /******/ 		var isNumber = +id + "" === id;
@@ -266,7 +242,7 @@
 /******/ 		hotSetStatus("check");
 /******/ 		return hotDownloadManifest(hotRequestTimeout).then(function(update) {
 /******/ 			if (!update) {
-/******/ 				hotSetStatus(hotApplyInvalidatedModules() ? "ready" : "idle");
+/******/ 				hotSetStatus("idle");
 /******/ 				return null;
 /******/ 			}
 /******/ 			hotRequestedFilesMap = {};
@@ -282,7 +258,7 @@
 /******/ 				};
 /******/ 			});
 /******/ 			hotUpdate = {};
-/******/ 			var chunkId = "header";
+/******/ 			var chunkId = "google";
 /******/ 			// eslint-disable-next-line no-lone-blocks
 /******/ 			{
 /******/ 				hotEnsureUpdateChunk(chunkId);
@@ -359,11 +335,6 @@
 /******/ 		if (hotStatus !== "ready")
 /******/ 			throw new Error("apply() is only allowed in ready status");
 /******/ 		options = options || {};
-/******/ 		return hotApplyInternal(options);
-/******/ 	}
-/******/
-/******/ 	function hotApplyInternal(options) {
-/******/ 		hotApplyInvalidatedModules();
 /******/
 /******/ 		var cb;
 /******/ 		var i;
@@ -386,11 +357,7 @@
 /******/ 				var moduleId = queueItem.id;
 /******/ 				var chain = queueItem.chain;
 /******/ 				module = installedModules[moduleId];
-/******/ 				if (
-/******/ 					!module ||
-/******/ 					(module.hot._selfAccepted && !module.hot._selfInvalidated)
-/******/ 				)
-/******/ 					continue;
+/******/ 				if (!module || module.hot._selfAccepted) continue;
 /******/ 				if (module.hot._selfDeclined) {
 /******/ 					return {
 /******/ 						type: "self-declined",
@@ -558,13 +525,10 @@
 /******/ 				installedModules[moduleId] &&
 /******/ 				installedModules[moduleId].hot._selfAccepted &&
 /******/ 				// removed self-accepted modules should not be required
-/******/ 				appliedUpdate[moduleId] !== warnUnexpectedRequire &&
-/******/ 				// when called invalidate self-accepting is not possible
-/******/ 				!installedModules[moduleId].hot._selfInvalidated
+/******/ 				appliedUpdate[moduleId] !== warnUnexpectedRequire
 /******/ 			) {
 /******/ 				outdatedSelfAcceptedModules.push({
 /******/ 					module: moduleId,
-/******/ 					parents: installedModules[moduleId].parents.slice(),
 /******/ 					errorHandler: installedModules[moduleId].hot._selfAccepted
 /******/ 				});
 /******/ 			}
@@ -637,11 +601,7 @@
 /******/ 		// Now in "apply" phase
 /******/ 		hotSetStatus("apply");
 /******/
-/******/ 		if (hotUpdateNewHash !== undefined) {
-/******/ 			hotCurrentHash = hotUpdateNewHash;
-/******/ 			hotUpdateNewHash = undefined;
-/******/ 		}
-/******/ 		hotUpdate = undefined;
+/******/ 		hotCurrentHash = hotUpdateNewHash;
 /******/
 /******/ 		// insert new code
 /******/ 		for (moduleId in appliedUpdate) {
@@ -694,8 +654,7 @@
 /******/ 		for (i = 0; i < outdatedSelfAcceptedModules.length; i++) {
 /******/ 			var item = outdatedSelfAcceptedModules[i];
 /******/ 			moduleId = item.module;
-/******/ 			hotCurrentParents = item.parents;
-/******/ 			hotCurrentChildModule = moduleId;
+/******/ 			hotCurrentParents = [moduleId];
 /******/ 			try {
 /******/ 				__webpack_require__(moduleId);
 /******/ 			} catch (err) {
@@ -737,33 +696,10 @@
 /******/ 			return Promise.reject(error);
 /******/ 		}
 /******/
-/******/ 		if (hotQueuedInvalidatedModules) {
-/******/ 			return hotApplyInternal(options).then(function(list) {
-/******/ 				outdatedModules.forEach(function(moduleId) {
-/******/ 					if (list.indexOf(moduleId) < 0) list.push(moduleId);
-/******/ 				});
-/******/ 				return list;
-/******/ 			});
-/******/ 		}
-/******/
 /******/ 		hotSetStatus("idle");
 /******/ 		return new Promise(function(resolve) {
 /******/ 			resolve(outdatedModules);
 /******/ 		});
-/******/ 	}
-/******/
-/******/ 	function hotApplyInvalidatedModules() {
-/******/ 		if (hotQueuedInvalidatedModules) {
-/******/ 			if (!hotUpdate) hotUpdate = {};
-/******/ 			hotQueuedInvalidatedModules.forEach(hotApplyInvalidatedModule);
-/******/ 			hotQueuedInvalidatedModules = undefined;
-/******/ 			return true;
-/******/ 		}
-/******/ 	}
-/******/
-/******/ 	function hotApplyInvalidatedModule(moduleId) {
-/******/ 		if (!Object.prototype.hasOwnProperty.call(hotUpdate, moduleId))
-/******/ 			hotUpdate[moduleId] = modules[moduleId];
 /******/ 	}
 /******/
 /******/ 	// The module cache
@@ -854,63 +790,206 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return hotCreateRequire("./app/fronts/packs/header.js")(__webpack_require__.s = "./app/fronts/packs/header.js");
+/******/ 	return hotCreateRequire("./app/fronts/packs/google.js")(__webpack_require__.s = "./app/fronts/packs/google.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./app/fronts/packs/header.js":
+/***/ "./app/fronts/packs/google.js":
 /*!************************************!*\
-  !*** ./app/fronts/packs/header.js ***!
+  !*** ./app/fronts/packs/google.js ***!
   \************************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _src_javascripts_google_routesmap_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../src/javascripts/google/routesmap.js */ "./app/fronts/src/javascripts/google/routesmap.js");
+/* harmony import */ var _src_javascripts_google_routesmap_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_src_javascripts_google_routesmap_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _src_javascripts_google_postmap_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../src/javascripts/google/postmap.js */ "./app/fronts/src/javascripts/google/postmap.js");
+/* harmony import */ var _src_javascripts_google_postmap_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_src_javascripts_google_postmap_js__WEBPACK_IMPORTED_MODULE_1__);
+
+
+
+/***/ }),
+
+/***/ "./app/fronts/src/javascripts/google/postmap.js":
+/*!******************************************************!*\
+  !*** ./app/fronts/src/javascripts/google/postmap.js ***!
+  \******************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+window.addEventListener('DOMContentLoaded', function getMap() {
+  var postMap = function () {
+    function codeAddress(address) {
+      // google.maps.Geocoder()コンストラクタのインスタンスを生成
+      var geocoder = new google.maps.Geocoder(); //マーカー変数用意
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+      var marker; // 地図表示に関するオプション
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+      var mapOptions = {
+        zoom: 16
+      }; // 地図を表示させるインスタンスを生成
 
-document.addEventListener('DOMContentLoaded', function () {
-  var MobileMenu = /*#__PURE__*/function () {
-    function MobileMenu() {
-      _classCallCheck(this, MobileMenu);
+      var map = new google.maps.Map(document.getElementById("newpost"), mapOptions); // geocoder.geocode()メソッドを実行
 
-      this.DOM = {};
-      this.DOM.btn = document.querySelector('.mobile-menu__btn');
-      this.DOM.cover = document.querySelector('.mobile-menu__cover');
-      this.DOM.container = document.querySelector('#global-container');
-      this.eventType = this._getEventType();
+      geocoder.geocode({
+        'address': address
+      }, function (results, status) {
+        // ジオコーディングが成功した場合
+        if (status == google.maps.GeocoderStatus.OK) {
+          // 変換した緯度・経度情報を地図の中心に表示
+          map.setCenter(results[0].geometry.location); //☆表示している地図上の緯度経度
 
-      this._addEvent();
-    }
+          document.getElementById('lat').value = results[0].geometry.location.lat();
+          document.getElementById('lng').value = results[0].geometry.location.lng(); // マーカー設定
 
-    _createClass(MobileMenu, [{
-      key: "_getEventType",
-      value: function _getEventType() {
-        return window.ontouchstart ? 'touchstart' : 'click';
+          marker = new google.maps.Marker({
+            map: map,
+            position: results[0].geometry.location
+          }); // ジオコーディングが成功しなかった場合
+        } else {
+          console.log('Geocode was not successful for the following reason: ' + status);
+        }
+      }); // マップをクリックで位置変更
+
+      map.addListener('click', function (e) {
+        getClickLatLng(e.latLng, map);
+      });
+
+      function getClickLatLng(lat_lng, map) {
+        //☆表示している地図上の緯度経度
+        document.getElementById('lat').value = lat_lng.lat();
+        document.getElementById('lng').value = lat_lng.lng(); // マーカーを設置
+
+        marker.setMap(null);
+        marker = new google.maps.Marker({
+          position: lat_lng,
+          map: map,
+          animation: google.maps.Animation.DROP
+        }); // 座標の中心をずらす
+
+        map.panTo(lat_lng);
       }
-    }, {
-      key: "_toggle",
-      value: function _toggle() {
-        this.DOM.container.classList.toggle('menu-open');
-      }
-    }, {
-      key: "_addEvent",
-      value: function _addEvent() {
-        this.DOM.btn.addEventListener(this.eventType, this._toggle.bind(this));
-        this.DOM.cover.addEventListener(this.eventType, this._toggle.bind(this));
-      }
-    }]);
+    } //inputのvalueで検索して地図を表示
 
-    return MobileMenu;
+
+    return {
+      getAddress: function getAddress() {
+        // ボタンに指定したid要素を取得
+        var button = document.getElementById("map_button"); // ボタンが押された時の処理
+
+        button.onclick = function () {
+          // フォームに入力された住所情報を取得
+          var address = document.getElementById("address").value; // 取得した住所を引数に指定してcodeAddress()関数を実行
+
+          codeAddress(address);
+        }; //読み込まれたときに地図を表示
+
+
+        window.onload = function () {
+          // フォームに入力された住所情報を取得
+          var address = document.getElementById("address").value; // 取得した住所を引数に指定してcodeAddress()関数を実行
+
+          codeAddress(address);
+        };
+      }
+    };
   }();
 
-  new MobileMenu();
+  postMap.getAddress();
+});
+
+/***/ }),
+
+/***/ "./app/fronts/src/javascripts/google/routesmap.js":
+/*!********************************************************!*\
+  !*** ./app/fronts/src/javascripts/google/routesmap.js ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+window.addEventListener('load', function initMap() {
+  //マップを生成して表示
+  var routesmap = new google.maps.Map(document.getElementById('routes'), {
+    center: {
+      lat: 35.681167,
+      lng: 139.767052
+    },
+    zoom: 15
+  }); //情報ウィンドウのインスタンスの生成
+
+  var infoWindow = new google.maps.InfoWindow(); //ブラウザが Geolocation に対応しているかを判定
+  //対応していない場合の処理
+
+  if (!navigator.geolocation) {
+    //情報ウィンドウの位置をマップの中心位置に指定
+    infoWindow.setPosition(routesmap.getCenter()); //情報ウィンドウのコンテンツを設定
+
+    infoWindow.setContent('Geolocation に対応していません。'); //情報ウィンドウを表示
+
+    infoWindow.open(routesmap);
+  } //ブラウザが対応している場合、position にユーザーの位置情報が入る
+
+
+  navigator.geolocation.getCurrentPosition(function (position) {
+    //[スタート地点]
+    //position から緯度経度（ユーザーの位置）のオブジェクトを作成し変数に代入
+    var pos = {
+      lat: position.coords.latitude,
+      lng: position.coords.longitude
+    }; //[到着地点]
+    //gon gemで定義したmapモデル内のlatitudeとlongitudeを使用
+
+    var latlng = {
+      lat: gon.lat,
+      lng: gon.lng
+    }; //DirectionsService のオブジェクトを生成
+
+    var directionsService = new google.maps.DirectionsService(); //DirectionsRenderer のオブジェクトを生成
+
+    var directionsRenderer = new google.maps.DirectionsRenderer(); //directionsRenderer と地図を紐付け
+
+    directionsRenderer.setMap(routesmap); // ルートを取得するリクエスト
+
+    var request = {
+      origin: pos,
+      // 出発地点の緯度経度（ユーザーの位置）
+      //gon gemで定義した目的地をlatlngに格納したものを使用
+      destination: latlng,
+      // 到着地点
+      travelMode: 'DRIVING' //ドライブ（デフォルト）
+
+    }; //DirectionsService のオブジェクトのメソッド route() にリクエストを渡し、
+    //コールバック関数で結果を setDirections(result) で directionsRenderer にセットして表示
+
+    directionsService.route(request, function (result, status) {
+      //ステータスがOKの場合、
+      if (status === 'OK') {
+        directionsRenderer.setDirections(result); //取得したルート（結果：result）をセット
+
+        var directionsData = result.routes[0].legs[0]; //（結果：result）から、取得したlegs以下のステータスをdirectionsDataに代入。
+
+        document.getElementById('msg_d').innerHTML += directionsData.distance.text; // 変数　directionsData　内の distanceをhtmlで取得
+
+        document.getElementById('msg_t').innerHTML += directionsData.duration.text; // 変数　directionsData　内の durationをhtmlで取得
+      } else {
+        alert("取得できませんでした：" + status);
+      }
+    });
+  }, function () {
+    //位置情報の取得をユーザーがブロックした場合のコールバック
+    //情報ウィンドウの位置をマップの中心位置に指定
+    infoWindow.setPosition(routesmap.getCenter()); //情報ウィンドウのコンテンツを設定
+
+    infoWindow.setContent('Error: あなたの現在地が取得できませんでした。'); //情報ウィンドウを表示
+
+    infoWindow.open(routesmap);
+  });
 });
 
 /***/ })
 
 /******/ });
-//# sourceMappingURL=header-8c197ac63acbd85808f5.js.map
+//# sourceMappingURL=google-76c8b1f8f192c25dca84.js.map

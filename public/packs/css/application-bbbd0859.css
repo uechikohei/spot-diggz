@@ -817,7 +817,7 @@ h1:first-letter {
 .map_card_container .min-card .min-social ul .name-aria {
           width: 30%; }
 .user-image-window {
-  border-radius: 30px; }
+  border-radius: 10px; }
 .user_card_content {
   position: relative;
   flex-wrap: wrap;
@@ -939,29 +939,22 @@ h1:first-letter {
   grid-template-columns: repeat(12, 1fr);
   grid-template-rows: repeat(9, 1fr); }
 .show_card .card-body .Grid__c1 {
-    grid-column: 4 span;
+    grid-column: 3 span;
     grid-row: 1 span;
     text-align: center; }
 .show_card .card-body .Grid__c2 {
-    grid-column: 4 span;
+    grid-column: 3 span;
     grid-row: 1 span;
     text-align: center; }
 .show_card .card-body .Grid__c3 {
-    grid-column: 4 span;
+    grid-column: 6 span;
     grid-row: 1 span; }
 .show_card .card-body .Grid__c4 {
     grid-column: 12 span;
     grid-row: 5 span; }
 .show_card .card-body .Grid__c5 {
-    grid-column: 6 span;
-    grid-row: 1 span; }
-.show_card .card-body .Grid__c6 {
-    grid-column: 6 span;
-    grid-row: 1 span;
-    align-items: center; }
-.show_card .card-body .Grid__c7 {
     grid-column: 12 span;
-    grid-row: 2 span;
+    grid-row: 4 span;
     align-items: center; }
 .show_card .card-body .Grid__box-layout {
     height: 100%;
@@ -1299,29 +1292,23 @@ textarea {
   grid-template-columns: repeat(12, 1fr);
   grid-template-rows: repeat(9, 1fr); }
 .show_card .card-body .Grid__c1 {
-    grid-column: 4 span;
+    grid-column: 3 span;
     grid-row: 1 span;
     text-align: center; }
 .show_card .card-body .Grid__c2 {
-    grid-column: 4 span;
+    grid-column: 3 span;
     grid-row: 1 span;
     text-align: center; }
 .show_card .card-body .Grid__c3 {
-    grid-column: 4 span;
-    grid-row: 1 span;
-    text-align: center; }
+    grid-column: 6 span;
+    grid-row: 1 span; }
 .show_card .card-body .Grid__c4 {
     grid-column: 12 span;
     grid-row: 5 span; }
 .show_card .card-body .Grid__c5 {
-    grid-column: 6 span;
-    grid-row: 1 span; }
-.show_card .card-body .Grid__c6 {
-    grid-column: 6 span;
-    grid-row: 1 span; }
-.show_card .card-body .Grid__c7 {
     grid-column: 12 span;
-    grid-row: 2 span; }
+    grid-row: 4 span;
+    align-items: center; }
 .show_card .card-body .Grid__font-s {
     font-size: 13px; }
 .show_card .card-body .Grid__font-m {
@@ -1384,31 +1371,23 @@ Stylesheet: 600px以上のタブレットやモニタで適用[ipad]
     grid-template-columns: repeat(12, 1fr);
     grid-template-rows: repeat(9, 1fr); }
     .show_card .card-body .Grid__c1 {
-      grid-column: 4 span;
+      grid-column: 3 span;
       grid-row: 1 span;
       text-align: center; }
     .show_card .card-body .Grid__c2 {
-      grid-column: 4 span;
+      grid-column: 3 span;
       grid-row: 1 span;
       text-align: center; }
     .show_card .card-body .Grid__c3 {
-      grid-column: 4 span;
-      grid-row: 1 span;
-      text-align: center; }
+      grid-column: 6 span;
+      grid-row: 1 span; }
     .show_card .card-body .Grid__c4 {
       grid-column: 12 span;
       grid-row: 5 span; }
     .show_card .card-body .Grid__c5 {
-      grid-column: 6 span;
-      grid-row: 1 span;
-      text-align: center; }
-    .show_card .card-body .Grid__c6 {
-      grid-column: 6 span;
-      grid-row: 1 span;
-      text-align: center; }
-    .show_card .card-body .Grid__c7 {
       grid-column: 12 span;
-      grid-row: 2 span; }
+      grid-row: 4 span;
+      align-items: center; }
     .show_card .card-body .Grid__font-s {
       font-size: 15px; }
     .show_card .card-body .Grid__font-m {
@@ -1442,35 +1421,29 @@ Stylesheet: 960px以上のモニタで適用[ipad pro]
     grid-template-columns: repeat(12, 1fr);
     grid-template-rows: repeat(9, 1fr); }
     .show_card .card-body .Grid__c1 {
-      grid-column: 4 span;
+      grid-column: 3 span;
       grid-row: 1 span;
       text-align: center; }
     .show_card .card-body .Grid__c2 {
-      grid-column: 4 span;
+      grid-column: 3 span;
       grid-row: 1 span;
       text-align: center; }
     .show_card .card-body .Grid__c3 {
-      grid-column: 4 span;
-      grid-row: 1 span;
-      text-align: center; }
+      grid-column: 6 span;
+      grid-row: 1 span; }
     .show_card .card-body .Grid__c4 {
       grid-column: 12 span;
       grid-row: 5 span; }
     .show_card .card-body .Grid__c5 {
-      grid-column: 6 span;
-      grid-row: 1 span; }
-    .show_card .card-body .Grid__c6 {
-      grid-column: 6 span;
-      grid-row: 1 span; }
-    .show_card .card-body .Grid__c7 {
       grid-column: 12 span;
-      grid-row: 2 span; }
+      grid-row: 4 span;
+      align-items: center; }
     .show_card .card-body .Grid__font-s {
-      font-size: 15px; }
+      font-size: 16px; }
     .show_card .card-body .Grid__font-m {
-      font-size: 17px; }
+      font-size: 19px; }
     .show_card .card-body .Grid__font-l {
-      font-size: 20px; }
+      font-size: 21px; }
     .show_card .card-body .Grid__like-button {
       line-height: 43.1px;
       width: 100%;
@@ -1484,8 +1457,8 @@ Stylesheet: 960px以上のモニタで適用[ipad pro]
     .show_card .card-body .Grid__image {
       overflow: hidden; }
     .show_card .card-body .Grid__resize {
-      width: 70%;
-      height: 90%; }
+      width: 50%;
+      height: 100%; }
   .font-sm {
     font-size: 16px; }
   .font-md {
@@ -1512,58 +1485,49 @@ Stylesheet: 1280px以上のモニタで適用[mac book]
 ******************************************************************/
   .show_card .card-body .Grid {
     width: 100%;
-    height: 350px;
+    height: 450px;
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: repeat(8, 1fr); }
+    grid-template-rows: repeat(9, 1fr); }
     .show_card .card-body .Grid__c1 {
-      grid-column: 8 span;
-      grid-row: 2 span; }
+      grid-column: 3 span;
+      grid-row: 1 span;
+      text-align: center; }
     .show_card .card-body .Grid__c2 {
-      grid-column: 4 span;
-      grid-row: 1 span; }
+      grid-column: 3 span;
+      grid-row: 1 span;
+      text-align: center; }
     .show_card .card-body .Grid__c3 {
-      grid-column: 4 span;
+      grid-column: 6 span;
       grid-row: 1 span; }
     .show_card .card-body .Grid__c4 {
-      grid-column: 6 span;
+      grid-column: 12 span;
       grid-row: 5 span; }
     .show_card .card-body .Grid__c5 {
-      grid-column: 1 span;
-      grid-row: 1 span; }
-    .show_card .card-body .Grid__c6 {
-      grid-column: 5 span;
-      grid-row: 1 span; }
-    .show_card .card-body .Grid__c7 {
-      grid-column: 6 span;
-      grid-row: 4 span; }
-    .show_card .card-body .Grid__c8 {
       grid-column: 12 span;
-      grid-row: 1 span; }
-    .show_card .card-body .Grid__c9 {
-      grid-column: 12 span;
-      grid-row: 1 span; }
+      grid-row: 4 span;
+      align-items: center; }
     .show_card .card-body .Grid__font-s {
-      font-size: 13px; }
+      font-size: 18px; }
     .show_card .card-body .Grid__font-m {
-      font-size: 16px; }
+      font-size: 21px; }
     .show_card .card-body .Grid__font-l {
-      font-size: 20px; }
+      font-size: 23px; }
     .show_card .card-body .Grid__like-button {
-      line-height: 41.6px;
+      line-height: 43.1px;
       width: 100%;
       align-items: center;
       text-align: center; }
     .show_card .card-body .Grid__like-msg {
-      line-height: 41.6px;
+      line-height: 43.1px;
       width: 100%;
       align-items: center;
       text-align: center; }
     .show_card .card-body .Grid__image {
       overflow: hidden; }
     .show_card .card-body .Grid__resize {
-      width: 400px;
-      height: 210px; } }
+      width: 50%;
+      height: 100%; } }
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi), (-webkit-min-devise-pixel-ratio: 2) {
   /******************************************************************
 
@@ -1586,7 +1550,7 @@ Stylesheet: プリンタのみに適用
 
 ******************************************************************/ }
 /*!
- * Font Awesome Free 5.14.0 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 5.13.0 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 .fa,
@@ -1896,10 +1860,6 @@ readers do not read off random characters that represent icons */
   content: "\f04a"; }
 .fa-bacon:before {
   content: "\f7e5"; }
-.fa-bacteria:before {
-  content: "\e059"; }
-.fa-bacterium:before {
-  content: "\e05a"; }
 .fa-bahai:before {
   content: "\f666"; }
 .fa-balance-scale:before {
@@ -2027,7 +1987,7 @@ readers do not read off random characters that represent icons */
 .fa-box-open:before {
   content: "\f49e"; }
 .fa-box-tissue:before {
-  content: "\e05b"; }
+  content: "\f95b"; }
 .fa-boxes:before {
   content: "\f468"; }
 .fa-braille:before {
@@ -2411,15 +2371,13 @@ readers do not read off random characters that represent icons */
 .fa-d-and-d-beyond:before {
   content: "\f6ca"; }
 .fa-dailymotion:before {
-  content: "\e052"; }
+  content: "\f952"; }
 .fa-dashcube:before {
   content: "\f210"; }
 .fa-database:before {
   content: "\f1c0"; }
 .fa-deaf:before {
   content: "\f2a4"; }
-.fa-deezer:before {
-  content: "\e077"; }
 .fa-delicious:before {
   content: "\f1a5"; }
 .fa-democrat:before {
@@ -2542,8 +2500,6 @@ readers do not read off random characters that represent icons */
   content: "\f4f4"; }
 .fa-edge:before {
   content: "\f282"; }
-.fa-edge-legacy:before {
-  content: "\e078"; }
 .fa-edit:before {
   content: "\f044"; }
 .fa-egg:before {
@@ -2631,7 +2587,7 @@ readers do not read off random characters that represent icons */
 .fa-fast-forward:before {
   content: "\f050"; }
 .fa-faucet:before {
-  content: "\e005"; }
+  content: "\f905"; }
 .fa-fax:before {
   content: "\f1ac"; }
 .fa-feather:before {
@@ -2713,7 +2669,7 @@ readers do not read off random characters that represent icons */
 .fa-firefox:before {
   content: "\f269"; }
 .fa-firefox-browser:before {
-  content: "\e007"; }
+  content: "\f907"; }
 .fa-first-aid:before {
   content: "\f479"; }
 .fa-first-order:before {
@@ -2872,8 +2828,6 @@ readers do not read off random characters that represent icons */
   content: "\f1a0"; }
 .fa-google-drive:before {
   content: "\f3aa"; }
-.fa-google-pay:before {
-  content: "\e079"; }
 .fa-google-play:before {
   content: "\f3ab"; }
 .fa-google-plus:before {
@@ -2959,7 +2913,7 @@ readers do not read off random characters that represent icons */
 .fa-hand-holding-heart:before {
   content: "\f4be"; }
 .fa-hand-holding-medical:before {
-  content: "\e05c"; }
+  content: "\f95c"; }
 .fa-hand-holding-usd:before {
   content: "\f4c0"; }
 .fa-hand-holding-water:before {
@@ -2987,7 +2941,7 @@ readers do not read off random characters that represent icons */
 .fa-hand-scissors:before {
   content: "\f257"; }
 .fa-hand-sparkles:before {
-  content: "\e05d"; }
+  content: "\f95d"; }
 .fa-hand-spock:before {
   content: "\f259"; }
 .fa-hands:before {
@@ -2995,13 +2949,13 @@ readers do not read off random characters that represent icons */
 .fa-hands-helping:before {
   content: "\f4c4"; }
 .fa-hands-wash:before {
-  content: "\e05e"; }
+  content: "\f95e"; }
 .fa-handshake:before {
   content: "\f2b5"; }
 .fa-handshake-alt-slash:before {
-  content: "\e05f"; }
+  content: "\f95f"; }
 .fa-handshake-slash:before {
-  content: "\e060"; }
+  content: "\f960"; }
 .fa-hanukiah:before {
   content: "\f6e6"; }
 .fa-hard-hat:before {
@@ -3017,13 +2971,13 @@ readers do not read off random characters that represent icons */
 .fa-hdd:before {
   content: "\f0a0"; }
 .fa-head-side-cough:before {
-  content: "\e061"; }
+  content: "\f961"; }
 .fa-head-side-cough-slash:before {
-  content: "\e062"; }
+  content: "\f962"; }
 .fa-head-side-mask:before {
-  content: "\e063"; }
+  content: "\f963"; }
 .fa-head-side-virus:before {
-  content: "\e064"; }
+  content: "\f964"; }
 .fa-heading:before {
   content: "\f1dc"; }
 .fa-headphones:before {
@@ -3093,7 +3047,7 @@ readers do not read off random characters that represent icons */
 .fa-house-damage:before {
   content: "\f6f1"; }
 .fa-house-user:before {
-  content: "\e065"; }
+  content: "\f965"; }
 .fa-houzz:before {
   content: "\f27c"; }
 .fa-hryvnia:before {
@@ -3117,7 +3071,7 @@ readers do not read off random characters that represent icons */
 .fa-id-card-alt:before {
   content: "\f47f"; }
 .fa-ideal:before {
-  content: "\e013"; }
+  content: "\f913"; }
 .fa-igloo:before {
   content: "\f7ae"; }
 .fa-image:before {
@@ -3141,7 +3095,7 @@ readers do not read off random characters that represent icons */
 .fa-instagram:before {
   content: "\f16d"; }
 .fa-instagram-square:before {
-  content: "\e055"; }
+  content: "\f955"; }
 .fa-intercom:before {
   content: "\f7af"; }
 .fa-internet-explorer:before {
@@ -3219,7 +3173,7 @@ readers do not read off random characters that represent icons */
 .fa-laptop-code:before {
   content: "\f5fc"; }
 .fa-laptop-house:before {
-  content: "\e066"; }
+  content: "\f966"; }
 .fa-laptop-medical:before {
   content: "\f812"; }
 .fa-laravel:before {
@@ -3301,7 +3255,7 @@ readers do not read off random characters that represent icons */
 .fa-lungs:before {
   content: "\f604"; }
 .fa-lungs-virus:before {
-  content: "\e067"; }
+  content: "\f967"; }
 .fa-lyft:before {
   content: "\f3c3"; }
 .fa-magento:before {
@@ -3387,7 +3341,7 @@ readers do not read off random characters that represent icons */
 .fa-meteor:before {
   content: "\f753"; }
 .fa-microblog:before {
-  content: "\e01a"; }
+  content: "\f91a"; }
 .fa-microchip:before {
   content: "\f2db"; }
 .fa-microphone:before {
@@ -3415,7 +3369,7 @@ readers do not read off random characters that represent icons */
 .fa-mixcloud:before {
   content: "\f289"; }
 .fa-mixer:before {
-  content: "\e056"; }
+  content: "\f956"; }
 .fa-mizuni:before {
   content: "\f3cc"; }
 .fa-mobile:before {
@@ -3575,7 +3529,7 @@ readers do not read off random characters that represent icons */
 .fa-penny-arcade:before {
   content: "\f704"; }
 .fa-people-arrows:before {
-  content: "\e068"; }
+  content: "\f968"; }
 .fa-people-carry:before {
   content: "\f4ce"; }
 .fa-pepper-hot:before {
@@ -3619,7 +3573,7 @@ readers do not read off random characters that represent icons */
 .fa-pied-piper-pp:before {
   content: "\f1a7"; }
 .fa-pied-piper-square:before {
-  content: "\e01e"; }
+  content: "\f91e"; }
 .fa-piggy-bank:before {
   content: "\f4d3"; }
 .fa-pills:before {
@@ -3641,7 +3595,7 @@ readers do not read off random characters that represent icons */
 .fa-plane-departure:before {
   content: "\f5b0"; }
 .fa-plane-slash:before {
-  content: "\e069"; }
+  content: "\f969"; }
 .fa-play:before {
   content: "\f04b"; }
 .fa-play-circle:before {
@@ -3693,9 +3647,9 @@ readers do not read off random characters that represent icons */
 .fa-project-diagram:before {
   content: "\f542"; }
 .fa-pump-medical:before {
-  content: "\e06a"; }
+  content: "\f96a"; }
 .fa-pump-soap:before {
-  content: "\e06b"; }
+  content: "\f96b"; }
 .fa-pushed:before {
   content: "\f3e1"; }
 .fa-puzzle-piece:before {
@@ -3822,8 +3776,6 @@ readers do not read off random characters that represent icons */
   content: "\f70c"; }
 .fa-rupee-sign:before {
   content: "\f156"; }
-.fa-rust:before {
-  content: "\e07a"; }
 .fa-sad-cry:before {
   content: "\f5b3"; }
 .fa-sad-tear:before {
@@ -3889,7 +3841,7 @@ readers do not read off random characters that represent icons */
 .fa-shield-alt:before {
   content: "\f3ed"; }
 .fa-shield-virus:before {
-  content: "\e06c"; }
+  content: "\f96c"; }
 .fa-ship:before {
   content: "\f21a"; }
 .fa-shipping-fast:before {
@@ -3899,7 +3851,7 @@ readers do not read off random characters that represent icons */
 .fa-shoe-prints:before {
   content: "\f54b"; }
 .fa-shopify:before {
-  content: "\e057"; }
+  content: "\f957"; }
 .fa-shopping-bag:before {
   content: "\f290"; }
 .fa-shopping-basket:before {
@@ -3928,8 +3880,6 @@ readers do not read off random characters that represent icons */
   content: "\f7c4"; }
 .fa-simplybuilt:before {
   content: "\f215"; }
-.fa-sink:before {
-  content: "\e06d"; }
 .fa-sistrix:before {
   content: "\f3ee"; }
 .fa-sitemap:before {
@@ -3993,7 +3943,7 @@ readers do not read off random characters that represent icons */
 .fa-snowplow:before {
   content: "\f7d2"; }
 .fa-soap:before {
-  content: "\e06e"; }
+  content: "\f96e"; }
 .fa-socks:before {
   content: "\f696"; }
 .fa-solar-panel:before {
@@ -4105,15 +4055,15 @@ readers do not read off random characters that represent icons */
 .fa-stopwatch:before {
   content: "\f2f2"; }
 .fa-stopwatch-20:before {
-  content: "\e06f"; }
+  content: "\f96f"; }
 .fa-store:before {
   content: "\f54e"; }
 .fa-store-alt:before {
   content: "\f54f"; }
 .fa-store-alt-slash:before {
-  content: "\e070"; }
+  content: "\f970"; }
 .fa-store-slash:before {
-  content: "\e071"; }
+  content: "\f971"; }
 .fa-strava:before {
   content: "\f428"; }
 .fa-stream:before {
@@ -4254,8 +4204,6 @@ readers do not read off random characters that represent icons */
   content: "\f08d"; }
 .fa-ticket-alt:before {
   content: "\f3ff"; }
-.fa-tiktok:before {
-  content: "\e07b"; }
 .fa-times:before {
   content: "\f00d"; }
 .fa-times-circle:before {
@@ -4275,7 +4223,7 @@ readers do not read off random characters that represent icons */
 .fa-toilet-paper:before {
   content: "\f71e"; }
 .fa-toilet-paper-slash:before {
-  content: "\e072"; }
+  content: "\f972"; }
 .fa-toolbox:before {
   content: "\f552"; }
 .fa-tools:before {
@@ -4295,7 +4243,7 @@ readers do not read off random characters that represent icons */
 .fa-traffic-light:before {
   content: "\f637"; }
 .fa-trailer:before {
-  content: "\e041"; }
+  content: "\f941"; }
 .fa-train:before {
   content: "\f238"; }
 .fa-tram:before {
@@ -4369,7 +4317,7 @@ readers do not read off random characters that represent icons */
 .fa-uniregistry:before {
   content: "\f404"; }
 .fa-unity:before {
-  content: "\e049"; }
+  content: "\f949"; }
 .fa-universal-access:before {
   content: "\f29a"; }
 .fa-university:before {
@@ -4380,8 +4328,6 @@ readers do not read off random characters that represent icons */
   content: "\f09c"; }
 .fa-unlock-alt:before {
   content: "\f13e"; }
-.fa-unsplash:before {
-  content: "\e07c"; }
 .fa-untappd:before {
   content: "\f405"; }
 .fa-upload:before {
@@ -4442,8 +4388,6 @@ readers do not read off random characters that represent icons */
   content: "\f0c0"; }
 .fa-users-cog:before {
   content: "\f509"; }
-.fa-users-slash:before {
-  content: "\e073"; }
 .fa-usps:before {
   content: "\f7e1"; }
 .fa-ussunnah:before {
@@ -4489,11 +4433,11 @@ readers do not read off random characters that represent icons */
 .fa-vine:before {
   content: "\f1ca"; }
 .fa-virus:before {
-  content: "\e074"; }
+  content: "\f974"; }
 .fa-virus-slash:before {
-  content: "\e075"; }
+  content: "\f975"; }
 .fa-viruses:before {
-  content: "\e076"; }
+  content: "\f976"; }
 .fa-vk:before {
   content: "\f189"; }
 .fa-vnv:before {
@@ -4642,4 +4586,4 @@ readers do not read off random characters that represent icons */
   width: auto; }
 
 
-/*# sourceMappingURL=application-2c56dc8e.css.map*/
+/*# sourceMappingURL=application-bbbd0859.css.map*/

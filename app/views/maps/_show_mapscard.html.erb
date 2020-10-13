@@ -1,3 +1,13 @@
+<%# 挿入：いいねボタン & いいねカウント %>
+  <div id="likes_buttons_<%= post.id %>">
+    <%= render partial: '/likes/likes_btn', locals: {post: post} %>
+  </div>
+  <span id="likes_count_<%= post.id %>">
+    <%= render partial: '/likes/likes_count', locals: {post: post} %>
+  </span>
+  <span>人が、ｲｲﾈ!しています。</span>
+
+<%# 挿入： 投稿情報ドロワーのレイアウト %>
 <div class="show_card" id="drawer-menu">
   <div class="card-image">
     <div class="route-map" id='routes'></div>
@@ -18,18 +28,17 @@
         </p>
       </div>
     </div>
-
-      <div class="Grid">
-          <div class="Grid__c1">
-            <div class="Grid__box-layout">
+    <div class="Grid">
+        <div class="Grid__c1">
+          <div class="Grid__box-layout">
               <% if post.spot_style? %>
                 <i class="fas fa-store-alt"></i> <span class="Grid__font-s">スケートパーク</span>
               <% else%>
                 <i class="fas fa-street-view"></i> <span class="Grid__font-s">ストリート</span>
               <% end %>
-            </div>
           </div>
-          <div class="Grid__c2">
+        </div>
+        <div class="Grid__c2">
             <div class="Grid__box-layout">
               <% if post.helmet? %>
               　<span class="Grid__font-s">ヘルメット着用</span>
@@ -37,32 +46,21 @@
                 <span class="Grid__font-s">ヘルメット不要</span>
               <% end %>
             </div>
-          </div>
-          <div class="Grid__c3">
+        </div>
+        <div class="Grid__c3">
             <div class="Grid__box-layout">
-              <%# 挿入：いいねボタン %>
-              <div id="likes_buttons_<%= post.id %>">
-                <%= render partial: '/likes/likes_btn', locals: {post: post} %>
-              </div>
+              <%= post.address %>
             </div>
-          </div>
-          <div class="Grid__c4">
+        </div>
+        <div class="Grid__c4">
             <div class="Grid__image Grid__box-layout">
               <%= image_tag post.picture.url , class: "Grid__resize"%>
             </div>
-          </div>
-          <div class="Grid__c5">
-            <div class="Grid__box-layout">
-              <%# 挿入：いいねカウント %>
-              <p class="Grid__font-s" id="likes_count_<%= post.id %>">
-                <%= render partial: '/likes/likes_count', locals: {post: post} %>
-              </p>
-              <span class="Grid__font-s">人が、ｲｲﾈ!しています。</span>
-            </div>
-          </div>
-          <div class="Grid__c6"><p class="Grid__text-layout Grid__font-s"><br><%= post.address %></p></div>
-          <div class="Grid__c7"><p class="Grid__text-layout Grid__font-s"><%= post.content %></p></div>
-      </div>
+        </div>
+        <div class="Grid__c5">
+            <p class="Grid__text-layout Grid__font-s"><%= post.content %></p>
+        </div>
+    </div>
   </div>
 </div>
 

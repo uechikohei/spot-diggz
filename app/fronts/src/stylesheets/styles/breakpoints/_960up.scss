@@ -12,44 +12,36 @@ Stylesheet: 960px以上のモニタで適用[ipad pro]
   grid-template-columns: repeat(12, 1fr);
   grid-template-rows: repeat(9, 1fr);
   &__c1{
-    grid-column: 4 span;
+    grid-column: 3 span;
     grid-row: 1 span;
     text-align: center;
   }
   &__c2{
-    grid-column: 4 span;
+    grid-column: 3 span;
     grid-row: 1 span;
     text-align: center;
   }
   &__c3{
-    grid-column: 4 span;
+    grid-column: 6 span;
     grid-row: 1 span;
-    text-align: center;
   }
   &__c4{
     grid-column: 12 span;
     grid-row: 5 span;
   }
   &__c5{
-    grid-column: 6 span;
-    grid-row: 1 span;
-  }
-  &__c6{
-    grid-column: 6 span;
-    grid-row: 1 span;
-  }
-  &__c7{
     grid-column: 12 span;
-    grid-row: 2 span;
+    grid-row: 4 span;
+    align-items: center;
   }
   &__font-s {
-    font-size: 15px;
+    font-size: 16px;
   }
   &__font-m {
-    font-size: 17px;
+    font-size: 19px;
   }
   &__font-l {
-    font-size: 20px;
+    font-size: 21px;
   }
   &__like-button {
     line-height: 43.1px;
@@ -67,8 +59,8 @@ Stylesheet: 960px以上のモニタで適用[ipad pro]
     overflow: hidden;
   }
   &__resize {
-    width: 70%;
-    height: 90%;
+    width: 50%;
+    height: 100%;
   }
 }
 

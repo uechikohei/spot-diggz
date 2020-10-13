@@ -12,10 +12,10 @@ class PictureUploader < CarrierWave::Uploader::Base
   process convert: 'jpg'
 
   # 画像リサイズと分類
-  process resize_to_fill: [1080, 720]
+  process resize_to_fill: [1080, 540]
 
   version :thumb do
-    process resize_to_limit: [275, 275]
+    process resize_to_fill: [275, 275]
   end
 
   def filename
