@@ -13,6 +13,11 @@ Rails.application.routes.draw do
   post 'follow/:id' => 'relationships#follow', as: 'follow' # フォローする
   post 'unfollow/:id' => 'relationships#unfollow', as: 'unfollow' # フォロー外す
 
+  get   'inquiry'         => 'inquiry#index'     # 入力画面
+  post  'inquiry'         => 'inquiry#index'     # 入力画面
+  post  'inquiry/confirm' => 'inquiry#confirm'   # 確認画面
+  post  'inquiry/thanks'  => 'inquiry#thanks'    # 送信完了画面
+
   resources :users
 
   # ブロック関数を使用

@@ -1,0 +1,75 @@
+<main>
+  <div class="first-content">
+  <%# よくある質問　%>
+    <h1>よくある質問</h2>
+    <div class="box18">
+      <h3>問.　<span class="markerB">PC版のchromeブラウザで閲覧中、現在地から目的地までのルートが反映されません。</span></h3>
+      <br><br>
+        <h3>答.　<span class="markerY">位置情報を許可してください。</span></h3>
+      <br><br>
+      <h3>[手順]</h3>
+      <ol>
+        <li>パソコンで Chrome を開きます。</li>
+        <li>右上のその他アイコン その他 次に [設定] をクリックします。</li>
+        <li>[プライバシーとセキュリティ] の [サイトの設定] をクリックします。</li>
+        <li>[位置情報] をクリックします。</li>
+        <li>[アクセスする前に確認する] をオンまたはオフにします。</li>
+      </ol>
+    </div>
+      <br><br>
+    <div class="box18">
+      <h3>問.　<span class="markerB">スマホ版のchromeブラウザを操作中、新規投稿ページからカメラを起動して撮影したいのですがカメラが真っ黒で撮影ができません。</span></h3>
+      <br><br>
+        <h3>答.　<span class="markerY">スマホchromeブラウザのアプリ設定からカメラを許可してください。</span></h3>
+      <br><br>
+        <h3>[手順]</h3>
+        <ol>
+          <li>設定を開く。</li>
+          <li>chromeを開く。</li>
+          <li>カメラをオンにする。</li>
+        </ol>
+      <br><br>
+      <div class="box18">
+    <%# 問い合わせフォーム　%>
+    <%= form_for @inquiry, :url => inquiry_confirm_path do |f| %>
+      <h2><span class="markerB">お問い合わせ</span></h2>
+      <br>
+      <p>(その他あれば内容を記載の上、問い合わせフォームよりお知らせください)</p>
+      <br><br>
+      <% if @inquiry.errors.any? %>
+        <div id="error_explanation" role="alert">
+          <strong class="markerY">入力内容にエラーがあります</strong>
+          <br><br>
+          <ul>
+            <% @inquiry.errors.each do |attr, msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+      <%# 問い合わせフォーム　%>
+      <table>
+        <tr>
+          <th>名前<span class="text-danger">（必須）</span></th>
+          <td><%= f.text_field :name %></td>
+        </tr>
+        <tr>
+          <th>メールアドレス<span class="text-danger">（必須）</span></th>
+          <td><%= f.text_field :mail %></td>
+        </tr>
+        <tr>
+          <th>お問い合わせ内容</th>
+          <td><%= f.text_area :message %></td>
+        </tr>
+      </table>
+      <%= button_tag type: 'submit', class: "btn-cubic", id: 'btn' do %>
+        <span class="hovering-submit">
+          <i class="fas fa-paper-plane"></i>
+        </span>
+        <span class="default">確認</span>
+      <% end %>
+    <% end %>
+  </div>
+    <br><br>
+  </div>
+</main>
