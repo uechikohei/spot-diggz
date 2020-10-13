@@ -12,7 +12,6 @@ class ImageUploader < CarrierWave::Uploader::Base
   # 保存形式をJPGにする
   process convert: 'jpg'
 
-
   # 画像リサイズと分類
   process resize_to_fill: [150, 150]
 

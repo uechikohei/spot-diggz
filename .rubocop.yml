@@ -14,6 +14,9 @@ AllCops:
         - 'node_modules/**/*'
         - 'spec/**/*'
 
+Rails/LexicallyScopedActionFilter:
+  Enable: false
+
 # 日本語でのコメントを許可
 AsciiComments:
   Enabled: false

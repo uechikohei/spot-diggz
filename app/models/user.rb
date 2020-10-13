@@ -61,7 +61,7 @@ class User < ApplicationRecord
       user.password = SecureRandom.urlsafe_base64
       user.name = 'guest_user'
       user.image = image_path
-      user.confirmed_at = Time.now  # Confirmable を使用している場合は必要
+      user.confirmed_at = Time.zone.now # Confirmable を使用している場合は必要
     end
   end
 end
