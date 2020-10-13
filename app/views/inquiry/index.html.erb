@@ -28,48 +28,49 @@
           <li>chromeを開く。</li>
           <li>カメラをオンにする。</li>
         </ol>
-      <br><br>
+      </div>
+        <br><br>
       <div class="box18">
-    <%# 問い合わせフォーム　%>
-    <%= form_for @inquiry, :url => inquiry_confirm_path do |f| %>
-      <h2><span class="markerB">お問い合わせ</span></h2>
-      <br>
-      <p>(その他あれば内容を記載の上、問い合わせフォームよりお知らせください)</p>
-      <br><br>
-      <% if @inquiry.errors.any? %>
-        <div id="error_explanation" role="alert">
-          <strong class="markerY">入力内容にエラーがあります</strong>
+        <%# 問い合わせフォーム　%>
+        <%= form_for @inquiry, :url => inquiry_confirm_path do |f| %>
+          <h2><span class="markerB">お問い合わせ</span></h2>
+          <br>
+          <p>(その他あれば内容を記載の上、問い合わせフォームよりお知らせください)</p>
           <br><br>
-          <ul>
-            <% @inquiry.errors.each do |attr, msg| %>
-              <li><%= msg %></li>
-            <% end %>
-          </ul>
-        </div>
-      <% end %>
-      <%# 問い合わせフォーム　%>
-      <table>
-        <tr>
-          <th>名前<span class="text-danger">（必須）</span></th>
-          <td><%= f.text_field :name %></td>
-        </tr>
-        <tr>
-          <th>メールアドレス<span class="text-danger">（必須）</span></th>
-          <td><%= f.text_field :mail %></td>
-        </tr>
-        <tr>
-          <th>お問い合わせ内容</th>
-          <td><%= f.text_area :message %></td>
-        </tr>
-      </table>
-      <%= button_tag type: 'submit', class: "btn-cubic", id: 'btn' do %>
-        <span class="hovering-submit">
-          <i class="fas fa-paper-plane"></i>
-        </span>
-        <span class="default">確認</span>
-      <% end %>
-    <% end %>
-  </div>
+          <% if @inquiry.errors.any? %>
+            <div id="error_explanation" role="alert">
+              <strong class="markerY">入力内容にエラーがあります</strong>
+              <br><br>
+              <ul>
+                <% @inquiry.errors.each do |attr, msg| %>
+                  <li><%= msg %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+          <%# 問い合わせフォーム　%>
+          <table>
+            <tr>
+              <th>名前<span class="text-danger">（必須）</span></th>
+              <td><%= f.text_field :name %></td>
+            </tr>
+            <tr>
+              <th>メールアドレス<span class="text-danger">（必須）</span></th>
+              <td><%= f.text_field :mail %></td>
+            </tr>
+            <tr>
+              <th>お問い合わせ内容</th>
+              <td><%= f.text_area :message %></td>
+            </tr>
+          </table>
+          <%= button_tag type: 'submit', class: "btn-cubic", id: 'btn' do %>
+            <span class="hovering-submit">
+              <i class="fas fa-paper-plane"></i>
+            </span>
+            <span class="default">確認</span>
+          <% end %>
+        <% end %>
+      </div>
     <br><br>
   </div>
 </main>
