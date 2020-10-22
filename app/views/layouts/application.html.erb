@@ -12,8 +12,16 @@
       <%= javascript_pack_tag 'google',       'data-turbolinks-track': 'reload' %>
       <%= javascript_pack_tag 'card_action',  'data-turbolinks-track': 'reload' %>
       <%= javascript_pack_tag 'header',       'data-turbolinks-track': 'reload' %>
+      <%= javascript_pack_tag 'select2',      'data-turbolinks-track': 'reload' %>
       <!--publi配下のfaviconを使用-->
       <%= favicon_pack_tag('favicon.ico') %>
+      <!--CDNで読み込め、使用できたselect2-->
+      <link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
+      <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js"></script>
+      <!--CDNで読み込め、使用できたselect2-->
   </head>
     <body>
       <div id="global-container">

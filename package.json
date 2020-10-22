@@ -7,10 +7,13 @@
     "@rails/activestorage": "^6.0.0",
     "@rails/ujs": "^6.0.0",
     "@rails/webpacker": "4.2.2",
+    "bootstrap": "^4.5.3",
     "jquery": "^3.5.1",
     "node-sass": "^4.13.1",
+    "popper.js": "^1.16.1",
     "rails-ujs": "^5.2.4-3",
     "resolve-url-loader": "^3.1.1",
+    "select2": "^4.0.13",
     "turbolinks": "^5.2.0",
     "webpacker": "^4.6.0"
   },

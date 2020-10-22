@@ -4,3 +4,8 @@
     <i class="fas fa-search"></i>
   <% end %>
 <% end %>
+
+<%= search_form_for @map_key do |f| %>
+  <%= f.select :address_cont, Map.ride_areas.keys, {}, {class: 'pref'} %>
+  <%= f.button '検索' %>
+<% end %>

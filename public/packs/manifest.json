@@ -1,27 +1,27 @@
 {
-  "application.css": "/packs/css/application-bc158dae.css",
-  "application.js": "/packs/js/application-d338a6070b2d0d9c7b19.js",
-  "application.js.map": "/packs/js/application-d338a6070b2d0d9c7b19.js.map",
-  "card_action.js": "/packs/js/card_action-d32ba331bdf1b8bd1f70.js",
-  "card_action.js.map": "/packs/js/card_action-d32ba331bdf1b8bd1f70.js.map",
+  "application.css": "/packs/css/application-d92c9f05.css",
+  "application.js": "/packs/js/application-00bc060c98f9c35c286b.js",
+  "application.js.map": "/packs/js/application-00bc060c98f9c35c286b.js.map",
+  "card_action.js": "/packs/js/card_action-88ced95b5316f655cc9a.js",
+  "card_action.js.map": "/packs/js/card_action-88ced95b5316f655cc9a.js.map",
   "entrypoints": {
     "application": {
       "css": [
-        "/packs/css/application-bc158dae.css"
+        "/packs/css/application-d92c9f05.css"
       ],
       "js": [
-        "/packs/js/application-d338a6070b2d0d9c7b19.js"
+        "/packs/js/application-00bc060c98f9c35c286b.js"
       ],
       "js.map": [
-        "/packs/js/application-d338a6070b2d0d9c7b19.js.map"
+        "/packs/js/application-00bc060c98f9c35c286b.js.map"
       ]
     },
     "card_action": {
       "js": [
-        "/packs/js/card_action-d32ba331bdf1b8bd1f70.js"
+        "/packs/js/card_action-88ced95b5316f655cc9a.js"
       ],
       "js.map": [
-        "/packs/js/card_action-d32ba331bdf1b8bd1f70.js.map"
+        "/packs/js/card_action-88ced95b5316f655cc9a.js.map"
       ]
     },
     "google": {
@@ -39,6 +39,17 @@
       "js.map": [
         "/packs/js/header-120d520cef8b0d524ab9.js.map"
       ]
+    },
+    "select2": {
+      "css": [
+        "/packs/css/select2-b5505a27.css"
+      ],
+      "js": [
+        "/packs/js/select2-359b2b23a05a32540656.js"
+      ],
+      "js.map": [
+        "/packs/js/select2-359b2b23a05a32540656.js.map"
+      ]
     }
   },
   "google.js": "/packs/js/google-3b1e13d9783c85023c88.js",
@@ -46,5 +57,8 @@
   "header.js": "/packs/js/header-120d520cef8b0d524ab9.js",
   "header.js.map": "/packs/js/header-120d520cef8b0d524ab9.js.map",
   "media/images/favicon.ico": "/packs/media/images/favicon-88803cf40ce85b873a7fb2a981dffcf4.ico",
-  "media/images/logo.svg": "/packs/media/images/logo-bb0493b8c3a21ff85a36e0802324268b.svg"
+  "media/images/logo.svg": "/packs/media/images/logo-bb0493b8c3a21ff85a36e0802324268b.svg",
+  "select2.css": "/packs/css/select2-b5505a27.css",
+  "select2.js": "/packs/js/select2-359b2b23a05a32540656.js",
+  "select2.js.map": "/packs/js/select2-359b2b23a05a32540656.js.map"
 }

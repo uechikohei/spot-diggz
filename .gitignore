@@ -23,6 +23,7 @@
 
 /public/uploads/*
 /public/packs-test/*
+/public/packs/*
 /node_modules
 /yarn-error.log
 yarn-debug.log*
