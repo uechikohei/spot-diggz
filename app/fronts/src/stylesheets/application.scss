@@ -2,3 +2,5 @@
 @import "styles/style";
 @import "styles/vendors/bootstrap-reboot.css";
 @import "~@fortawesome/fontawesome-free/scss/fontawesome";
+//追加でselect2がcdn不要で反映された
+@import "select2/dist/css/select2.min.css";

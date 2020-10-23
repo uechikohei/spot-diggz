@@ -17,11 +17,11 @@ class Map < ApplicationRecord
   # user.rbのhas_manyに対応する
   belongs_to  :user
   # likeテーブルと1対多になる
-  has_many    :likes, dependent: :destroy
+  has_many    :likes,       dependent: :destroy
   # 投稿が、どのユーザにいいねされているか取得
-  has_many    :liked_users, through: :likes, source: :user
+  has_many    :liked_users, through: :likes,    source: :user
   # commentテーブルと1対多になる
-  has_many :comments, dependent: :destroy
+  has_many    :comments,    dependent: :destroy
 
   # 最近作成されたユーザーから表示
   default_scope -> { order(created_at: :desc) }

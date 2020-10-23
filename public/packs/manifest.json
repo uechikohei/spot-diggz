@@ -1,64 +1,64 @@
 {
-  "application.css": "/packs/css/application-d92c9f05.css",
-  "application.js": "/packs/js/application-00bc060c98f9c35c286b.js",
-  "application.js.map": "/packs/js/application-00bc060c98f9c35c286b.js.map",
-  "card_action.js": "/packs/js/card_action-88ced95b5316f655cc9a.js",
-  "card_action.js.map": "/packs/js/card_action-88ced95b5316f655cc9a.js.map",
+  "application.css": "/packs/css/application-63b08cc8.css",
+  "application.css.map": "/packs/css/application-63b08cc8.css.map",
+  "application.js": "/packs/application-10fcee9559242cb593c6.js",
+  "application.js.map": "/packs/application-10fcee9559242cb593c6.js.map",
+  "card_action.js": "/packs/card_action-10fcee9559242cb593c6.js",
+  "card_action.js.map": "/packs/card_action-10fcee9559242cb593c6.js.map",
   "entrypoints": {
     "application": {
       "css": [
-        "/packs/css/application-d92c9f05.css"
+        "/packs/css/application-63b08cc8.css"
       ],
       "js": [
-        "/packs/js/application-00bc060c98f9c35c286b.js"
+        "/packs/application-10fcee9559242cb593c6.js"
+      ],
+      "css.map": [
+        "/packs/css/application-63b08cc8.css.map"
       ],
       "js.map": [
-        "/packs/js/application-00bc060c98f9c35c286b.js.map"
+        "/packs/application-10fcee9559242cb593c6.js.map"
       ]
     },
     "card_action": {
       "js": [
-        "/packs/js/card_action-88ced95b5316f655cc9a.js"
+        "/packs/card_action-10fcee9559242cb593c6.js"
       ],
       "js.map": [
-        "/packs/js/card_action-88ced95b5316f655cc9a.js.map"
+        "/packs/card_action-10fcee9559242cb593c6.js.map"
       ]
     },
     "google": {
       "js": [
-        "/packs/js/google-3b1e13d9783c85023c88.js"
+        "/packs/google-10fcee9559242cb593c6.js"
       ],
       "js.map": [
-        "/packs/js/google-3b1e13d9783c85023c88.js.map"
+        "/packs/google-10fcee9559242cb593c6.js.map"
       ]
     },
     "header": {
       "js": [
-        "/packs/js/header-120d520cef8b0d524ab9.js"
+        "/packs/header-10fcee9559242cb593c6.js"
       ],
       "js.map": [
-        "/packs/js/header-120d520cef8b0d524ab9.js.map"
+        "/packs/header-10fcee9559242cb593c6.js.map"
       ]
     },
     "select2": {
-      "css": [
-        "/packs/css/select2-b5505a27.css"
-      ],
       "js": [
-        "/packs/js/select2-359b2b23a05a32540656.js"
+        "/packs/select2-10fcee9559242cb593c6.js"
       ],
       "js.map": [
-        "/packs/js/select2-359b2b23a05a32540656.js.map"
+        "/packs/select2-10fcee9559242cb593c6.js.map"
       ]
     }
   },
-  "google.js": "/packs/js/google-3b1e13d9783c85023c88.js",
-  "google.js.map": "/packs/js/google-3b1e13d9783c85023c88.js.map",
-  "header.js": "/packs/js/header-120d520cef8b0d524ab9.js",
-  "header.js.map": "/packs/js/header-120d520cef8b0d524ab9.js.map",
+  "google.js": "/packs/google-10fcee9559242cb593c6.js",
+  "google.js.map": "/packs/google-10fcee9559242cb593c6.js.map",
+  "header.js": "/packs/header-10fcee9559242cb593c6.js",
+  "header.js.map": "/packs/header-10fcee9559242cb593c6.js.map",
   "media/images/favicon.ico": "/packs/media/images/favicon-88803cf40ce85b873a7fb2a981dffcf4.ico",
   "media/images/logo.svg": "/packs/media/images/logo-bb0493b8c3a21ff85a36e0802324268b.svg",
-  "select2.css": "/packs/css/select2-b5505a27.css",
-  "select2.js": "/packs/js/select2-359b2b23a05a32540656.js",
-  "select2.js.map": "/packs/js/select2-359b2b23a05a32540656.js.map"
+  "select2.js": "/packs/select2-10fcee9559242cb593c6.js",
+  "select2.js.map": "/packs/select2-10fcee9559242cb593c6.js.map"
 }
