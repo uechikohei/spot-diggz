@@ -106,3 +106,14 @@ Stylesheet: 960px以上のモニタで適用[ipad pro]
   }
 }
 
+.form {
+  display: inline-block;
+  align-items: center;
+  &__ul {
+    list-style-type: none;
+    display: flex;
+  }
+  &__li {
+    margin-right: 50px;
+  }
+}

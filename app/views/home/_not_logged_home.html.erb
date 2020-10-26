@@ -1,42 +1,39 @@
 <main>
   <div class="first-content">
-    <h1>WELLCOME！</h1>
     <div class="box17">
-      <p>スケートボードを <span class="markerB">練習する場所が、ない！</span><br>
-      練習できる所ってどこ？</p>
-      <h1>skatespotsearch なら</h1>
-      <h2><span class="markerY">スケートボードパーク</span>や、<span class="markerY">ストリートスポット</span>でも<br>
-      googlemap上なら、<span class="markerY">どこでもスポット登録可能！</span></h2>
+      <h2><span class="markerY">Google Mapを使用した</span></h2>
+      <h2><span class="markerY">スケボースポット検索アプリ</span></h2>
       <br>
-      <h3><span class="markerB">どんどんシェアして、みんなでスケートボードを楽しもう！</span></h3>
-      <br>
-      <div>
-        <%= link_to new_user_registration_path , class: "btn filled" do %>
-          <i class="fas fa-user-plus"></i>
-          新規登録の方はこちら！
-        <% end %>
-      </div>
-      <br>
-      <div>
-        <%= link_to new_user_session_path , class: "btn filled" do %>
-          <i class="fas fa-sign-in-alt"></i>
-          ログインの方はこちら！
-        <% end %>
-      </div>
-      <br>
-      <div>
-        <%= link_to users_guest_sign_in_path , method: :post , class: "btn filled" do %>
-          <i class="fas fa-sign-in-alt"></i>
-          ポートフォリオ閲覧の方はこちらから！
-        <% end %>
-      </div>
+      <nav class="header__center">
+        <ul class="header__ul">
+          <li class="header__li">
+          <%= link_to new_user_registration_path , class: "btn filled" do %>
+            <i class="fas fa-user-plus"></i>
+            新規登録
+          <% end %>
+          </li>
+        <br>
+          <li class="header__li">
+          <%= link_to new_user_session_path , class: "btn filled" do %>
+            <i class="fas fa-sign-in-alt"></i>
+            ログイン
+          <% end %>
+          </li>
+        <br>
+          <li class="header__li">
+          <%= link_to users_guest_sign_in_path , method: :post , class: "btn filled" do %>
+            <i class="fas fa-sign-in-alt"></i>
+            ポートフォリオ閲覧
+          <% end %>
+          </li>
+        </ul>
+      </nav>
     </div>
     <div class="item-center">
-      <h2><span class="markerY">投稿一覧を検索</span></h2>
       <%# any?: 検索キーワード１つでも該当すれかどうかで分岐　%>
       <% if @search_maps.any? %>
             <div>
-              <%= render partial: "/shared/search_form/map_title_cont" %>
+              <%= render partial: "/shared/search_form/map_address_cont" %>
                 <div class="map_card_container" id="items">
                   <%= render partial: "maps/mapscard", collection: @search_maps, as: "post" %>
                 </div>
@@ -44,7 +41,7 @@
             </div>
       <% else %>
             <div>
-              <%= render'/shared/search_form/map_title_cont' %>
+              <%= render partial: "/shared/search_form/map_address_cont" %>
                 <br><br>
                   <h3>まだコンテンツが投稿されていません！</h3>
                 <br><br>

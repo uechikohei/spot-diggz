@@ -1,32 +1,28 @@
 <main>
   <div class="first-content">
-    <div class="box17">
-      <h3><span class="markerB">スケートボードスポットを登録する！</span></h3>
-      <br>
-      <div>
+    <div class="item-center">
         <%= link_to new_map_path , class: "btn filled" do %>
           <i class="fas fa-map-pin"></i>
-          NEW
+          NEW POST
         <% end %>
-      </div>
+      <br><br>
+      <%# any?: 検索キーワード１つでも該当すれかどうかで分岐　%>
+      <% if @search_maps.any? %>
+            <div>
+              <%= render partial: "/shared/search_form/map_address_cont" %>
+                <div class="map_card_container" id="items">
+                  <%= render partial: "maps/mapscard", collection: @search_maps, as: "post" %>
+                </div>
+              <%= link_to_next_page @search_maps, 'つづきを見る', remote: true, class: "btn filled", id: 'more_link' %>
+            </div>
+      <% else %>
+            <div>
+              <%= render partial: "/shared/search_form/map_address_cont" %>
+                <br><br>
+                    <h3>まだコンテンツが投稿されていません！</h3>
+                <br><br>
+            </div>
+      <% end %>
     </div>
-    <h2><span class="markerY">投稿一覧を検索</span></h2>
-    <%# any?: 検索キーワード１つでも該当すれかどうかで分岐　%>
-    <% if @search_maps.any? %>
-          <div>
-            <%= render partial: "/shared/search_form/map_title_cont" %>
-              <div class="map_card_container" id="items">
-                <%= render partial: "maps/mapscard", collection: @search_maps, as: "post" %>
-              </div>
-            <%= link_to_next_page @search_maps, 'つづきを見る', remote: true, class: "btn filled", id: 'more_link' %>
-          </div>
-    <% else %>
-          <div>
-            <%= render'/shared/search_form/map_title_cont' %>
-              <br><br>
-                  <h3>まだコンテンツが投稿されていません！</h3>
-              <br><br>
-          </div>
-    <% end %>
   </div>
 </main>

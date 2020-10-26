@@ -35,6 +35,7 @@
             <span class="sub-title">ログインユーザーのプロフィールを閲覧</span>
           <% end %>
         </li>
+          <br><br>
         <li class="mobile-menu__item">
           <%= link_to destroy_user_session_path, method: :delete , class: "btn filled" do %>
             <i class="fas fa-sign-out-alt"></i>
@@ -43,12 +44,21 @@
         </li>
       <% else %>
         <li class="mobile-menu__item">
+          <%= link_to maps_path , class: "mobile-menu__link" do %>
+            <i class="fab fa-searchengin fa-lg"></i>
+            <span class="main-title">view spot</span>
+            <span class="sub-title">スケートスポットを見る</span>
+          <% end %>
+        </li>
+          <br><br>
+        <li class="mobile-menu__item">
           <%= link_to new_user_registration_path , class: "btn filled" do %>
             <i class="fas fa-user-plus"></i>
             new user
           <% end %>
           <span class="sub-title">新規登録して、サービスを利用しよう！</span>
         </li>
+          <br>
         <li class="mobile-menu__item">
           <%= link_to new_user_session_path , class: "btn filled" do %>
             <i class="fas fa-sign-in-alt"></i>
@@ -56,6 +66,7 @@
           <% end %>
           <span class="sub-title">ログインはこちら！</span>
         </li>
+          <br>
         <li class="mobile-menu__item">
           <%= link_to users_guest_sign_in_path, method: :post, class: "btn filled" do %>
             <i class="fas fa-sign-in-alt"></i>

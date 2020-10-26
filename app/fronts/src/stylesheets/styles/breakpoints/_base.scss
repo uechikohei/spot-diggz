@@ -107,6 +107,10 @@ textarea {
   display: flex;
   align-items: center;
   z-index: 100;
+  &__center {
+    display: inline-block;
+    text-align: center;
+  }
   &__nav {
     display: none;
   }
@@ -271,5 +275,16 @@ textarea {
   &__resize {
     width: 100%;
     height: 100%;
+  }
+}
+
+//検索フォームバー最小サイズ
+.pref{
+  min-width: 200px;
+}
+
+.form {
+  &__ul {
+    list-style-type: none;
   }
 }

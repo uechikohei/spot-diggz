@@ -1,6 +1,6 @@
-<%# 検索フォーム：タイトル名　%>
+<%# 検索フォーム：都道府県名　%>
 <%= search_form_for @map_key do |f| %>
-  <%= f.search_field :title_cont, placeholder: 'タイトル名で検索', class: 'form-layout' %>
+  <%= f.select :address_cont, Map.pref_areas.keys, {}, { class: 'pref' } %>
   <%= button_tag type: 'submit' , class: "btn-mini slide-bg" do %>
     <i class="fas fa-search"></i>
   <% end %>

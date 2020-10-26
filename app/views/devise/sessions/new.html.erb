@@ -1,8 +1,8 @@
 <main>
   <div class="first-content">
-    <h1>ログインページ</h1>
+    <h1>ログイン</h1>
       <%= form_for(resource, as: resource_name, url:session_path(resource_name)) do |f| %>
-        <div class="item-center">
+        <div class="box17">
           <h3><span class="markerB"><%= f.label :email %></span></h3>
             <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "Email" %>
           <br><br>

@@ -4,8 +4,16 @@
     <div class="item-center">
     <%# any?: 検索キーワード１つでも該当すれかどうかで分岐　%>
     <% if @search_maps.any? %>
-          <div>
-            <%= render partial: "/shared/search_form/map_title_cont" %>
+          <div class="form">
+            <ul class="form__ul">
+              <li class="form__li">
+                <%= render partial: "/shared/search_form/map_title_cont" %>
+              </li>
+              <li>
+                <%= render partial: "/shared/search_form/map_address_cont" %>
+              </li>
+            </ul>
+          </div>
               <div class="map_card_container" id="items">
                 <%= render partial: "maps/mapscard", collection: @search_maps, as: "post" %>
               </div>
@@ -22,4 +30,3 @@
     </div>
   </div>
 </main>
-
