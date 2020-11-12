@@ -15,10 +15,8 @@ services:
       - NODE_ENV=$NODE_ENV
       - RAILS_ENV=$RAILS_ENV
       - RAILS_MASTER_KEY=$RAILS_MASTER_KEY
-      - DB_HOST=$DB_HOST
-      - DB_DATABASE=$DB_DATABASE
-      - DB_USERNAME=$DB_USERNAME
-      - DB_PASSWORD=$DB_PASSWORD
+      - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
     volumes:
       - .:/app

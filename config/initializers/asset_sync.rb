@@ -11,7 +11,6 @@ if defined?(AssetSync)
     ##gzipとmanifestを指定すると、manifest.jsonしかアップされない
     #config.gzip_compression       = true
     #config.manifest               = true
-
     config.add_local_file_paths do
       Dir.chdir(Rails.root.join('public')) do
         Dir[File.join(Webpacker.config.public_output_path, '/**/**')]
