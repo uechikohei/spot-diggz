@@ -49,9 +49,9 @@ services:
     restart: always
     environment:
       MYSQL_HOST: 127.0.0.1
-      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: app_development
       MYSQL_USERNAME: root
+      MYSQL_ROOT_PASSWORD: root
       RAILS_ENV: development
     security_opt:
       - seccomp:unconfined

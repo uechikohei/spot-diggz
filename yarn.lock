@@ -1063,6 +1063,13 @@
   dependencies:
     core-js "^2.5.7"
 
+"@prettier/plugin-ruby@^0.20.1":
+  version "0.20.1"
+  resolved "https://registry.yarnpkg.com/@prettier/plugin-ruby/-/plugin-ruby-0.20.1.tgz#5fc27541436914c34d9406e5d98908f0ba5ac290"
+  integrity sha512-SGIRV+T6dzWZN2xheT169Tjwb22K3rTrzUUqhJ436gUDz2hfI3OxxKNpfU/0j++HhhGECSwFlFjGBn5tB52+XQ==
+  dependencies:
+    prettier ">=1.10"
+
 "@rails/actioncable@^6.0.0":
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/@rails/actioncable/-/actioncable-6.0.2.tgz#bcba9bcd6ee09a47c6628336e07399a68ca87814"
@@ -7381,6 +7388,11 @@ prepend-http@^1.0.0:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/prepend-http/-/prepend-http-1.0.4.tgz#d4f4562b0ce3696e41ac52d0e002e57a635dc6dc"
   integrity sha1-1PRWKwzjaW5BrFLQ4ALlemNdxtw=
+
+prettier@>=1.10:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.1.2.tgz#3050700dae2e4c8b67c4c3f666cdb8af405e1ce5"
+  integrity sha512-16c7K+x4qVlJg9rEbXl7HEGmQyZlG4R9AgP+oHKRMsMsuk8s+ATStlf1NpDqyBI1HpVyfjLOeMhH2LvuNvV5Vg==
 
 pretty-error@^2.0.2:
   version "2.1.1"
