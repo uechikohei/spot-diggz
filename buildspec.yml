@@ -24,6 +24,7 @@ phases:
     commands:
       - echo image build...
       - docker-compose -f docker-compose-pro.yml up --build -d
+      - docker-compose -f docker-compose-pro.yml run app yarn upgrade --ignore-engines
       - docker-compose -f docker-compose-pro.yml run app bundle exec rails webpacker:compile RAILS_ENV=production
       - docker images
       - docker volume ls
