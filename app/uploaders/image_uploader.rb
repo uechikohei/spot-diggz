@@ -39,7 +39,7 @@ class ImageUploader < CarrierWave::Uploader::Base
 
   # プロフ画像としてimageがnillなら適用
   def default_url(*args)
-    '/images/' + [version_name, 'image_default.png'].compact.join('_')
+    '/images/' + ['image_default.png'].compact.join('_')
   end
 
   # Process files as they are uploaded:

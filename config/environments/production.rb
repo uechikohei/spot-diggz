@@ -20,10 +20,6 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
-  #Asset Syncの設定。s3バケットへpacksとして吐き出す
-  config.action_controller.asset_host   = '//s3-ap-northeast-1.amazonaws.com/sss-my-public'
-  config.assets.prefix                  = '/packs'
-
   config.i18n.fallbacks = true
 
   config.active_support.deprecation = :notify

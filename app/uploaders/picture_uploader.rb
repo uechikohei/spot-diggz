@@ -34,7 +34,7 @@ class PictureUploader < CarrierWave::Uploader::Base
 
   # public/imagesへとパスがつながっている
   def default_url(*args)
-    '/images/' + [version_name, 'picture_default.png'].compact.join('_')
+    '/images/' + ['picture_default.png'].compact.join('_')
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:

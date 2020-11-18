@@ -5,7 +5,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # before_action :configure_account_update_params, only: [:update]
   before_action :check_guest, only: %i[destroy]
 
-  def destroy; end
+  #def destroy; end ←これがあると、ユーザー削除ができなくなる。ゲストユーザー削除は回避できる。
 
   def check_guest
     redirect_to root_path, alert: 'ゲストユーザーは削除できません。' if resource.email == 'guest@sample.com'
