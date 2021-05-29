@@ -1,3 +1,5 @@
+# ごめんなさい！今メンテ中です！
+## 見やすくspaにするので、少々おまちを！
 
 # SkateSpotSearch
 ![sss.red-miso.work](https://github.com/uechikohei/SkateSpotSearch/blob/images/sss.png)
