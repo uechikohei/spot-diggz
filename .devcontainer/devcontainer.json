@@ -91,7 +91,7 @@
   },
   
   // ライフサイクルコマンド
-  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postCreateCommand": "bash /workspace/.devcontainer/setup.sh",
   "postStartCommand": "echo 'spot-diggz開発環境が起動しました 🚀'",
   
   // 環境変数
