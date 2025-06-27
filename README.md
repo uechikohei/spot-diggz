@@ -1,21 +1,57 @@
-# 停止中
+# 🛹 spot-diggz
 
-# SkateSpotSearch
-![sss.red-miso.work](https://github.com/uechikohei/SkateSpotSearch/blob/images/sss.png)
-スケボー初心者の方へ！練習場所をお探しですか？  
-このアプリでは、
-  1. 練習できる場所を登録してみんなでシェア！
-  2. 登録済みのスポットへ現在地からルートを取得！  
-どにいてもスケボーができる場所を探すことができます！
+**スケートスポット検索・シェアアプリケーションのモダンリプレイス版**
 
-開発環境
-- macbook pro retina mid2015
-- macOS Catalina (ver10.15.6)
-- docker,docker-compose
+旧SkateSpotSearchをRust + TypeScript + GCPでフルリニューアル！
 
-URL
----
-https://sss.red-miso.work/
+## 🚀 Quick Start (GitHub Codespaces)
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=master&repo=uechikohei/spot-diggz)
+
+1. 上記ボタンをクリックしてCodespacesを作成
+2. 自動セットアップ完了まで待機（約3-5分）
+3. 開発開始！
+
+## 🛠️ Tech Stack
+
+| Layer | Technology | 選定理由 |
+|-------|------------|----------|
+| **Backend** | Rust (スクラッチ実装) | パフォーマンス + 学習効果 |
+| **Frontend** | React + TypeScript | 型安全性 + エコシステム |
+| **Infrastructure** | GCP (Cloud Run, Firestore) | サーバーレス + コスト効率 |
+| **IaC** | Terraform | Infrastructure as Code |
+| **Development** | GitHub Codespaces + Docker | 統合開発環境 |
+
+## 📁 Project Structure
+
+```
+spot-diggz/
+├── .devcontainer/          # GitHub Codespaces設定
+├── src/
+│   ├── api/               # 🦀 Rust APIサーバー
+│   └── ui/                # ⚛️ React UIアプリ  
+├── resources/             # 🏗️ Terraform Infrastructure
+├── docs/                  # 📚 ドキュメント
+└── scripts/               # 🔧 開発用スクリプト
+```
+
+## 🔧 Development Commands
+
+```bash
+# 開発環境起動
+./scripts/dev-start.sh
+
+# API開発
+cd src/api && cargo run      # localhost:8080
+
+# UI開発  
+cd src/ui && npm start       # localhost:3000
+```
+
+## 📚 Documentation
+
+- [開発環境セットアップ](docs/DEVELOPMENT_SETUP.md)
+- [プロジェクト詳細](CLAUDE.md)
 
 
 操作画面GIF
