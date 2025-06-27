@@ -1,0 +1,360 @@
+{
+  "folders": [
+    {
+      "name": "🏠 Root",
+      "path": "."
+    },
+    {
+      "name": "🦀 API (Rust)",
+      "path": "./src/api"
+    },
+    {
+      "name": "⚛️ UI (React)",
+      "path": "./src/ui"
+    },
+    {
+      "name": "🏗️ Infrastructure (Terraform)",
+      "path": "./resources"
+    },
+    {
+      "name": "📚 Documentation",
+      "path": "./docs"
+    }
+  ],
+  "settings": {
+    // 全体設定
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": true,
+    "editor.renderWhitespace": "boundary",
+    "editor.trimAutoWhitespace": true,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    
+    // Rust設定
+    "rust-analyzer.cargo.loadOutDirsFromCheck": true,
+    "rust-analyzer.procMacro.enable": true,
+    "rust-analyzer.checkOnSave.command": "clippy",
+    "rust-analyzer.cargo.allFeatures": true,
+    "rust-analyzer.completion.addCallArgumentSnippets": true,
+    "rust-analyzer.completion.addCallParenthesis": true,
+    
+    // TypeScript/React設定
+    "typescript.preferences.quoteStyle": "double",
+    "javascript.preferences.quoteStyle": "double",
+    "typescript.suggest.autoImports": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "emmet.includeLanguages": {
+      "typescript": "html",
+      "typescriptreact": "html"
+    },
+    
+    // フォーマッター設定
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.eslint.fixAll": true,
+      "source.organizeImports": true
+    },
+    
+    // 言語別フォーマッター
+    "[rust]": {
+      "editor.defaultFormatter": "rust-lang.rust-analyzer",
+      "editor.formatOnSave": true,
+      "editor.tabSize": 4
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.tabSize": 2
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.tabSize": 2
+    },
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.tabSize": 2
+    },
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.tabSize": 2
+    },
+    "[terraform]": {
+      "editor.defaultFormatter": "hashicorp.terraform",
+      "editor.tabSize": 2
+    },
+    "[markdown]": {
+      "editor.defaultFormatter": "yzhang.markdown-all-in-one",
+      "editor.wordWrap": "on",
+      "editor.quickSuggestions": {
+        "comments": "off",
+        "strings": "off",
+        "other": "off"
+      }
+    },
+    
+    // ファイル監視除外
+    "files.watcherExclude": {
+      "**/target/**": true,
+      "**/node_modules/**": true,
+      "**/.terraform/**": true,
+      "**/dist/**": true,
+      "**/build/**": true,
+      "**/.cache/**": true
+    },
+    
+    // 検索除外
+    "search.exclude": {
+      "**/target": true,
+      "**/node_modules": true,
+      "**/.terraform": true,
+      "**/dist": true,
+      "**/build": true,
+      "**/.cache": true,
+      "**/*.log": true
+    },
+    
+    // ターミナル設定
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "terminal.integrated.cwd": "${workspaceFolder}",
+    "terminal.integrated.env.linux": {
+      "RUST_LOG": "debug"
+    },
+    
+    // Git設定
+    "git.enableSmartCommit": true,
+    "git.autofetch": true,
+    "git.confirmSync": false,
+    "git.enableStatusBarSync": true,
+    
+    // エクスプローラー設定
+    "explorer.compactFolders": false,
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    
+    // Terraform設定
+    "terraform.indexing": {
+      "enabled": true,
+      "liveIndexing": true
+    },
+    "terraform.experimentalFeatures": {
+      "validateOnSave": true,
+      "prefillRequiredFields": true
+    }
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "🦀 Build Rust API",
+        "type": "shell",
+        "command": "cargo",
+        "args": ["build"],
+        "options": {
+          "cwd": "${workspaceFolder}/src/api"
+        },
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "shared",
+          "group": "build"
+        },
+        "problemMatcher": "$rustc"
+      },
+      {
+        "label": "🦀 Run Rust API",
+        "type": "shell",
+        "command": "cargo",
+        "args": ["run"],
+        "options": {
+          "cwd": "${workspaceFolder}/src/api"
+        },
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "shared",
+          "group": "dev"
+        },
+        "problemMatcher": "$rustc"
+      },
+      {
+        "label": "🦀 Test Rust API",
+        "type": "shell",
+        "command": "cargo",
+        "args": ["test"],
+        "options": {
+          "cwd": "${workspaceFolder}/src/api"
+        },
+        "group": "test",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "shared",
+          "group": "test"
+        }
+      },
+      {
+        "label": "⚛️ Install UI Dependencies",
+        "type": "shell",
+        "command": "npm",
+        "args": ["install"],
+        "options": {
+          "cwd": "${workspaceFolder}/src/ui"
+        },
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "shared",
+          "group": "setup"
+        }
+      },
+      {
+        "label": "⚛️ Start React Dev Server",
+        "type": "shell",
+        "command": "npm",
+        "args": ["start"],
+        "options": {
+          "cwd": "${workspaceFolder}/src/ui"
+        },
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "shared",
+          "group": "dev"
+        },
+        "isBackground": true
+      },
+      {
+        "label": "⚛️ Build React UI",
+        "type": "shell",
+        "command": "npm",
+        "args": ["run", "build"],
+        "options": {
+          "cwd": "${workspaceFolder}/src/ui"
+        },
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "shared",
+          "group": "build"
+        }
+      },
+      {
+        "label": "⚛️ Test React UI",
+        "type": "shell",
+        "command": "npm",
+        "args": ["test"],
+        "options": {
+          "cwd": "${workspaceFolder}/src/ui"
+        },
+        "group": "test",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "shared",
+          "group": "test"
+        }
+      },
+      {
+        "label": "🏗️ Terraform Init",
+        "type": "shell",
+        "command": "terraform",
+        "args": ["init"],
+        "options": {
+          "cwd": "${workspaceFolder}/resources"
+        },
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "shared",
+          "group": "terraform"
+        }
+      },
+      {
+        "label": "🏗️ Terraform Plan",
+        "type": "shell",
+        "command": "terraform",
+        "args": ["plan"],
+        "options": {
+          "cwd": "${workspaceFolder}/resources"
+        },
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "shared",
+          "group": "terraform"
+        }
+      },
+      {
+        "label": "🚀 Start Development Environment",
+        "type": "shell",
+        "command": "./scripts/dev-start.sh",
+        "options": {
+          "cwd": "${workspaceFolder}"
+        },
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "shared",
+          "group": "dev"
+        }
+      },
+      {
+        "label": "🛑 Stop Development Environment",
+        "type": "shell",
+        "command": "./scripts/dev-stop.sh",
+        "options": {
+          "cwd": "${workspaceFolder}"
+        },
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "shared",
+          "group": "dev"
+        }
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "🦀 Debug Rust API",
+        "type": "lldb",
+        "request": "launch",
+        "program": "${workspaceFolder}/src/api/target/debug/spot-diggz-api",
+        "args": [],
+        "cwd": "${workspaceFolder}/src/api",
+        "sourceLanguages": ["rust"],
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "rust-lang.rust-analyzer",
+      "vadimcn.vscode-lldb",
+      "serayuzgur.crates",
+      "bradlc.vscode-tailwindcss",
+      "esbenp.prettier-vscode",
+      "dbaeumer.vscode-eslint",
+      "ms-vscode.vscode-typescript-next",
+      "hashicorp.terraform",
+      "ms-azuretools.vscode-docker",
+      "googlecloudtools.cloudcode",
+      "eamodio.gitlens",
+      "yzhang.markdown-all-in-one",
+      "ms-vscode.vscode-json",
+      "github.codespaces",
+      "github.vscode-pull-request-github"
+    ]
+  }
+}
