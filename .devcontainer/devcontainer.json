@@ -16,7 +16,8 @@
     },
     "ghcr.io/devcontainers/features/terraform:1": {
       "version": "latest"
-    }
+    },
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
   },
 
   "customizations": {
@@ -40,6 +41,5 @@
   "remoteUser": "vscode",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   
-  "postCreateCommand": "npm install -g @anthropic-ai/claude-code",
   "postStartCommand": "echo 'spot-diggz開発環境が起動しました 🚀' && echo 'Claude Code利用可能: claude --help'"
 }
