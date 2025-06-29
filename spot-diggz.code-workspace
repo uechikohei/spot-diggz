@@ -120,6 +120,9 @@
       "RUST_LOG": "debug"
     },
     
+    // Claude Code設定
+    "terminal.integrated.allowChords": false,
+    
     // Git設定
     "git.enableSmartCommit": true,
     "git.autofetch": true,
@@ -319,6 +322,22 @@
           "reveal": "always",
           "panel": "shared",
           "group": "dev"
+        }
+      },
+      {
+        "label": "🤖 Start Claude Code",
+        "type": "shell",
+        "command": "claude",
+        "args": [],
+        "options": {
+          "cwd": "${workspaceFolder}"
+        },
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "shared",
+          "group": "claude"
         }
       }
     ]
