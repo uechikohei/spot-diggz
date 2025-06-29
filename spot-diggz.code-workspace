@@ -1,0 +1,8 @@
+{
+    "settings": {
+        "editor.codeActionsOnSave": {
+            "source.eslint.fixAll": "explicit",
+            "source.organizeImports": "explicit"
+        }
+    }
+}
