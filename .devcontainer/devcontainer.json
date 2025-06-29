@@ -1,129 +1,27 @@
 {
   "name": "spot-diggz Development",
-  "dockerFile": "Dockerfile",
-  "context": "..",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
   
-  // VS Code設定
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        // Rust開発
-        "rust-lang.rust-analyzer",
-        "vadimcn.vscode-lldb",
-        "serayuzgur.crates",
-        
-        // TypeScript/React開発
-        "bradlc.vscode-tailwindcss",
-        "esbenp.prettier-vscode",
-        "dbaeumer.vscode-eslint",
-        "ms-vscode.vscode-typescript-next",
-        "bradgashler.htmltagwrap",
-        
-        // インフラ・DevOps
-        "hashicorp.terraform",
-        "ms-azuretools.vscode-docker",
-        "GoogleCloudTools.cloudcode",
-        
-        // Git・ドキュメント
-        "eamodio.gitlens",
-        "yzhang.markdown-all-in-one",
-        "ms-vscode.vscode-json",
-        
-        // 汎用開発支援
-        "ms-vscode.remote-containers",
-        "ms-vscode.remote-repositories",
-        "github.codespaces",
-        "github.vscode-pull-request-github",
-        "ms-vscode.hexeditor"
-      ],
-      
-      "settings": {
-        // Rust設定
-        "rust-analyzer.cargo.loadOutDirsFromCheck": true,
-        "rust-analyzer.procMacro.enable": true,
-        "rust-analyzer.checkOnSave.command": "clippy",
-        
-        // TypeScript設定  
-        "typescript.preferences.quoteStyle": "double",
-        "javascript.preferences.quoteStyle": "double",
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true,
-        "editor.codeActionsOnSave": {
-          "source.eslint.fixAll": true
-        },
-        
-        // ターミナル設定
-        "terminal.integrated.defaultProfile.linux": "bash",
-        "terminal.integrated.shell.linux": "/bin/bash",
-        
-        // ファイル設定
-        "files.watcherExclude": {
-          "**/target/**": true,
-          "**/node_modules/**": true,
-          "**/.terraform/**": true
-        },
-        "search.exclude": {
-          "**/target": true,
-          "**/node_modules": true,
-          "**/.terraform": true
-        }
-      }
-    }
-  },
-  
-  // ポートフォワーディング
-  "forwardPorts": [
-    3000,  // React開発サーバー
-    8080,  // Rust APIサーバー  
-    5432,  // PostgreSQL（開発用）
-    6379   // Redis（開発用）
-  ],
-  
-  "portsAttributes": {
-    "3000": {
-      "label": "React UI",
-      "onAutoForward": "notify"
-    },
-    "8080": {
-      "label": "Rust API", 
-      "onAutoForward": "notify"
-    }
-  },
-  
-  // ライフサイクルコマンド
-  "postCreateCommand": "bash .devcontainer/setup.sh",
-  "postStartCommand": "echo 'spot-diggz開発環境が起動しました 🚀'",
-  
-  // 環境変数
-  "containerEnv": {
-    "RUST_LOG": "debug",
-    "NODE_ENV": "development",
-    "CARGO_NET_GIT_FETCH_WITH_CLI": "true"
-  },
-  
-  // セキュリティ・権限設定
-  "privileged": false,
-  "overrideCommand": false,
-  "shutdownAction": "stopContainer",
-  
-  // 永続化ボリューム
-  "mounts": [
-    "source=sdz-cargo-cache,target=/usr/local/cargo/registry,type=volume",
-    "source=sdz-node-modules,target=/workspace/node_modules,type=volume"
-  ],
-  
-  // リモート開発設定
-  "remoteUser": "vscode",
-  "workspaceFolder": "/workspace",
-  
-  // 機能有効化
   "features": {
-    "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers/features/git:1": {},
     "ghcr.io/devcontainers/features/common-utils:2": {
       "installZsh": true,
       "installOhMyZsh": true,
       "upgradePackages": true
     }
-  }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-json"
+      ]
+    }
+  },
+
+  "forwardPorts": [3000, 8080],
+  
+  "remoteUser": "vscode",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  
+  "postStartCommand": "echo 'spot-diggz開発環境が起動しました 🚀'"
 }
