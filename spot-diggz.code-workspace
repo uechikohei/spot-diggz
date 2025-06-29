@@ -106,6 +106,7 @@
     
     // Claude Code設定
     "terminal.integrated.allowChords": false,
+    "terminal.integrated.shellIntegration.enabled": true,
     
     // Git設定
     "git.enableSmartCommit": true,

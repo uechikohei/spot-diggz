@@ -10,14 +10,28 @@
     },
     "ghcr.io/devcontainers/features/node:1": {
       "version": "lts"
+    },
+    "ghcr.io/devcontainers/features/rust:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/terraform:1": {
+      "version": "latest"
     }
   },
 
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-vscode.vscode-json"
-      ]
+        "ms-vscode.vscode-json",
+        "rust-lang.rust-analyzer",
+        "hashicorp.terraform",
+        "ms-vscode.vscode-typescript-next",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint"
+      ],
+      "settings": {
+        "terminal.integrated.shellIntegration.enabled": true
+      }
     }
   },
 
@@ -26,6 +40,6 @@
   "remoteUser": "vscode",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   
-  "postCreateCommand": "npm install -g @anthropic-ai/claude-code",
+  "postCreateCommand": "bash -c 'curl -fsSL https://raw.githubusercontent.com/anthropics/claude-code/main/install.sh | bash'",
   "postStartCommand": "echo 'spot-diggz開発環境が起動しました 🚀' && echo 'Claude Code利用可能: claude --help'"
 }
