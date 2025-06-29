@@ -40,6 +40,6 @@
   "remoteUser": "vscode",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   
-  "postCreateCommand": "bash -c 'curl -fsSL https://raw.githubusercontent.com/anthropics/claude-code/main/install.sh | bash'",
+  "postCreateCommand": "npm install -g @anthropic-ai/claude-code",
   "postStartCommand": "echo 'spot-diggz開発環境が起動しました 🚀' && echo 'Claude Code利用可能: claude --help'"
 }
