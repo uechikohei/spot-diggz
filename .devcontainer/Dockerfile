@@ -89,7 +89,7 @@ RUN . $HOME/.cargo/env \
 WORKDIR /workspace
 
 # 開発用スクリプトコピー
-COPY setup.sh /workspace/.devcontainer/setup.sh
+COPY .devcontainer/setup.sh /workspace/.devcontainer/setup.sh
 RUN chmod +x /workspace/.devcontainer/setup.sh
 
 # ユーザー設定（Codespacesではvscodeユーザーがデフォルト）

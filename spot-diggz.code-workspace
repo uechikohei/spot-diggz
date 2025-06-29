@@ -1,24 +1,8 @@
 {
   "folders": [
     {
-      "name": "🏠 Root",
+      "name": "🏠 spot-diggz",
       "path": "."
-    },
-    {
-      "name": "🦀 API (Rust)",
-      "path": "./src/api"
-    },
-    {
-      "name": "⚛️ UI (React)",
-      "path": "./src/ui"
-    },
-    {
-      "name": "🏗️ Infrastructure (Terraform)",
-      "path": "./resources"
-    },
-    {
-      "name": "📚 Documentation",
-      "path": "./docs"
     }
   ],
   "settings": {
