@@ -41,6 +41,20 @@ src/api/
 5. ユースケースが必要に応じて`domain`エンティティを操作し、`infrastructure`のリポジトリでFirestore等にアクセス。
 6. 結果をJSON化してレスポンスとして返す。
 
+## 環境変数（API実行時）
+- `SDZ_AUTH_PROJECT_ID` … Firebase/Identity PlatformのプロジェクトID
+- `SDZ_USE_FIRESTORE` … 1でFirestore利用（未設定ならインメモリ）
+- `SDZ_FIRESTORE_PROJECT_ID` … FirestoreプロジェクトID（省略時は`SDZ_AUTH_PROJECT_ID`）
+- `SDZ_FIRESTORE_TOKEN` … Firestore REST用Bearerトークン
+- `SDZ_CORS_ALLOWED_ORIGINS` … 許可オリジン（カンマ区切り、未設定時はlocalhost:3000）
+
+## Firestore 設計メモ
+- データベース: `(default)` を利用し、環境はGCPプロジェクト分離で管理（sdz-dev/stg/prod）。
+- コレクション: `users`, `spots`（プレフィックスなしで統一）。
+- ドキュメントID: usersはFirebase UID、spotsはサーバー生成UUID（プレフィックスなし）。
+- タイムスタンプ: `createdAt` / `updatedAt` はJST(UTC+9)で付与。
+- 位置情報: `location { lat, lng }`（後でgeohashを追加する場合はフィールド追加で対応）。
+
 ## Python/AWSとの比較 (Learning)
 - FastAPI + SQLAlchemyなどでよく見る「Router → Service → Repository」構造とほぼ同じ。Rustでは命名が違うだけ。
 - AWS API Gatewayを利用する場合でも、Lambda内部の処理は同様にレイヤー化できる。Gatewayが`presentation`相当を担当し、内部コードが`application`以降を担うイメージ。
