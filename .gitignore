@@ -1,0 +1,6 @@
+/.DS_Store
+/src/api/target/
+/src/ui/node_modules/
+/src/ui/.next/
+/src/ui/build/
+

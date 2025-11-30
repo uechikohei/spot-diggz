@@ -8,7 +8,7 @@
 - 高可用性かつセキュアなREST APIを設計し、Web/モバイル双方からのアクセスを支える共通基盤を整える。
 - 位置情報投稿や画像ハンドリングといった高負荷処理にも対応できる構成を準備する。
 ### Action
-- 非同期ランタイム（Tokio）とHTTPレイヤー（hyper或いはaxum相当の薄いルータ）を採用したレイヤードアーキテクチャを定義する。
+- 非同期ランタイム（Tokio）とAxumルータを採用したレイヤードアーキテクチャを定義する。
 - 認証／認可、スポット管理、ユーザー管理、統合メトリクスの各コンポーネントを明確に分離し、FirestoreやCloud Storageと疎結合に連携する。
 ### Result
 - iOSアプリやWebフロントが同一APIを利用でき、将来的な機能拡張にも耐える保守性の高い基盤が整う。
@@ -30,9 +30,8 @@
 
 ## 5W1H: Rust APIプロジェクト初期構成
 - **Who**: バックエンド担当（Rust習熟を目指す開発者）が中心、iOS/フロントチームもAPI契約を参照。
-- **What**: `src/api`配下に以下の主要構成を作成。`Cargo.toml`でTokio・hyper/h3・serdeなどを管理。
-  - `src/main.rs`（エントリポイント、`sdz_bootstrap.rs`へ委譲）
-  - `sdz_bootstrap.rs`（設定ロード、DI、サーバー起動）
+- **What**: `src/api`配下に以下の主要構成を作成。`Cargo.toml`でTokio・Axum・serdeなどを管理。
+  - `src/main.rs`（エントリポイント、PORT解決とAxum Router組み立て・serve）
   - `presentation/sdz_router.rs`（ルーティング定義）
   - `presentation/handlers/`（`sdz_auth_handler.rs`, `sdz_spot_handler.rs`, `sdz_user_handler.rs`）
   - `application/sdz_usecases/`（ユースケースロジック）

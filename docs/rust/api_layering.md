@@ -18,17 +18,15 @@
 | domain | ビジネスルールやエンティティ、値オブジェクトを表現 | `domain/sdz_models.rs` |
 | infrastructure | FirestoreやCloud Storage、外部APIとの通信実装 | `infrastructure/`配下に今後追加 |
 
-## bootstrapの役割 (How)
-- `sdz_bootstrap.rs`はアプリ起動時の初期化専用モジュール。サーバーのポート解決、Routerの組み立て、依存関係の注入をまとめる。
-- UIというよりは、サーバーのエントリポイント近くの設定係。DjangoやFastAPIでいう「app = FastAPI()」「uvicorn.run(...)」をひとまとめにしたイメージ。
-- 将来的にConfig読み込みやログ設定、DIコンテナ初期化などもここに集約すると整頓しやすい。
+## 起動とRouterの役割 (How)
+- `main.rs`でPORT環境変数を解決し、Axumの`Router`を組み立てて`axum::serve`で起動する。
+- AxumではRouter/State/ミドルウェアをひとまとめに扱えるため、起動時初期化は`main.rs`に寄せ、Config読み込みやログ設定をここで行う形がシンプル。
 
 ## ディレクトリ構成 (Where)
 ```
 src/api/
   ├── src/
-  │   ├── main.rs            // Tokioエントリポイント
-  │   ├── sdz_bootstrap.rs   // サーバー起動処理
+  │   ├── main.rs            // Tokioエントリポイント（Axum Router組み立て）
   │   ├── presentation/      // ルーターとハンドラ
   │   ├── application/       // ユースケース
   │   ├── domain/            // ドメインモデル
@@ -37,9 +35,8 @@ src/api/
 ```
 
 ## 処理の流れ (Flow)
-1. `main.rs` → `sdz_bootstrap::sdz_bootstrap()`を呼ぶ。
-2. bootstrapがPORT環境変数を読み出し、hyperサーバーを起動。
-3. リクエストが来ると`presentation::sdz_router`がURL/HTTPメソッドでマッチング。
+1. `main.rs`でPORT環境変数を読み出し、Axum Routerを組み立て`axum::serve`で起動。
+2. リクエストが来ると`presentation::sdz_router`がURL/HTTPメソッドでマッチング。
 4. ハンドラが`application`レイヤーのユースケースを呼び出す。
 5. ユースケースが必要に応じて`domain`エンティティを操作し、`infrastructure`のリポジトリでFirestore等にアクセス。
 6. 結果をJSON化してレスポンスとして返す。
@@ -61,3 +58,11 @@ src/api/
 - `application`レイヤーでトランザクションや複数リポジトリを組み合わせるパターン。
 - `domain`でバリデーションロジックやビジネスルールを表現するテクニック（Smart Constructorなど）。
 - `presentation`でミドルウェア（認証、ロギング、Rate Limiting）を実装する方法。
+
+## Rust Webフレームワーク比較メモ
+- 参考リンク: https://github.com/flosse/rust-web-framework-comparison#high-level-server-frameworks
+- 高レベル・学習コスト低めでAPIを組み立てるならAxumが第一候補（Tokio + Tower、extractorが扱いやすい）。
+- 成熟度・実績重視ならActix Webが有力。iOSクライアントから叩く一般的なREST/JSONシナリオでも問題なく利用できる。
+- WarpはフィルタDSLが特徴で、短いコードで書けるが思考パターンに慣れが必要。
+- Poem/SalvoはAxumに近い書き味で、OpenAPI生成など周辺機能がまとまっている。
+- 目的が「成熟度・実績」であればActix Web、モダンな書き味と拡張性であればAxumを軸に検討する。
