@@ -34,7 +34,7 @@ impl SdzCreateSpotUseCase {
             input.images.unwrap_or_default(),
             auth_user.sdz_user_id,
         )
-        .map_err(|e| map_validation_error(e))?;
+        .map_err(map_validation_error)?;
 
         repo.create(spot.clone()).await?;
 
