@@ -7,7 +7,7 @@ use crate::{
     presentation::error::SdzApiError,
 };
 
-/// Firestoreの`sdl-user`コレクションからユーザーを取得するリポジトリ。
+/// Firestoreの`users`コレクションからユーザーを取得するリポジトリ。
 /// 認証には環境変数`SDZ_FIRESTORE_TOKEN`で指定されたBearerトークンを使用する。
 pub struct SdzFirestoreUserRepository {
     project_id: String,
@@ -29,7 +29,7 @@ impl SdzFirestoreUserRepository {
     }
 
     async fn get_document(&self, user_id: &str) -> Result<Option<FirestoreUserDoc>, SdzApiError> {
-        let url = format!("https://firestore.googleapis.com/v1/projects/{}/databases/(default)/documents/sdz-user/{}", self.project_id, user_id);
+        let url = format!("https://firestore.googleapis.com/v1/projects/{}/databases/(default)/documents/users/{}", self.project_id, user_id);
         let resp = self
             .http
             .get(url)

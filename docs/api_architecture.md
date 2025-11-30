@@ -42,6 +42,22 @@
 - **Why**: レイヤー分離により認証、スポット管理、外部API連携を疎結合化し、テスト容易性とセキュリティ制御を高めるため。
 - **How**: Configは`sdz_config`モジュールで環境変数（Secret Manager連携）を読み込み、依存注入は構造体パターンで実施。FireStoreアクセスは`google-cloud-firestore`互換クライアント、MapKit/Google Maps連携はREST/gRPCクライアントを用意する。
 
+## ランタイム環境変数（API）
+- `SDZ_AUTH_PROJECT_ID`: Firebase/Identity PlatformのプロジェクトID（例: sdz-dev）
+- `SDZ_USE_FIRESTORE`: 1でFirestore利用（未設定ならインメモリ）
+- `SDZ_FIRESTORE_PROJECT_ID`: FirestoreプロジェクトID（省略時は`SDZ_AUTH_PROJECT_ID`）
+- `SDZ_FIRESTORE_TOKEN`: Firestore REST用Bearerトークン（開発時は`gcloud auth print-access-token`）
+- `SDZ_CORS_ALLOWED_ORIGINS`: 許可オリジンのカンマ区切り（未設定時はlocalhost:3000のみ）
+
+## Firestore 命名・ID方針
+- データベース: `(default)`（環境はプロジェクト分離で管理: sdz-dev/stg/prod）
+- コレクション: `users`, `spots`（プレフィックス不要）
+- ドキュメントID:  
+  - users … Firebase UID  
+  - spots … サーバー生成UUID（プレフィックスなし）
+- タイムスタンプ: `createdAt` / `updatedAt` をJST(UTC+9)で付与
+- 位置情報: `location { lat, lng }`（必要なら将来 geohash 追加）
+
 ## 5W1H: 投稿APIと位置情報連携のトラブル観点
 - **Who**: 投稿するのは認証済み会員ユーザー。iOSアプリからの投稿が主だがWeb管理画面も想定。
 - **What**: `POST /v1/sdz-spots`で座標・画像・タグを受け取り、Firestoreに保存しCloud Storageへ画像を転送。MapKit経由の経路提案情報はメタデータとして保持。

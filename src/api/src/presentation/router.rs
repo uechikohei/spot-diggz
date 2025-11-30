@@ -8,15 +8,19 @@ use tower_http::{
 use std::sync::Arc;
 
 use crate::{
-    application::use_cases::user_repository::SdzUserRepository,
+    application::use_cases::{
+        spot_repository::SdzSpotRepository, user_repository::SdzUserRepository,
+    },
     domain::models::SdzUser,
     infrastructure::{
+        firestore_spot_repository::SdzFirestoreSpotRepository,
         firestore_user_repository::SdzFirestoreUserRepository,
+        in_memory_spot_repository::SdzInMemorySpotRepository,
         in_memory_user_repository::SdzInMemoryUserRepository,
     },
 };
 
-use super::handlers::{health_handler, user_handler};
+use super::handlers::{health_handler, spot_handler, user_handler};
 
 pub fn sdz_build_router() -> Router {
     let state = build_state();
@@ -24,6 +28,11 @@ pub fn sdz_build_router() -> Router {
     Router::new()
         .route("/sdz/health", get(health_handler::handle_health))
         .route("/sdz/users/me", get(user_handler::handle_get_me))
+        .route(
+            "/sdz/spots",
+            axum::routing::post(spot_handler::handle_create_spot),
+        )
+        .route("/sdz/spots/:spot_id", get(spot_handler::handle_get_spot))
         .with_state(state)
         .layer(cors_layer())
         .layer(TraceLayer::new_for_http())
@@ -72,9 +81,13 @@ fn build_state() -> SdzAppState {
                 .or_else(|_| std::env::var("SDZ_AUTH_PROJECT_ID")),
             std::env::var("SDZ_FIRESTORE_TOKEN"),
         ) {
-            if let Ok(repo) = SdzFirestoreUserRepository::new(project_id, token) {
+            if let (Ok(user_repo), Ok(spot_repo)) = (
+                SdzFirestoreUserRepository::new(project_id.clone(), token.clone()),
+                SdzFirestoreSpotRepository::new(project_id, token),
+            ) {
                 return SdzAppState {
-                    user_repo: Arc::new(repo),
+                    user_repo: Arc::new(user_repo),
+                    spot_repo: Arc::new(spot_repo),
                 };
             } else {
                 tracing::warn!("Failed to init Firestore repo, falling back to in-memory");
@@ -95,10 +108,12 @@ fn build_state() -> SdzAppState {
     let repo = SdzInMemoryUserRepository::new_with_seed(vec![seed_user]);
     SdzAppState {
         user_repo: Arc::new(repo),
+        spot_repo: Arc::new(SdzInMemorySpotRepository::default()),
     }
 }
 
 #[derive(Clone)]
 pub struct SdzAppState {
     pub user_repo: Arc<dyn SdzUserRepository>,
+    pub spot_repo: Arc<dyn SdzSpotRepository>,
 }

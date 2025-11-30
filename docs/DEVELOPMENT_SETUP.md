@@ -118,17 +118,21 @@ gcloud auth login
 gcloud config set project sdz-dev  # 開発環境プロジェクト
 ```
 
-### 環境変数設定
+### 環境変数設定（API）
 
 ```bash
-# .env ファイル作成（各サブプロジェクトで）
+# Rust API用の例
 cd src/api
 cat > .env << 'EOF'
 RUST_LOG=debug
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/spot_diggz_dev
-REDIS_URL=redis://localhost:6379
+SDZ_AUTH_PROJECT_ID=sdz-dev                # Firebase/Identity PlatformのプロジェクトID
+SDZ_USE_FIRESTORE=1                        # 1でFirestore利用（未設定ならインメモリ）
+SDZ_FIRESTORE_PROJECT_ID=sdz-dev           # 省略時はSDZ_AUTH_PROJECT_ID
+SDZ_FIRESTORE_TOKEN=$(gcloud auth print-access-token)   # Firestore REST用のBearerトークン
+SDZ_CORS_ALLOWED_ORIGINS=http://localhost:3000          # カンマ区切りで追加
 EOF
 
+# UI用の例
 cd ../ui  
 cat > .env << 'EOF'
 REACT_APP_API_URL=http://localhost:8080
