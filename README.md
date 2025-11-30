@@ -115,6 +115,11 @@ chromedriverコンテナ(systemspecブラウザを使用したテストの為)
 - 都道府県別や現在地から近い登録スポットを表示する機能
 (実装予定)
 
+## 開発メモ: Gitで無視しているもの
+- `/src/api/target/` … Rustビルド成果物。`cargo clean`で再生成可能。
+- `/src/ui/node_modules/` `/src/ui/.next/` `/src/ui/build/` … フロントの依存やビルド成果物。`npm install`/`npm run build`で再生成可能。
+- `/.DS_Store` … macOSのメタファイル。コードと無関係のため除外。
+
 #### その他
 - Rspecテストが少ない。request specが書けていない。
 - git commit メッセージが重複していたり、簡潔でない内容になっている。
