@@ -55,7 +55,6 @@ jobs:
   react-ci:
     name: ⚛️ React UI CI
     runs-on: ubuntu-latest
-    if: ${{ hashFiles('src/ui/package-lock.json') != '' }}
     defaults:
       run:
         working-directory: ./src/ui
@@ -63,8 +62,19 @@ jobs:
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
-        
+      
+      - name: 🔎 Check lockfile exists
+        id: lockfile
+        run: |
+          if [ -f package-lock.json ]; then
+            echo "exists=yes" >> "$GITHUB_OUTPUT"
+          else
+            echo "package-lock.json not found, skipping React CI"
+            echo "exists=no" >> "$GITHUB_OUTPUT"
+          fi
+      
       - name: 📦 Setup Node.js
+        if: steps.lockfile.outputs.exists == 'yes'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -72,21 +82,27 @@ jobs:
           cache-dependency-path: src/ui/package-lock.json
           
       - name: 📦 Install dependencies
+        if: steps.lockfile.outputs.exists == 'yes'
         run: npm ci
         
       - name: 🔍 Run ESLint
+        if: steps.lockfile.outputs.exists == 'yes'
         run: npm run lint
         
       - name: 📋 Check TypeScript types
+        if: steps.lockfile.outputs.exists == 'yes'
         run: npm run type-check
         
       - name: 🧪 Run unit tests
+        if: steps.lockfile.outputs.exists == 'yes'
         run: npm test -- --coverage --watchAll=false
         
       - name: 🏗️ Build production bundle
+        if: steps.lockfile.outputs.exists == 'yes'
         run: npm run build
         
       - name: 📊 Upload coverage reports
+        if: steps.lockfile.outputs.exists == 'yes'
         uses: codecov/codecov-action@v3
         with:
           directory: ./src/ui/coverage
