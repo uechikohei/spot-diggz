@@ -48,6 +48,7 @@ where
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct FirebaseClaims {
     #[serde(default)]
     sub: String,
