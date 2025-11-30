@@ -48,10 +48,24 @@ cd src/api && cargo run      # localhost:8080
 cd src/ui && npm start       # localhost:3000
 ```
 
+## ⚙️ 環境変数（API）
+
+- `SDZ_AUTH_PROJECT_ID` … Firebase/Identity PlatformのプロジェクトID（例: sdz-dev）
+- `SDZ_USE_FIRESTORE` … `1` でFirestore利用、未設定ならインメモリ
+- `SDZ_FIRESTORE_PROJECT_ID` … FirestoreのプロジェクトID（省略時はSDZ_AUTH_PROJECT_IDを使用）
+- `SDZ_FIRESTORE_TOKEN` … Firestore RESTに使うBearerトークン（`gcloud auth print-access-token` など）
+- `SDZ_CORS_ALLOWED_ORIGINS` … カンマ区切りの許可オリジン（未設定時はlocalhost:3000のみ）
+
 ## 📚 Documentation
 
 - [開発環境セットアップ](docs/DEVELOPMENT_SETUP.md)
 - [プロジェクト詳細](CLAUDE.md)
+
+## 🔌 APIエンドポイント（現在の実装状況）
+- `GET /sdz/health` … ヘルスチェック
+- `GET /sdz/users/me` … 認証必須。Firebase IDトークンを検証し、Firestoreの`users/{uid}`またはメモリから返却
+- `POST /sdz/spots` … 認証必須。UUIDの`spotId`を払い出し、Firestoreの`spots/{uuid}`またはメモリに保存
+- `GET /sdz/spots/{id}` … 公開。Firestore/メモリから取得（存在しなければ404）
 
 
 操作画面GIF
@@ -114,6 +128,11 @@ chromedriverコンテナ(systemspecブラウザを使用したテストの為)
 #### アプリの機能が少ない。
 - 都道府県別や現在地から近い登録スポットを表示する機能
 (実装予定)
+
+## 開発メモ: Gitで無視しているもの
+- `/src/api/target/` … Rustビルド成果物。`cargo clean`で再生成可能。
+- `/src/ui/node_modules/` `/src/ui/.next/` `/src/ui/build/` … フロントの依存やビルド成果物。`npm install`/`npm run build`で再生成可能。
+- `/.DS_Store` … macOSのメタファイル。コードと無関係のため除外。
 
 #### その他
 - Rspecテストが少ない。request specが書けていない。
