@@ -55,6 +55,7 @@ jobs:
   react-ci:
     name: ⚛️ React UI CI
     runs-on: ubuntu-latest
+    if: ${{ hashFiles('src/ui/package-lock.json') != '' }}
     defaults:
       run:
         working-directory: ./src/ui
