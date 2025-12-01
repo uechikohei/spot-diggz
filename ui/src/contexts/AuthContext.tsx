@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import {
   User,
   onAuthStateChanged,
@@ -8,10 +9,9 @@ import {
   sendEmailVerification,
   signOut,
 } from 'firebase/auth';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react';
 import { auth } from '../firebase';
 import {
-  collection,
   doc,
   getDoc,
   getFirestore,
@@ -25,7 +25,7 @@ type AuthContextValue = {
   loading: boolean;
   loginWithGoogle: () => Promise<void>;
   loginWithEmail: (email: string, password: string) => Promise<void>;
-  signupWithEmail: (email: string, password: string, displayName: string) => Promise<void>;
+  signupWithEmail: (email: string, password: string) => Promise<void>;
   resendVerification: () => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -62,7 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => unsub();
   }, []);
 
-  const loginWithGoogle = async () => {
+  const loginWithGoogle = useCallback(async () => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
     const credential = await signInWithPopup(auth, provider);
@@ -73,9 +73,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await ensureUserDoc(user.uid, user.email);
 
     // 初回ログイン時のFirestore作成は後続のサーバーサイド処理や別タイミングで実施する想定
-  };
+  }, [ensureUserDoc]);
 
-  const loginWithEmail = async (email: string, password: string) => {
+  const loginWithEmail = useCallback(async (email: string, password: string) => {
     const credential = await signInWithEmailAndPassword(auth, email, password);
     if (!credential.user.emailVerified) {
       await sendEmailVerification(credential.user);
@@ -85,9 +85,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await ensureUserDoc(credential.user.uid, credential.user.email);
     const token = await credential.user.getIdToken();
     setIdToken(token ?? null);
-  };
+  }, [ensureUserDoc]);
 
-  const signupWithEmail = async (email: string, password: string, displayName: string) => {
+  const signupWithEmail = useCallback(async (email: string, password: string) => {
     const credential = await createUserWithEmailAndPassword(auth, email, password);
     const user = credential.user;
     await sendEmailVerification(user);
@@ -95,15 +95,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIdToken(null);
 
     await ensureUserDoc(user.uid, email);
-  };
+  }, [ensureUserDoc]);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     await signOut(auth);
     setIdToken(null);
-  };
+  }, []);
 
   // users/{uid} を存在しなければ作成（createdAtのみセット、updatedAtはnull）
-  const ensureUserDoc = async (uid: string, email: string | null) => {
+  const ensureUserDoc = useCallback(async (uid: string, email: string | null) => {
     try {
       if (!email) {
         throw new Error('メールアドレスが取得できませんでした。');
@@ -144,15 +144,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         ? err
         : new Error('ユーザープロファイルの作成に失敗しました。');
     }
-  };
+  }, []);
 
-  const resendVerification = async () => {
+  const resendVerification = useCallback(async () => {
     if (auth.currentUser && !auth.currentUser.emailVerified) {
       await sendEmailVerification(auth.currentUser);
     } else {
       throw new Error('再送できる未認証ユーザーが見つかりません。');
     }
-  };
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -165,7 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       resendVerification,
       logout,
     }),
-    [user, idToken, loading],
+    [user, idToken, loading, loginWithGoogle, loginWithEmail, signupWithEmail, resendVerification, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
