@@ -378,5 +378,5 @@ impl FirestoreSpotDocWithName {
 }
 
 fn extract_doc_id(name: &str) -> Option<String> {
-    name.split('/').last().map(|s| s.to_string())
+    name.split('/').next_back().map(|s| s.to_owned())
 }
