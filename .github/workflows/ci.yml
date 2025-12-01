@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./src/api
+        working-directory: ./api
     
     steps:
       - name: 📥 Checkout repository
@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./src/ui
+        working-directory: ./ui
         
     steps:
       - name: 📥 Checkout repository
@@ -79,7 +79,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: src/ui/package-lock.json
+          cache-dependency-path: ui/package-lock.json
           
       - name: 📦 Install dependencies
         if: steps.lockfile.outputs.exists == 'yes'
@@ -105,7 +105,7 @@ jobs:
         if: steps.lockfile.outputs.exists == 'yes'
         uses: codecov/codecov-action@v3
         with:
-          directory: ./src/ui/coverage
+          directory: ./ui/coverage
 
   # Terraform 設定検証
   terraform-ci:

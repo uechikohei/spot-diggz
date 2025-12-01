@@ -99,6 +99,66 @@ impl SdzSpotRepository for SdzFirestoreSpotRepository {
 
         Ok(Some(doc.into_spot(spot_id.to_string())))
     }
+
+    async fn list_recent(&self, _limit: usize) -> Result<Vec<SdzSpot>, SdzApiError> {
+        let limit = _limit.min(100) as i32;
+        let url = format!(
+            "https://firestore.googleapis.com/v1/projects/{}/databases/(default)/documents:runQuery",
+            self.project_id
+        );
+
+        let body = json!({
+            "structuredQuery": {
+                "from": [{ "collectionId": "spots" }],
+                "orderBy": [{
+                    "field": { "fieldPath": "createdAt" },
+                    "direction": "DESCENDING"
+                }],
+                "limit": limit
+            }
+        });
+
+        let resp = self
+            .http
+            .post(url)
+            .bearer_auth(&self.bearer_token)
+            .json(&body)
+            .send()
+            .await
+            .map_err(|e| {
+                tracing::error!("Firestore runQuery request error: {:?}", e);
+                SdzApiError::Internal
+            })?;
+
+        if !resp.status().is_success() {
+            let status = resp.status();
+            let text = resp.text().await.unwrap_or_default();
+            tracing::error!(
+                "Firestore runQuery unexpected status {} body: {}",
+                status,
+                text
+            );
+            return Err(SdzApiError::Internal);
+        }
+
+        let rows = resp
+            .json::<Vec<FirestoreRunQueryResponse>>()
+            .await
+            .map_err(|e| {
+                tracing::error!("Failed to parse Firestore runQuery response: {:?}", e);
+                SdzApiError::Internal
+            })?;
+
+        let mut spots = Vec::new();
+        for row in rows {
+            if let Some(doc) = row.document {
+                if let Some(spot_id) = extract_doc_id(&doc.name) {
+                    spots.push(doc.into_spot(spot_id));
+                }
+            }
+        }
+        Ok(spots)
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -295,4 +355,28 @@ fn map_status(
             Err(SdzApiError::Internal)
         }
     }
+}
+
+#[derive(Debug, Deserialize)]
+struct FirestoreRunQueryResponse {
+    document: Option<FirestoreSpotDocWithName>,
+}
+
+#[derive(Debug, Deserialize)]
+struct FirestoreSpotDocWithName {
+    name: String,
+    fields: FirestoreSpotFields,
+}
+
+impl FirestoreSpotDocWithName {
+    fn into_spot(self, spot_id: String) -> SdzSpot {
+        let doc = FirestoreSpotDoc {
+            fields: self.fields,
+        };
+        doc.into_spot(spot_id)
+    }
+}
+
+fn extract_doc_id(name: &str) -> Option<String> {
+    name.split('/').next_back().map(|s| s.to_owned())
 }

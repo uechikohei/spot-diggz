@@ -134,7 +134,7 @@
         "command": "cargo",
         "args": ["build"],
         "options": {
-          "cwd": "${workspaceFolder}/src/api"
+        "cwd": "${workspaceFolder}/api"
         },
         "group": "build",
         "presentation": {
@@ -151,7 +151,7 @@
         "command": "cargo",
         "args": ["run"],
         "options": {
-          "cwd": "${workspaceFolder}/src/api"
+        "cwd": "${workspaceFolder}/api"
         },
         "group": "build",
         "presentation": {
@@ -168,7 +168,7 @@
         "command": "cargo",
         "args": ["test"],
         "options": {
-          "cwd": "${workspaceFolder}/src/api"
+        "cwd": "${workspaceFolder}/api"
         },
         "group": "test",
         "presentation": {
@@ -184,7 +184,7 @@
         "command": "npm",
         "args": ["install"],
         "options": {
-          "cwd": "${workspaceFolder}/src/ui"
+        "cwd": "${workspaceFolder}/ui"
         },
         "group": "build",
         "presentation": {
@@ -200,7 +200,7 @@
         "command": "npm",
         "args": ["start"],
         "options": {
-          "cwd": "${workspaceFolder}/src/ui"
+        "cwd": "${workspaceFolder}/ui"
         },
         "group": "build",
         "presentation": {
@@ -217,7 +217,7 @@
         "command": "npm",
         "args": ["run", "build"],
         "options": {
-          "cwd": "${workspaceFolder}/src/ui"
+        "cwd": "${workspaceFolder}/ui"
         },
         "group": "build",
         "presentation": {
@@ -233,7 +233,7 @@
         "command": "npm",
         "args": ["test"],
         "options": {
-          "cwd": "${workspaceFolder}/src/ui"
+        "cwd": "${workspaceFolder}/ui"
         },
         "group": "test",
         "presentation": {
@@ -314,9 +314,9 @@
         "name": "🦀 Debug Rust API",
         "type": "lldb",
         "request": "launch",
-        "program": "${workspaceFolder}/src/api/target/debug/spot-diggz-api",
+        "program": "${workspaceFolder}/api/target/debug/sdz_api",
         "args": [],
-        "cwd": "${workspaceFolder}/src/api",
+        "cwd": "${workspaceFolder}/api",
         "sourceLanguages": ["rust"],
         "console": "integratedTerminal"
       }

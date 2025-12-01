@@ -1,7 +1,7 @@
 # Cloud Run デプロイとAPI構成ガイド
 
 ## 1. 全体像 (What)
-- `src/api`で実装したRustコンテナをCloud Runへデプロイし、HTTPSエンドポイントとして公開する。
+- `api`で実装したRustコンテナをCloud Runへデプロイし、HTTPSエンドポイントとして公開する。
 - クライアント（Web/モバイル）はCloud RunのURLまたはカスタムドメイン経由でAPIへリクエストする。
 - FirestoreやCloud StorageといったGCPマネージドサービスへはRustアプリから直接アクセスする。
 

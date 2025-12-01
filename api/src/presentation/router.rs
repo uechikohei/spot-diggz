@@ -32,7 +32,8 @@ pub fn sdz_build_router() -> Router {
             "/sdz/spots",
             axum::routing::post(spot_handler::handle_create_spot),
         )
-        .route("/sdz/spots/:spot_id", get(spot_handler::handle_get_spot))
+        .route("/sdz/spots", get(spot_handler::handle_list_spots))
+        .route("/sdz/spots/{spot_id}", get(spot_handler::handle_get_spot))
         .with_state(state)
         .layer(cors_layer())
         .layer(TraceLayer::new_for_http())

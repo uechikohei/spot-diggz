@@ -26,10 +26,7 @@ impl SdzGetSpotUseCase {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        domain::models::{SdzSpot, SdzSpotLocation},
-        infrastructure::in_memory_spot_repository::SdzInMemorySpotRepository,
-    };
+    use crate::infrastructure::in_memory_spot_repository::SdzInMemorySpotRepository;
 
     #[tokio::test]
     async fn get_spot_not_found() {

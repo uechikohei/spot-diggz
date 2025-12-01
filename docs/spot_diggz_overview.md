@@ -57,8 +57,8 @@
 - ユーザーはスポット閲覧から現地ナビまでワンストップで利用でき、コミュニティ投稿の活性化も期待できる。
 
 ## 参考: 現行リポジトリ構成（2024-詳細設計前）
-- `src/api`: RustによるAPIサーバープロジェクト（Cargoベース、スクラッチ実装予定）。
-- `src/ui`: React + TypeScript SPA（npmベース、Cloud Storageから配信予定）。
+- `api`: RustによるAPIサーバープロジェクト（Cargoベース、スクラッチ実装予定）。
+- `ui`: React + TypeScript SPA（npmベース、Cloud Storageから配信予定）。
 - `src/ios`（新設予定）: Swift/SwiftUIで実装するネイティブアプリのコードベース。MapKit連携とAPIクライアントを含む。
 - `resources`: Terraformによる組織・環境・プロジェクト階層のIaC定義。
 - `docs`: 開発手順や要件メモを格納するディレクトリ。
