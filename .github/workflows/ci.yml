@@ -95,7 +95,7 @@ jobs:
         
       - name: 🧪 Run unit tests
         if: steps.lockfile.outputs.exists == 'yes'
-        run: npm test -- --coverage --watchAll=false
+        run: npm test -- --coverage --watch=false
         
       - name: 🏗️ Build production bundle
         if: steps.lockfile.outputs.exists == 'yes'

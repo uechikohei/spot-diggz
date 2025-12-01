@@ -13,13 +13,24 @@ function formatCoords(location?: SdzSpot['location']) {
 }
 
 function App() {
-  const { user, idToken, login, logout, loading: authLoading } = useAuth();
+  const {
+    user,
+    idToken,
+    loginWithGoogle,
+    loginWithEmail,
+    signupWithEmail,
+    resendVerification,
+    logout,
+    loading: authLoading,
+  } = useAuth();
   const [spots, setSpots] = useState<SdzSpot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -36,6 +47,7 @@ function App() {
     () => `API base: ${apiUrl}（GET /sdz/spots を表示中）`,
     [],
   );
+  const isEmailPending = user && !user.emailVerified;
 
   const fetchSpots = async (signal?: AbortSignal) => {
     try {
@@ -59,13 +71,44 @@ function App() {
     return () => controller.abort();
   }, []);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLoginWithGoogle = async () => {
+    setAuthError(null);
+    try {
+      await loginWithGoogle();
+    } catch (err) {
+      setAuthError((err as Error).message);
+    }
+  };
+
+  const handleLoginWithEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError(null);
     try {
-      await login(email, password);
-      setEmail('');
-      setPassword('');
+      await loginWithEmail(loginEmail, loginPassword);
+      setLoginEmail('');
+      setLoginPassword('');
+    } catch (err) {
+      setAuthError((err as Error).message);
+    }
+  };
+
+  const handleSignupWithEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError(null);
+    try {
+      await signupWithEmail(signupEmail, signupPassword);
+      setSignupEmail('');
+      setSignupPassword('');
+    } catch (err) {
+      setAuthError((err as Error).message);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setAuthError(null);
+    try {
+      await resendVerification();
+      setAuthError('確認メールを再送しました。受信トレイを確認してください。');
     } catch (err) {
       setAuthError((err as Error).message);
     }
@@ -159,31 +202,82 @@ function App() {
             <button onClick={handleLogout}>ログアウト</button>
           </div>
         ) : (
-          <form onSubmit={handleLogin} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <input
-              type="email"
-              placeholder="メールアドレス"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <input
-              type="password"
-              placeholder="パスワード"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <button type="submit" disabled={authLoading}>
-              ログイン
-            </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <button type="button" onClick={handleLoginWithGoogle} disabled={authLoading}>
+                Googleでログイン / 新規登録
+              </button>
+            </div>
+
+            <form onSubmit={handleLoginWithEmail} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <input
+                type="email"
+                placeholder="メールアドレスでログイン"
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                required
+              />
+              <input
+                type="password"
+                placeholder="パスワード"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                required
+              />
+              <button type="submit" disabled={authLoading}>
+                メールでログイン
+              </button>
+            </form>
+
+            <form onSubmit={handleSignupWithEmail} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <input
+                type="email"
+                placeholder="メールアドレス（新規登録）"
+                value={signupEmail}
+                onChange={(e) => setSignupEmail(e.target.value)}
+                required
+              />
+              <input
+                type="password"
+                placeholder="パスワード（新規登録）"
+                value={signupPassword}
+                onChange={(e) => setSignupPassword(e.target.value)}
+                required
+              />
+              <button type="submit" disabled={authLoading}>
+                メールで新規登録
+              </button>
+            </form>
             {authError && <div className="sdz-error">Authエラー: {authError}</div>}
-          </form>
+          </div>
         )}
       </div>
 
-      {/* 新規/更新ボタンプレースホルダ */}
-      {user && (
+      {/* 未認証ユーザー向けの案内（専用ビュー） */}
+      {isEmailPending && (
+        <div className="sdz-card" style={{ marginBottom: 16 }}>
+          <h2>メール認証が必要です</h2>
+          <p>
+            {user?.email} 宛に認証メールを送信しました。受信トレイ（迷惑メール含む）でリンクを開いて認証してください。
+          </p>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+            <button type="button" onClick={handleResendVerification}>
+              認証メールを再送
+            </button>
+            <button type="button" onClick={() => window.location.reload()}>
+              認証後は再読み込み
+            </button>
+            <button type="button" onClick={handleLogout}>
+              ログアウト
+            </button>
+          </div>
+          {authError && <div className="sdz-error">Authエラー: {authError}</div>}
+        </div>
+      )}
+
+      {/* 認証済みユーザー専用コンテンツ */}
+      {!isEmailPending && user && (
+        /* 新規/更新ボタンプレースホルダ */
         <div className="sdz-card" style={{ marginBottom: 16 }}>
           <form onSubmit={handleCreateSpot} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
