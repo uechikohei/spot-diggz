@@ -48,6 +48,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [idToken, setIdToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // users/{uid} を存在しなければ作成（createdAtのみセット、updatedAtはnull）
+  const ensureUserDoc = useCallback(async (uid: string, email: string | null) => {
+    try {
+      if (!email) {
+        throw new Error('メールアドレスが取得できませんでした。');
+      }
+      const db = getFirestore();
+      const docRef = doc(db, 'users', uid);
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) {
+        await setDoc(
+          docRef,
+          {
+            email,
+            createdAt: serverTimestamp(),
+            updatedAt: null, // 初回はnull、更新時に上書きする想定
+          },
+          { merge: true },
+        );
+      } else {
+        // 既存ドキュメントでもemailが空なら補完する
+        const current = snap.data();
+        if (!current?.email) {
+          await setDoc(
+            docRef,
+            { email, updatedAt: serverTimestamp() },
+            { merge: true },
+          );
+        }
+      }
+
+      // 書き込み後に存在を確認し、なければエラー
+      const confirm = await getDoc(docRef);
+      if (!confirm.exists()) {
+        throw new Error('Firestoreにユーザードキュメントを作成できませんでした。');
+      }
+    } catch (err) {
+      console.error('ensureUserDoc failed', err);
+      throw err instanceof Error
+        ? err
+        : new Error('ユーザープロファイルの作成に失敗しました。');
+    }
+  }, []);
+
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
       setUser(u);
@@ -100,50 +144,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = useCallback(async () => {
     await signOut(auth);
     setIdToken(null);
-  }, []);
-
-  // users/{uid} を存在しなければ作成（createdAtのみセット、updatedAtはnull）
-  const ensureUserDoc = useCallback(async (uid: string, email: string | null) => {
-    try {
-      if (!email) {
-        throw new Error('メールアドレスが取得できませんでした。');
-      }
-      const db = getFirestore();
-      const docRef = doc(db, 'users', uid);
-      const snap = await getDoc(docRef);
-      if (!snap.exists()) {
-        await setDoc(
-          docRef,
-          {
-            email,
-            createdAt: serverTimestamp(),
-            updatedAt: null, // 初回はnull、更新時に上書きする想定
-          },
-          { merge: true },
-        );
-      } else {
-        // 既存ドキュメントでもemailが空なら補完する
-        const current = snap.data();
-        if (!current?.email) {
-          await setDoc(
-            docRef,
-            { email, updatedAt: serverTimestamp() },
-            { merge: true },
-          );
-        }
-      }
-
-      // 書き込み後に存在を確認し、なければエラー
-      const confirm = await getDoc(docRef);
-      if (!confirm.exists()) {
-        throw new Error('Firestoreにユーザードキュメントを作成できませんでした。');
-      }
-    } catch (err) {
-      console.error('ensureUserDoc failed', err);
-      throw err instanceof Error
-        ? err
-        : new Error('ユーザープロファイルの作成に失敗しました。');
-    }
   }, []);
 
   const resendVerification = useCallback(async () => {
