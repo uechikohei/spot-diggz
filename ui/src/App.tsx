@@ -31,7 +31,6 @@ function App() {
   const [loginPassword, setLoginPassword] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
-  const [signupDisplayName, setSignupDisplayName] = useState('');
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -97,10 +96,9 @@ function App() {
     e.preventDefault();
     setAuthError(null);
     try {
-      await signupWithEmail(signupEmail, signupPassword, signupDisplayName);
+      await signupWithEmail(signupEmail, signupPassword);
       setSignupEmail('');
       setSignupPassword('');
-      setSignupDisplayName('');
     } catch (err) {
       setAuthError((err as Error).message);
     }
@@ -232,13 +230,6 @@ function App() {
             </form>
 
             <form onSubmit={handleSignupWithEmail} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <input
-                type="text"
-                placeholder="表示名（新規登録）"
-                value={signupDisplayName}
-                onChange={(e) => setSignupDisplayName(e.target.value)}
-                required
-              />
               <input
                 type="email"
                 placeholder="メールアドレス（新規登録）"
