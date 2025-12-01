@@ -32,10 +32,10 @@ if command -v rustc &> /dev/null; then
     echo "✅ Cargo version: $(cargo --version)"
     
     # Rust APIディレクトリ初期化
-    if [ ! -f src/api/Cargo.toml ]; then
+    if [ ! -f api/Cargo.toml ]; then
         echo "📦 Rust APIプロジェクトを初期化中..."
-        cd src/api
-        cargo init --name spot-diggz-api --bin .
+        cd api
+    cargo init --name sdz_api --bin .
         
         # 基本的な依存関係を追加
         cat >> Cargo.toml << 'EOF'
@@ -68,9 +68,9 @@ if command -v node &> /dev/null; then
     echo "✅ npm version: $(npm --version)"
     
     # React UIディレクトリ初期化
-    if [ ! -f src/ui/package.json ]; then
+    if [ ! -f ui/package.json ]; then
         echo "⚛️ React UIプロジェクトを初期化中..."
-        cd src/ui
+        cd ui
         npx create-react-app . --template typescript
         
         # 追加依存関係インストール
@@ -249,7 +249,7 @@ cat > .vscode/tasks.json << 'EOF'
       "command": "cargo",
       "args": ["build"],
       "options": {
-        "cwd": "${workspaceFolder}/src/api"
+        "cwd": "${workspaceFolder}/api"
       },
       "group": "build",
       "presentation": {
@@ -264,7 +264,7 @@ cat > .vscode/tasks.json << 'EOF'
       "command": "npm",
       "args": ["start"],
       "options": {
-        "cwd": "${workspaceFolder}/src/ui"
+        "cwd": "${workspaceFolder}/ui"
       },
       "group": "build",
       "presentation": {
@@ -296,9 +296,9 @@ cat > .vscode/launch.json << 'EOF'
       "name": "Debug Rust API",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/src/api/target/debug/spot-diggz-api",
+      "program": "${workspaceFolder}/api/target/debug/sdz_api",
       "args": [],
-      "cwd": "${workspaceFolder}/src/api",
+      "cwd": "${workspaceFolder}/api",
       "sourceLanguages": ["rust"]
     }
   ]
@@ -323,8 +323,8 @@ echo "📦 PostgreSQL: localhost:5432"
 echo "🔴 Redis: localhost:6379"
 echo ""
 echo "次のコマンドで開発を開始:"
-echo "  cd src/api && cargo run    # Rust API"
-echo "  cd src/ui && npm start     # React UI"
+echo "  cd api && cargo run    # Rust API"
+echo "  cd ui && npm start     # React UI"
 EOF
 
 cat > scripts/dev-stop.sh << 'EOF'
@@ -399,7 +399,7 @@ echo "📋 次のステップ:"
 echo "1. GitHub Codespacesまたはローカル VS Codeで開発を開始"
 echo "2. Google Cloud CLI認証: gcloud auth login"
 echo "3. 開発サービス起動: ./scripts/dev-start.sh"
-echo "4. API開発: cd src/api && cargo run"
-echo "5. UI開発: cd src/ui && npm start"
+echo "4. API開発: cd api && cargo run"
+echo "5. UI開発: cd ui && npm start"
 echo ""
 echo "📚 詳細なドキュメントはCLAUDE.mdを参照してください"

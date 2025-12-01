@@ -1,8 +1,9 @@
 /.DS_Store
-/src/api/target/
-/src/api/.env
-/src/ui/node_modules/
-/src/ui/.next/
-/src/ui/build/
-/src/ui/dist/
-/src/ui/coverage/
+/api/target/
+/api/.env
+/ui/.env
+/ui/node_modules/
+/ui/.next/
+/ui/build/
+/ui/dist/
+/ui/coverage/

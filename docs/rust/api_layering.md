@@ -24,7 +24,7 @@
 
 ## ディレクトリ構成 (Where)
 ```
-src/api/
+api/
   ├── src/
   │   ├── main.rs            // Tokioエントリポイント（Axum Router組み立て）
   │   ├── presentation/      // ルーターとハンドラ
