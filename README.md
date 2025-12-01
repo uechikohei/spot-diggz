@@ -66,6 +66,7 @@ cd src/ui && npm start       # localhost:3000
 - `GET /sdz/users/me` … 認証必須。Firebase IDトークンを検証し、Firestoreの`users/{uid}`またはメモリから返却
 - `POST /sdz/spots` … 認証必須。UUIDの`spotId`を払い出し、Firestoreの`spots/{uuid}`またはメモリに保存
 - `GET /sdz/spots/{id}` … 公開。Firestore/メモリから取得（存在しなければ404）
+- `GET /sdz/spots` … 公開。Firestore/メモリから一覧を取得
 
 
 操作画面GIF
@@ -133,6 +134,19 @@ chromedriverコンテナ(systemspecブラウザを使用したテストの為)
 - `/src/api/target/` … Rustビルド成果物。`cargo clean`で再生成可能。
 - `/src/ui/node_modules/` `/src/ui/.next/` `/src/ui/build/` … フロントの依存やビルド成果物。`npm install`/`npm run build`で再生成可能。
 - `/.DS_Store` … macOSのメタファイル。コードと無関係のため除外。
+
+## 開発環境の手順まとめ
+
+### フロントエンド
+- パス: `/Users/kohei/workspace/uechikohei/spot-diggz/src/ui`
+- 環境設定ファイル: `/Users/kohei/workspace/uechikohei/spot-diggz/src/ui/.env`（`.env.example`をコピー）
+- 起動: `npm install && npm run dev`
+
+### バックエンド
+- パス: `/Users/kohei/workspace/uechikohei/spot-diggz/src/api`
+- 初回のGoogle Cloud認証（パスワードを求められたとき）: `gcloud auth login`
+- 環境設定ファイル: `/Users/kohei/workspace/uechikohei/spot-diggz/src/api/.env`（`.env.example`をコピー）
+- 起動: `cargo run`
 
 #### その他
 - Rspecテストが少ない。request specが書けていない。

@@ -26,4 +26,12 @@ impl SdzSpotRepository for SdzInMemorySpotRepository {
         let store = self.store.read().await;
         Ok(store.get(spot_id).cloned())
     }
+
+    async fn list_recent(&self, limit: usize) -> Result<Vec<SdzSpot>, SdzApiError> {
+        let store = self.store.read().await;
+        let mut list: Vec<_> = store.values().cloned().collect();
+        list.sort_by(|a, b| b.created_at.cmp(&a.created_at));
+        list.truncate(limit);
+        Ok(list)
+    }
 }
