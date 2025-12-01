@@ -5,6 +5,8 @@ mod presentation;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    // .envを読み込んで環境変数をセット（存在しなくてもOK）
+    let _ = dotenvy::dotenv();
     init_tracing();
     let router = presentation::router::sdz_build_router();
 
