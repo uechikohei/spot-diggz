@@ -27,9 +27,8 @@
 ```
 spot-diggz/
 ├── .devcontainer/          # GitHub Codespaces設定
-├── src/
-│   ├── api/               # 🦀 Rust APIサーバー
-│   └── ui/                # ⚛️ React UIアプリ  
+├── api/                   # 🦀 Rust APIサーバー
+├── ui/                    # ⚛️ React UIアプリ
 ├── resources/             # 🏗️ Terraform Infrastructure
 ├── docs/                  # 📚 ドキュメント
 └── scripts/               # 🔧 開発用スクリプト
@@ -42,10 +41,10 @@ spot-diggz/
 ./scripts/dev-start.sh
 
 # API開発
-cd src/api && cargo run      # localhost:8080
+cd api && cargo run      # localhost:8080
 
 # UI開発  
-cd src/ui && npm start       # localhost:3000
+cd ui && npm start       # localhost:3000
 ```
 
 ## ⚙️ 環境変数（API）
@@ -131,21 +130,23 @@ chromedriverコンテナ(systemspecブラウザを使用したテストの為)
 (実装予定)
 
 ## 開発メモ: Gitで無視しているもの
-- `/src/api/target/` … Rustビルド成果物。`cargo clean`で再生成可能。
-- `/src/ui/node_modules/` `/src/ui/.next/` `/src/ui/build/` … フロントの依存やビルド成果物。`npm install`/`npm run build`で再生成可能。
+- `/api/target/` … Rustビルド成果物。`cargo clean`で再生成可能。
+- `/ui/node_modules/` `/ui/.next/` `/ui/build/` … フロントの依存やビルド成果物。`npm install`/`npm run build`で再生成可能。
 - `/.DS_Store` … macOSのメタファイル。コードと無関係のため除外。
 
 ## 開発環境の手順まとめ
 
 ### フロントエンド
-- パス: `/Users/kohei/workspace/uechikohei/spot-diggz/src/ui`
-- 環境設定ファイル: `/Users/kohei/workspace/uechikohei/spot-diggz/src/ui/.env`（`.env.example`をコピー）
+- パス: `/Users/kohei/workspace/uechikohei/spot-diggz/ui`
+- 環境設定ファイル: `/Users/kohei/workspace/uechikohei/spot-diggz/ui/.env`（`.env.example`をコピー）
 - 起動: `npm install && npm run dev`
 
 ### バックエンド
-- パス: `/Users/kohei/workspace/uechikohei/spot-diggz/src/api`
-- 初回のGoogle Cloud認証（パスワードを求められたとき）: `gcloud auth login`
-- 環境設定ファイル: `/Users/kohei/workspace/uechikohei/spot-diggz/src/api/.env`（`.env.example`をコピー）
+- パス: `/Users/kohei/workspace/uechikohei/spot-diggz/api`
+- 起動前に実行（認証とトークン取得）:
+  1. `gcloud auth login`
+  2. `export SDZ_FIRESTORE_TOKEN=$(gcloud auth print-access-token)`
+- 環境設定ファイル: `/Users/kohei/workspace/uechikohei/spot-diggz/api/.env`（`.env.example`をコピーし、上記トークンなどを設定）
 - 起動: `cargo run`
 
 #### その他

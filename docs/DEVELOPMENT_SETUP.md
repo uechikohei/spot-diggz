@@ -40,8 +40,8 @@ Codespacesが起動すると、`.devcontainer/setup.sh`が自動実行され、�
 ./scripts/dev-start.sh
 
 # 個別サービス起動
-cd src/api && cargo run          # Rust API サーバー (ポート8080)
-cd src/ui && npm start           # React 開発サーバー (ポート3000)
+cd api && cargo run          # Rust API サーバー (ポート8080)
+cd ui && npm start           # React 開発サーバー (ポート3000)
 ```
 
 ## 💻 ローカル VS Code 連携
@@ -78,9 +78,8 @@ spot-diggz/
 │   ├── devcontainer.json   # VS Code + 拡張機能設定
 │   ├── Dockerfile          # 開発環境イメージ
 │   └── setup.sh           # 自動セットアップスクリプト
-├── src/
-│   ├── api/               # 🦀 Rust APIサーバー
-│   └── ui/                # ⚛️ React UIアプリ
+├── api/                   # 🦀 Rust APIサーバー
+├── ui/                    # ⚛️ React UIアプリ
 ├── resources/             # 🏗️ Terraform インフラ
 ├── docs/                  # 📚 ドキュメント
 ├── scripts/               # 🔧 開発用スクリプト
@@ -122,7 +121,7 @@ gcloud config set project sdz-dev  # 開発環境プロジェクト
 
 ```bash
 # Rust API用の例
-cd src/api
+cd api
 cat > .env << 'EOF'
 RUST_LOG=debug
 SDZ_AUTH_PROJECT_ID=sdz-dev                # Firebase/Identity PlatformのプロジェクトID
@@ -163,7 +162,7 @@ rustc --version
 cargo --version
 
 # 依存関係更新
-cd src/api
+cd api
 cargo update
 ```
 
@@ -171,7 +170,7 @@ cargo update
 
 ```bash
 # npm キャッシュクリア
-cd src/ui
+cd ui
 npm cache clean --force
 rm -rf node_modules package-lock.json
 npm install
@@ -206,8 +205,8 @@ docker ps -a
 cat /tmp/codespace-creation.log
 
 # アプリケーションログ
-cd src/api && cargo run          # Rust ログ
-cd src/ui && npm start           # React ログ
+cd api && cargo run          # Rust ログ
+cd ui && npm start           # React ログ
 
 # Dockerサービスログ
 docker-compose -f docker-compose.dev.yml logs

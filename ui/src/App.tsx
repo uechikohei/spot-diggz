@@ -1,6 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { SdzSpot } from './types/spot';
 import { useAuth } from './contexts/AuthContext';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 
 const apiUrl = import.meta.env.VITE_SDZ_API_URL || 'http://localhost:8080';
 
@@ -25,7 +28,9 @@ function App() {
     lat: '',
     lng: '',
     tags: '',
+    image: null as File | null,
   });
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const subtitle = useMemo(
     () => `API base: ${apiUrl}（GET /sdz/spots を表示中）`,
@@ -71,6 +76,19 @@ function App() {
     await logout();
   };
 
+  const handleMapSelect = (lat: number, lng: number) => {
+    setForm((f) => ({ ...f, lat: lat.toString(), lng: lng.toString() }));
+  };
+
+  const MapClicker: React.FC = () => {
+    useMapEvents({
+      click(e) {
+        handleMapSelect(e.latlng.lat, e.latlng.lng);
+      },
+    });
+    return null;
+  };
+
   const handleCreateSpot = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!idToken) {
@@ -80,6 +98,15 @@ function App() {
     setCreateError(null);
     setCreating(true);
     try {
+      const tags = form.tags
+        ? form.tags
+            .split(',')
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : [];
+
+      // 画像アップロードは未実装のため、現状は空配列を送信。
+      // TODO: 署名付きURLを取得してアップロードし、そのURLをimagesにセットする。
       const payload = {
         name: form.name,
         description: form.description || undefined,
@@ -87,13 +114,8 @@ function App() {
           form.lat && form.lng
             ? { lat: Number(form.lat), lng: Number(form.lng) }
             : undefined,
-        tags: form.tags
-          ? form.tags
-              .split(',')
-              .map((t) => t.trim())
-              .filter(Boolean)
-          : [],
-        images: [],
+        tags,
+        images: [] as string[],
       };
       const res = await fetch(`${apiUrl}/sdz/spots`, {
         method: 'POST',
@@ -108,7 +130,8 @@ function App() {
         throw new Error(`作成に失敗しました (${res.status}): ${msg}`);
       }
       await fetchSpots();
-      setForm({ name: '', description: '', lat: '', lng: '', tags: '' });
+      setForm({ name: '', description: '', lat: '', lng: '', tags: '', image: null });
+      if (fileInputRef.current) fileInputRef.current.value = '';
     } catch (err) {
       setCreateError((err as Error).message);
     } finally {
@@ -209,6 +232,40 @@ function App() {
                 onChange={(e) => setForm((f) => ({ ...f, tags: e.target.value }))}
                 placeholder="park,flat"
               />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <label>画像（1枚、未実装で送信はしない）</label>
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={(e) => setForm((f) => ({ ...f, image: e.target.files?.[0] ?? null }))}
+              />
+              <span className="sdz-meta">※ アップロード処理は後続実装予定。現在は送信されません。</span>
+            </div>
+            <div className="sdz-meta">地図をクリックすると緯度経度をセットできます。</div>
+            <div className="sdz-map">
+              <MapContainer
+                center={[34.6873, 135.5262]}
+                zoom={13}
+                style={{ height: '100%', width: '100%' }}
+                scrollWheelZoom
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <MapClicker />
+                {form.lat && form.lng && (
+                  <Marker
+                    position={[Number(form.lat), Number(form.lng)]}
+                    icon={L.icon({
+                      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                    })}
+                  />
+                )}
+              </MapContainer>
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <button type="submit" disabled={creating}>

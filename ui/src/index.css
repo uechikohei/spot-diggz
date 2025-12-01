@@ -70,3 +70,25 @@ body {
   border-radius: 8px;
   margin-bottom: 12px;
 }
+
+.sdz-form-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sdz-form-col {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sdz-map {
+  height: 240px;
+  width: 100%;
+  border: 1px solid #e5e8ed;
+  border-radius: 8px;
+  margin-top: 8px;
+}
