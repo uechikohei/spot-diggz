@@ -3,6 +3,7 @@
 /api/.env
 /ui/.env
 /ui/node_modules/
+/ui/.vite/
 /ui/.next/
 /ui/build/
 /ui/dist/
