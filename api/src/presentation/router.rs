@@ -194,5 +194,5 @@ fn build_storage_repo() -> Arc<dyn SdzStorageRepository> {
         tracing::warn!("Storage config missing, upload-url will be disabled");
     }
 
-    Arc::new(SdzDisabledStorageRepository::default())
+    Arc::new(SdzDisabledStorageRepository)
 }

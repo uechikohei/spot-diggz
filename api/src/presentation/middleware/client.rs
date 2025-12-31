@@ -45,9 +45,7 @@ fn extract_client(headers: &HeaderMap) -> Result<SdzClientType, SdzApiError> {
         .get("x-sdz-client")
         .and_then(|v| v.to_str().ok())
         .map(|v| v.trim().to_lowercase())
-        .ok_or_else(|| {
-            SdzApiError::Forbidden("mobile client required (x-sdz-client)".into())
-        })?;
+        .ok_or_else(|| SdzApiError::Forbidden("mobile client required (x-sdz-client)".into()))?;
 
     match value.as_str() {
         "ios" => Ok(SdzClientType::Ios),

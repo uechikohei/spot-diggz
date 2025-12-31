@@ -8,7 +8,9 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
 use crate::{
-    application::use_cases::storage_repository::{SdzStorageRepository, SdzUploadUrlRequest, SdzUploadUrlResult},
+    application::use_cases::storage_repository::{
+        SdzStorageRepository, SdzUploadUrlRequest, SdzUploadUrlResult,
+    },
     presentation::error::SdzApiError,
 };
 
@@ -130,7 +132,10 @@ impl SdzStorageSignedUrlRepository {
         let credential = format!("{}/{}", self.sdz_service_account_email, scope);
 
         let mut query_params = vec![
-            ("X-Goog-Algorithm".to_string(), SDZ_GCS_ALGORITHM.to_string()),
+            (
+                "X-Goog-Algorithm".to_string(),
+                SDZ_GCS_ALGORITHM.to_string(),
+            ),
             ("X-Goog-Credential".to_string(), credential),
             ("X-Goog-Date".to_string(), timestamp_query),
             (
@@ -176,7 +181,10 @@ impl SdzStorageRepository for SdzStorageSignedUrlRepository {
         let credential = format!("{}/{}", self.sdz_service_account_email, scope);
 
         let mut query_params = vec![
-            ("X-Goog-Algorithm".to_string(), SDZ_GCS_ALGORITHM.to_string()),
+            (
+                "X-Goog-Algorithm".to_string(),
+                SDZ_GCS_ALGORITHM.to_string(),
+            ),
             ("X-Goog-Credential".to_string(), credential),
             ("X-Goog-Date".to_string(), timestamp_query),
             (
