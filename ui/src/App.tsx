@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { SdzSpot } from './types/spot';
-import { useAuth } from './contexts/AuthContext';
+import { useAuth } from './contexts/useAuth';
 
 const apiUrl = import.meta.env.VITE_SDZ_API_URL || 'http://localhost:8080';
 

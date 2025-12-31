@@ -26,9 +26,7 @@ pub async fn handle_create_spot(
     Json(payload): Json<CreateSpotInput>,
 ) -> impl IntoResponse {
     if !client_app.is_mobile() {
-        return Err(SdzApiError::Forbidden(
-            "mobile client required".to_string(),
-        ));
+        return Err(SdzApiError::Forbidden("mobile client required".to_string()));
     }
     tracing::info!(
         event_code = "SDZ-API-2001",
@@ -59,9 +57,7 @@ pub async fn handle_create_upload_url(
     Json(payload): Json<SdzGenerateUploadUrlInput>,
 ) -> impl IntoResponse {
     if !client_app.is_mobile() {
-        return Err(SdzApiError::Forbidden(
-            "mobile client required".to_string(),
-        ));
+        return Err(SdzApiError::Forbidden("mobile client required".to_string()));
     }
     tracing::info!(
         event_code = "SDZ-API-2101",
