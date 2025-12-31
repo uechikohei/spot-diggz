@@ -1,9 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { SdzSpot } from './types/spot';
-import { useAuth } from './contexts/AuthContext';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
+import { useAuth } from './contexts/useAuth';
 
 const apiUrl = import.meta.env.VITE_SDZ_API_URL || 'http://localhost:8080';
 
@@ -13,6 +10,9 @@ function formatCoords(location?: SdzSpot['location']) {
 }
 
 function App() {
+<<<<<<< HEAD
+  const { user, login, logout, loading: authLoading } = useAuth();
+=======
   const {
     user,
     idToken,
@@ -23,10 +23,15 @@ function App() {
     logout,
     loading: authLoading,
   } = useAuth();
+>>>>>>> origin/develop
   const [spots, setSpots] = useState<SdzSpot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
+<<<<<<< HEAD
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+=======
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
@@ -42,6 +47,7 @@ function App() {
     image: null as File | null,
   });
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+>>>>>>> origin/develop
 
   const subtitle = useMemo(
     () => `API base: ${apiUrl}（GET /sdz/spots を表示中）`,
@@ -119,68 +125,7 @@ function App() {
     await logout();
   };
 
-  const handleMapSelect = (lat: number, lng: number) => {
-    setForm((f) => ({ ...f, lat: lat.toString(), lng: lng.toString() }));
-  };
-
-  const MapClicker: React.FC = () => {
-    useMapEvents({
-      click(e) {
-        handleMapSelect(e.latlng.lat, e.latlng.lng);
-      },
-    });
-    return null;
-  };
-
-  const handleCreateSpot = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!idToken) {
-      setCreateError('ログインが必要です');
-      return;
-    }
-    setCreateError(null);
-    setCreating(true);
-    try {
-      const tags = form.tags
-        ? form.tags
-            .split(',')
-            .map((t) => t.trim())
-            .filter(Boolean)
-        : [];
-
-      // 画像アップロードは未実装のため、現状は空配列を送信。
-      // TODO: 署名付きURLを取得してアップロードし、そのURLをimagesにセットする。
-      const payload = {
-        name: form.name,
-        description: form.description || undefined,
-        location:
-          form.lat && form.lng
-            ? { lat: Number(form.lat), lng: Number(form.lng) }
-            : undefined,
-        tags,
-        images: [] as string[],
-      };
-      const res = await fetch(`${apiUrl}/sdz/spots`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        const msg = await res.text();
-        throw new Error(`作成に失敗しました (${res.status}): ${msg}`);
-      }
-      await fetchSpots();
-      setForm({ name: '', description: '', lat: '', lng: '', tags: '', image: null });
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    } catch (err) {
-      setCreateError((err as Error).message);
-    } finally {
-      setCreating(false);
-    }
-  };
+  const handleRefresh = () => fetchSpots();
 
   return (
     <div className="sdz-container">
@@ -253,6 +198,9 @@ function App() {
         )}
       </div>
 
+<<<<<<< HEAD
+      {user && (
+=======
       {/* 未認証ユーザー向けの案内（専用ビュー） */}
       {isEmailPending && (
         <div className="sdz-card" style={{ marginBottom: 16 }}>
@@ -278,99 +226,19 @@ function App() {
       {/* 認証済みユーザー専用コンテンツ */}
       {!isEmailPending && user && (
         /* 新規/更新ボタンプレースホルダ */
+>>>>>>> origin/develop
         <div className="sdz-card" style={{ marginBottom: 16 }}>
-          <form onSubmit={handleCreateSpot} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label>名前</label>
-              <input
-                value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                placeholder="スポット名"
-                required
-              />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label>説明</label>
-              <textarea
-                value={form.description}
-                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                placeholder="説明（任意）"
-              />
-            </div>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <label>緯度</label>
-                <input
-                  type="number"
-                  step="0.0001"
-                  value={form.lat}
-                  onChange={(e) => setForm((f) => ({ ...f, lat: e.target.value }))}
-                  placeholder="34.6873"
-                />
-              </div>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <label>経度</label>
-                <input
-                  type="number"
-                  step="0.0001"
-                  value={form.lng}
-                  onChange={(e) => setForm((f) => ({ ...f, lng: e.target.value }))}
-                  placeholder="135.5262"
-                />
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+            <div>
+              <strong>閲覧専用モード</strong>
+              <div className="sdz-meta">
+                新規登録・画像登録はモバイルアプリからのみ行えます。
               </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label>タグ（カンマ区切り）</label>
-              <input
-                value={form.tags}
-                onChange={(e) => setForm((f) => ({ ...f, tags: e.target.value }))}
-                placeholder="park,flat"
-              />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label>画像（1枚、未実装で送信はしない）</label>
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                onChange={(e) => setForm((f) => ({ ...f, image: e.target.files?.[0] ?? null }))}
-              />
-              <span className="sdz-meta">※ アップロード処理は後続実装予定。現在は送信されません。</span>
-            </div>
-            <div className="sdz-meta">地図をクリックすると緯度経度をセットできます。</div>
-            <div className="sdz-map">
-              <MapContainer
-                center={[34.6873, 135.5262]}
-                zoom={13}
-                style={{ height: '100%', width: '100%' }}
-                scrollWheelZoom
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <MapClicker />
-                {form.lat && form.lng && (
-                  <Marker
-                    position={[Number(form.lat), Number(form.lng)]}
-                    icon={L.icon({
-                      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-                      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-                    })}
-                  />
-                )}
-              </MapContainer>
-            </div>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <button type="submit" disabled={creating}>
-                {creating ? '送信中...' : '新規スポット登録'}
-              </button>
-              {createError && <div className="sdz-error">作成エラー: {createError}</div>}
-            </div>
-            <div className="sdz-meta">
-              認証済みのみ。送信時に`Authorization: Bearer &lt;ID Token&gt;`を付与します。
-            </div>
-          </form>
+            <button type="button" onClick={handleRefresh}>
+              再読み込み
+            </button>
+          </div>
         </div>
       )}
 

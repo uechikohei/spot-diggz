@@ -8,22 +8,78 @@ use axum::{
 use crate::{
     application::use_cases::{
         create_spot_use_case::{CreateSpotInput, SdzCreateSpotUseCase},
+        generate_upload_url_use_case::{SdzGenerateUploadUrlInput, SdzGenerateUploadUrlUseCase},
         get_spot_use_case::SdzGetSpotUseCase,
         list_spots_use_case::SdzListSpotsUseCase,
     },
-    presentation::{error::SdzApiError, middleware::auth::SdzAuthUser, router::SdzAppState},
+    presentation::{
+        error::SdzApiError,
+        middleware::{auth::SdzAuthUser, client::SdzClientApp},
+        router::SdzAppState,
+    },
 };
 
 pub async fn handle_create_spot(
     State(state): State<SdzAppState>,
     auth_user: SdzAuthUser,
+    client_app: SdzClientApp,
     Json(payload): Json<CreateSpotInput>,
 ) -> impl IntoResponse {
+    if !client_app.is_mobile() {
+        return Err(SdzApiError::Forbidden("mobile client required".to_string()));
+    }
+    tracing::info!(
+        event_code = "SDZ-API-2001",
+        component = "presentation",
+        user_id = %auth_user.sdz_user_id,
+        has_location = payload.location.is_some(),
+        tags_len = payload.tags.as_ref().map(|t| t.len()).unwrap_or(0),
+        images_len = payload.images.as_ref().map(|i| i.len()).unwrap_or(0),
+        "create spot requested"
+    );
     let use_case = SdzCreateSpotUseCase::new();
     let spot = use_case
         .execute(state.spot_repo.clone(), auth_user, payload)
         .await?;
+    tracing::info!(
+        event_code = "SDZ-API-2002",
+        component = "presentation",
+        spot_id = %spot.sdz_spot_id,
+        "spot created"
+    );
     Ok::<_, SdzApiError>((StatusCode::OK, Json(spot)))
+}
+
+pub async fn handle_create_upload_url(
+    State(state): State<SdzAppState>,
+    auth_user: SdzAuthUser,
+    client_app: SdzClientApp,
+    Json(payload): Json<SdzGenerateUploadUrlInput>,
+) -> impl IntoResponse {
+    if !client_app.is_mobile() {
+        return Err(SdzApiError::Forbidden("mobile client required".to_string()));
+    }
+    tracing::info!(
+        event_code = "SDZ-API-2101",
+        component = "presentation",
+        user_id = %auth_user.sdz_user_id,
+        content_type = %payload.sdz_content_type,
+        "upload url requested"
+    );
+
+    let use_case = SdzGenerateUploadUrlUseCase::new();
+    let result = use_case
+        .execute(state.storage_repo.clone(), auth_user, payload)
+        .await?;
+
+    tracing::info!(
+        event_code = "SDZ-API-2102",
+        component = "presentation",
+        object_name = %result.sdz_object_name,
+        "upload url issued"
+    );
+
+    Ok::<_, SdzApiError>((StatusCode::OK, Json(result)))
 }
 
 pub async fn handle_get_spot(

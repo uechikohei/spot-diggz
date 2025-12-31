@@ -23,11 +23,20 @@ fn init_tracing() {
     // 環境変数RUST_LOGでログレベルを制御可能。例: RUST_LOG=info,sdz_api=debug
     let env_filter = tracing_subscriber::EnvFilter::try_from_default_env()
         .unwrap_or_else(|_| "info,sdz_api=debug".into());
-    tracing_subscriber::fmt()
+    let use_json = std::env::var("SDZ_LOG_FORMAT")
+        .ok()
+        .map(|v| v.to_lowercase() == "json")
+        .unwrap_or(true);
+
+    let builder = tracing_subscriber::fmt()
         .with_env_filter(env_filter)
-        .with_target(false)
-        .compact()
-        .init();
+        .with_target(false);
+
+    if use_json {
+        builder.json().init();
+    } else {
+        builder.compact().init();
+    }
 }
 
 fn resolve_listen_address() -> std::net::SocketAddr {

@@ -1,6 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
 import {
-  User,
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
@@ -9,6 +8,11 @@ import {
   sendEmailVerification,
   signOut,
 } from 'firebase/auth';
+<<<<<<< HEAD:ui/src/contexts/AuthProvider.tsx
+import { useEffect, useMemo, useState } from 'react';
+import { auth } from '../firebase';
+import { AuthContext } from './auth-context';
+=======
 import { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react';
 import { auth } from '../firebase';
 import {
@@ -42,9 +46,10 @@ const AuthContext = createContext<AuthContextValue>({
 });
 
 export const useAuth = () => useContext(AuthContext);
+>>>>>>> origin/develop:ui/src/contexts/AuthContext.tsx
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState(auth.currentUser);
   const [idToken, setIdToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -93,10 +98,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (u) => {
-      setUser(u);
-      if (u) {
-        const token = await u.getIdToken();
+    const unsub = onAuthStateChanged(auth, async (nextUser) => {
+      setUser(nextUser);
+      if (nextUser) {
+        const token = await nextUser.getIdToken();
         setIdToken(token);
       } else {
         setIdToken(null);
