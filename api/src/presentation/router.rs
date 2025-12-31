@@ -1,7 +1,9 @@
-use axum::{routing::get, Router};
+use axum::{body::Body, http::Request, routing::get, Router};
 use http::{HeaderValue, Method};
+use std::time::Duration;
 use tower_http::{
     cors::{AllowOrigin, CorsLayer},
+    request_id::{MakeRequestUuid, PropagateRequestIdLayer, SetRequestIdLayer},
     trace::TraceLayer,
 };
 
@@ -9,7 +11,8 @@ use std::sync::Arc;
 
 use crate::{
     application::use_cases::{
-        spot_repository::SdzSpotRepository, user_repository::SdzUserRepository,
+        spot_repository::SdzSpotRepository, storage_repository::SdzStorageRepository,
+        user_repository::SdzUserRepository,
     },
     domain::models::SdzUser,
     infrastructure::{
@@ -17,6 +20,8 @@ use crate::{
         firestore_user_repository::SdzFirestoreUserRepository,
         in_memory_spot_repository::SdzInMemorySpotRepository,
         in_memory_user_repository::SdzInMemoryUserRepository,
+        storage_disabled_repository::SdzDisabledStorageRepository,
+        storage_signed_url_repository::SdzStorageSignedUrlRepository,
     },
 };
 
@@ -32,11 +37,60 @@ pub fn sdz_build_router() -> Router {
             "/sdz/spots",
             axum::routing::post(spot_handler::handle_create_spot),
         )
+        .route(
+            "/sdz/spots/upload-url",
+            axum::routing::post(spot_handler::handle_create_upload_url),
+        )
         .route("/sdz/spots", get(spot_handler::handle_list_spots))
         .route("/sdz/spots/{spot_id}", get(spot_handler::handle_get_spot))
         .with_state(state)
+        .layer(PropagateRequestIdLayer::x_request_id())
+        .layer(SetRequestIdLayer::x_request_id(MakeRequestUuid))
         .layer(cors_layer())
-        .layer(TraceLayer::new_for_http())
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(|request: &Request<Body>| {
+                    let request_id = request
+                        .extensions()
+                        .get::<tower_http::request_id::RequestId>()
+                        .and_then(|id| id.header_value().to_str().ok())
+                        .unwrap_or("-");
+                    tracing::info_span!(
+                        "http_request",
+                        event_code = "SDZ-API-1001",
+                        component = "presentation",
+                        method = %request.method(),
+                        uri = %request.uri(),
+                        request_id = %request_id
+                    )
+                })
+                .on_response(
+                    |response: &axum::response::Response,
+                     latency: Duration,
+                     span: &tracing::Span| {
+                        tracing::info!(
+                            parent: span,
+                            event_code = "SDZ-API-1002",
+                            component = "presentation",
+                            status = %response.status(),
+                            latency_ms = latency.as_millis()
+                        );
+                    },
+                )
+                .on_failure(
+                    |error: tower_http::classify::ServerErrorsFailureClass,
+                     latency: Duration,
+                     span: &tracing::Span| {
+                        tracing::error!(
+                            parent: span,
+                            event_code = "SDZ-API-1003",
+                            component = "presentation",
+                            error = %error,
+                            latency_ms = latency.as_millis()
+                        );
+                    },
+                ),
+        )
 }
 
 fn cors_layer() -> CorsLayer {
@@ -75,6 +129,7 @@ fn allowed_origins() -> AllowOrigin {
 }
 
 fn build_state() -> SdzAppState {
+    let storage_repo: Arc<dyn SdzStorageRepository> = build_storage_repo();
     // 環境変数が整っていればFirestore実装を採用
     if std::env::var("SDZ_USE_FIRESTORE").ok().as_deref() == Some("1") {
         if let (Ok(project_id), Ok(token)) = (
@@ -89,6 +144,7 @@ fn build_state() -> SdzAppState {
                 return SdzAppState {
                     user_repo: Arc::new(user_repo),
                     spot_repo: Arc::new(spot_repo),
+                    storage_repo,
                 };
             } else {
                 tracing::warn!("Failed to init Firestore repo, falling back to in-memory");
@@ -110,6 +166,7 @@ fn build_state() -> SdzAppState {
     SdzAppState {
         user_repo: Arc::new(repo),
         spot_repo: Arc::new(SdzInMemorySpotRepository::default()),
+        storage_repo,
     }
 }
 
@@ -117,4 +174,25 @@ fn build_state() -> SdzAppState {
 pub struct SdzAppState {
     pub user_repo: Arc<dyn SdzUserRepository>,
     pub spot_repo: Arc<dyn SdzSpotRepository>,
+    pub storage_repo: Arc<dyn SdzStorageRepository>,
+}
+
+fn build_storage_repo() -> Arc<dyn SdzStorageRepository> {
+    let bucket = std::env::var("SDZ_STORAGE_BUCKET").ok();
+    let service_account = std::env::var("SDZ_STORAGE_SERVICE_ACCOUNT_EMAIL").ok();
+    let expires = std::env::var("SDZ_STORAGE_SIGNED_URL_EXPIRES_SECS")
+        .ok()
+        .and_then(|v| v.parse::<u32>().ok())
+        .unwrap_or(900);
+
+    if let (Some(bucket), Some(service_account)) = (bucket, service_account) {
+        match SdzStorageSignedUrlRepository::new(bucket, service_account, expires) {
+            Ok(repo) => return Arc::new(repo),
+            Err(_) => tracing::warn!("Failed to init storage repo, falling back to disabled"),
+        }
+    } else {
+        tracing::warn!("Storage config missing, upload-url will be disabled");
+    }
+
+    Arc::new(SdzDisabledStorageRepository)
 }
