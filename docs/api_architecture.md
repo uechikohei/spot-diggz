@@ -75,8 +75,3 @@
 - **Where**: クライアントはiOSアプリ（オフライン対応あり）とブラウザ。サーバー側はCloud Run内のRust API、データはFirestore/Storage。
 - **Why**: コミュニティ主導でスポット情報を充実させ、ナビ機能と連携した価値を提供するため。
 - **How**: JWT（Firebase Auth予定）で認証。リクエスト検証→ユースケース→リポジトリ→Firestore書込み→イベント発行（Pub/Subでレコメンド更新）。失敗時はIdempotency-Keyを利用し重複投稿を防ぐ。
-
-## 次アクションの指針
-- Phase 1では`api`のディレクトリ雛形とConfig/Routerの基礎コードを作成し、CIでビルドと`cargo fmt`を整備。
-- 認証・ユーザー・スポットのREST契約（OpenAPIまたはAsyncAPI）を定義し、iOS/フロントと契約テストを合意。
-- MapKit/Google Maps連携のPoC（ルート生成と共有リンク）をRust側のGatewayモジュールで検証する。***

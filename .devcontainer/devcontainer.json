@@ -13,7 +13,8 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-vscode.vscode-json"
+        "ms-vscode.vscode-json",
+        "openai.chatgpt"
       ]
     }
   },

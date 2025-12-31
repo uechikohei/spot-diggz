@@ -30,7 +30,7 @@ api/
   │   ├── presentation/      // ルーターとハンドラ
   │   ├── application/       // ユースケース
   │   ├── domain/            // ドメインモデル
-  │   └── infrastructure/    // Firestore等の実装予定
+  │   └── infrastructure/    // Firestore等の実装
   └── Cargo.toml
 ```
 
@@ -66,12 +66,6 @@ api/
 - **認証**: API Gatewayが提供する署名検証は、Cloud RunではIdentity Platform、IAP、またはアプリ内JWT検証で担保する。`presentation`層のミドルウェアで検証し、`application`層に認可ロジックを渡す構成が典型。
 - **スケーリング**: Lambdaはイベント駆動で自動スケールするが、Cloud Runもリクエスト数に応じてコンテナを自動スケールし、最大同時実行数で平準化する。Rustコンテナ内での処理はコンテナ上で完結するため、APIGateway→Lambdaの二段構えではなく「Load Balancer/Identity層 → Cloud Runコンテナ → Rustアプリ」というシンプルなラインになる。
 - **アプリ内の責務**: API Gatewayが担っていた前処理が減るぶん、Rust側の`presentation`や`application`レイヤーで認証・入力検証・制限ロジックを明示的に実装する必要がある。これにより制御が明確になる一方、テストも増えるのでIaCで周辺サービス設定を補うのが望ましい。
-
-## 今後学ぶポイント (Next)
-- `infrastructure`レイヤーでFirestore/Cloud Storageクライアントを実装する際の非同期エラーハンドリング。
-- `application`レイヤーでトランザクションや複数リポジトリを組み合わせるパターン。
-- `domain`でバリデーションロジックやビジネスルールを表現するテクニック（Smart Constructorなど）。
-- `presentation`でミドルウェア（認証、ロギング、Rate Limiting）を実装する方法。
 
 ## Rust Webフレームワーク比較メモ
 - 参考リンク: https://github.com/flosse/rust-web-framework-comparison#high-level-server-frameworks

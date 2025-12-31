@@ -36,12 +36,9 @@ Codespacesが起動すると、`.devcontainer/setup.sh`が自動実行され、�
 ### 3. 開発サービスの起動
 
 ```bash
-# 開発用サービス（PostgreSQL, Redis）起動
-./scripts/dev-start.sh
-
 # 個別サービス起動
 cd api && cargo run          # Rust API サーバー (ポート8080)
-cd ui && npm start           # React 開発サーバー (ポート3000)
+cd ui && npm run dev         # React 開発サーバー (ポート3000)
 ```
 
 ## 💻 ローカル VS Code 連携
@@ -129,13 +126,18 @@ SDZ_USE_FIRESTORE=1                        # 1でFirestore利用（未設定な�
 SDZ_FIRESTORE_PROJECT_ID=sdz-dev           # 省略時はSDZ_AUTH_PROJECT_ID
 SDZ_FIRESTORE_TOKEN=$(gcloud auth print-access-token)   # Firestore REST用のBearerトークン
 SDZ_CORS_ALLOWED_ORIGINS=http://localhost:3000          # カンマ区切りで追加
+SDZ_STORAGE_BUCKET=sdz-dev-img-bucket                   # 画像アップロード先バケット
+SDZ_STORAGE_SERVICE_ACCOUNT_EMAIL=sdz-dev-api@sdz-dev.iam.gserviceaccount.com
+SDZ_STORAGE_SIGNED_URL_EXPIRES_SECS=900                # 署名URL有効期限(秒)
 EOF
 
 # UI用の例
 cd ../ui  
 cat > .env << 'EOF'
-REACT_APP_API_URL=http://localhost:8080
-REACT_APP_ENVIRONMENT=development
+VITE_SDZ_API_URL=http://localhost:8080
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
 EOF
 ```
 
@@ -147,8 +149,6 @@ Codespacesで自動的に以下のポートがフォワードされます：
 |--------|----------|----------|
 | 3000 | React UI | https://xxx-3000.githubpreview.dev |
 | 8080 | Rust API | https://xxx-8080.githubpreview.dev |
-| 5432 | PostgreSQL | 内部アクセスのみ |
-| 6379 | Redis | 内部アクセスのみ |
 
 ## 🔍 トラブルシューティング
 
@@ -192,10 +192,6 @@ kill -9 <PID>
 ```bash
 # Docker状態確認
 docker ps -a
-
-# サービス再起動
-./scripts/dev-stop.sh
-./scripts/dev-start.sh
 ```
 
 ### ログ確認
@@ -206,10 +202,7 @@ cat /tmp/codespace-creation.log
 
 # アプリケーションログ
 cd api && cargo run          # Rust ログ
-cd ui && npm start           # React ログ
-
-# Dockerサービスログ
-docker-compose -f docker-compose.dev.yml logs
+cd ui && npm run dev         # React ログ
 ```
 
 ## 📱 モバイル開発
