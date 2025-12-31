@@ -95,7 +95,11 @@ jobs:
         
       - name: 🧪 Run unit tests
         if: steps.lockfile.outputs.exists == 'yes'
+<<<<<<< HEAD
         run: npm test -- --coverage
+=======
+        run: npm test -- --coverage --watch=false
+>>>>>>> origin/develop
         
       - name: 🏗️ Build production bundle
         if: steps.lockfile.outputs.exists == 'yes'
