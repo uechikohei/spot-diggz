@@ -10,6 +10,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: 1
+  SDZ_ENABLE_STAGING_DEPLOY: "false"
 
 jobs:
   # Rust API のテスト・ビルド
@@ -259,7 +260,7 @@ jobs:
     name: 🎭 Deploy to Staging
     runs-on: ubuntu-latest
     needs: [rust-ci, react-ci, terraform-ci]
-    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push' && env.SDZ_ENABLE_STAGING_DEPLOY == 'true'
     environment: staging
     
     steps:
