@@ -1,0 +1,296 @@
+openapi: 3.0.3
+info:
+  title: spot-diggz API
+  version: "0.1.0"
+  description: |
+    spot-diggz API contract (Rust/Axum). This is an internal contract for client development.
+servers:
+  - url: http://localhost:8080
+    description: Local development
+paths:
+  /sdz/health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+  /sdz/users/me:
+    get:
+      summary: Get current user profile
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/ErrorUnauthorized"
+        "404":
+          $ref: "#/components/responses/ErrorNotFound"
+  /sdz/spots:
+    post:
+      summary: Create a skate spot (mobile only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ClientHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSpotInput"
+      responses:
+        "200":
+          description: Created spot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Spot"
+        "400":
+          $ref: "#/components/responses/ErrorBadRequest"
+        "401":
+          $ref: "#/components/responses/ErrorUnauthorized"
+        "403":
+          $ref: "#/components/responses/ErrorForbidden"
+        "500":
+          $ref: "#/components/responses/ErrorInternal"
+    get:
+      summary: List spots
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Spot"
+        "500":
+          $ref: "#/components/responses/ErrorInternal"
+  /sdz/spots/{spot_id}:
+    get:
+      summary: Get a spot by ID
+      parameters:
+        - name: spot_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Spot"
+        "404":
+          $ref: "#/components/responses/ErrorNotFound"
+        "500":
+          $ref: "#/components/responses/ErrorInternal"
+  /sdz/spots/upload-url:
+    post:
+      summary: Generate signed upload URL (mobile only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ClientHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadUrlRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadUrlResponse"
+        "400":
+          $ref: "#/components/responses/ErrorBadRequest"
+        "401":
+          $ref: "#/components/responses/ErrorUnauthorized"
+        "403":
+          $ref: "#/components/responses/ErrorForbidden"
+        "500":
+          $ref: "#/components/responses/ErrorInternal"
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    ClientHeader:
+      name: X-SDZ-Client
+      in: header
+      required: true
+      description: Client type (`ios` or `android`) for mobile-only endpoints.
+      schema:
+        type: string
+        enum: [ios, android]
+  schemas:
+    HealthResponse:
+      type: object
+      required: [status, message]
+      properties:
+        status:
+          type: string
+          example: healthy
+        message:
+          type: string
+          example: spot-diggz api is running
+    ErrorResponse:
+      type: object
+      required: [code, errorCode, message]
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 401
+        errorCode:
+          type: string
+          example: SDZ-E-1001
+        message:
+          type: string
+          example: Unauthorized
+    SpotLocation:
+      type: object
+      required: [lat, lng]
+      properties:
+        lat:
+          type: number
+          format: double
+          example: 35.6812
+        lng:
+          type: number
+          format: double
+          example: 139.7671
+    Spot:
+      type: object
+      required:
+        - spotId
+        - name
+        - tags
+        - images
+        - userId
+        - createdAt
+        - updatedAt
+      properties:
+        spotId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        location:
+          $ref: "#/components/schemas/SpotLocation"
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+        images:
+          type: array
+          items:
+            type: string
+        userId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    CreateSpotInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        location:
+          $ref: "#/components/schemas/SpotLocation"
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+        images:
+          type: array
+          items:
+            type: string
+    UploadUrlRequest:
+      type: object
+      required: [contentType]
+      properties:
+        contentType:
+          type: string
+          example: image/jpeg
+    UploadUrlResponse:
+      type: object
+      required: [uploadUrl, objectUrl, objectName, expiresAt]
+      properties:
+        uploadUrl:
+          type: string
+        objectUrl:
+          type: string
+        objectName:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+    User:
+      type: object
+      required: [userId, displayName]
+      properties:
+        userId:
+          type: string
+        displayName:
+          type: string
+        email:
+          type: string
+          nullable: true
+  responses:
+    ErrorBadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ErrorUnauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ErrorForbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ErrorNotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ErrorInternal:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
