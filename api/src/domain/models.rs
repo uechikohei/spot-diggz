@@ -43,12 +43,23 @@ pub struct SdzSpot {
     pub location: Option<SdzSpotLocation>,
     pub tags: Vec<String>,
     pub images: Vec<String>,
+    #[serde(rename = "trustLevel")]
+    pub sdz_trust_level: SdzSpotTrustLevel,
+    #[serde(rename = "trustSources")]
+    pub sdz_trust_sources: Vec<String>,
     #[serde(rename = "userId")]
     pub sdz_user_id: String,
     #[serde(rename = "createdAt")]
     pub created_at: DateTime<FixedOffset>,
     #[serde(rename = "updatedAt")]
     pub updated_at: DateTime<FixedOffset>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum SdzSpotTrustLevel {
+    Verified,
+    Unverified,
 }
 
 impl SdzSpot {
@@ -69,6 +80,8 @@ impl SdzSpot {
             location,
             tags,
             images,
+            sdz_trust_level: SdzSpotTrustLevel::Unverified,
+            sdz_trust_sources: Vec::new(),
             sdz_user_id,
             created_at: now_jst(),
             updated_at: now_jst(),

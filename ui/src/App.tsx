@@ -163,10 +163,7 @@ function App() {
   const [sdzSearchText, setSdzSearchText] = useState('');
   const [sdzSelectedTag, setSdzSelectedTag] = useState('all');
 
-  const subtitle = useMemo(
-    () => `API base: ${apiUrl}（GET /sdz/spots を表示中）`,
-    [apiUrl],
-  );
+  const subtitle = `API base: ${apiUrl}（GET /sdz/spots を表示中）`;
   const isEmailPending = user && !user.emailVerified;
   const sdzAvailableTags = useMemo(() => {
     const tagSet = new Set<string>();
