@@ -1,10 +1,21 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
 import App from './App';
+import { MemoryRouter } from 'react-router-dom';
 
 describe('App', () => {
   it('renders list heading', () => {
-    render(<App />);
-    expect(screen.getByText(/スポット一覧/i)).toBeInTheDocument();
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => [],
+    } as Response);
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>,
+    );
+    return waitFor(() => {
+      expect(screen.getByText(/スポット一覧/i)).toBeInTheDocument();
+    });
   });
 });

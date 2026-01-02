@@ -1,12 +1,145 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { SdzSpot } from './types/spot';
 import { useAuth } from './contexts/useAuth';
+import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
 
 const apiUrl = import.meta.env.VITE_SDZ_API_URL || 'http://localhost:8080';
 
 function formatCoords(location?: SdzSpot['location']) {
   if (!location) return 'N/A';
   return `${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}`;
+}
+
+type SdzSpotDetailProps = {
+  spots: SdzSpot[];
+  apiUrl: string;
+};
+
+function SdzSpotDetailPage({ spots, apiUrl }: SdzSpotDetailProps) {
+  const { spotId } = useParams();
+  const navigate = useNavigate();
+  const [sdzDetail, setSdzDetail] = useState<SdzSpot | null>(null);
+  const [sdzDetailLoading, setSdzDetailLoading] = useState(false);
+  const [sdzDetailError, setSdzDetailError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!spotId) return;
+    const sdzExisting = spots.find((spot) => spot.spotId === spotId);
+    if (sdzExisting) {
+      setSdzDetail(sdzExisting);
+      setSdzDetailError(null);
+      return;
+    }
+    let isActive = true;
+    setSdzDetailLoading(true);
+    setSdzDetailError(null);
+    fetch(`${apiUrl}/sdz/spots/${spotId}`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Failed to fetch spot: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data: SdzSpot) => {
+        if (!isActive) return;
+        setSdzDetail(data);
+      })
+      .catch((err) => {
+        if (!isActive) return;
+        setSdzDetailError((err as Error).message);
+      })
+      .finally(() => {
+        if (!isActive) return;
+        setSdzDetailLoading(false);
+      });
+    return () => {
+      isActive = false;
+    };
+  }, [apiUrl, spotId, spots]);
+
+  if (!spotId) {
+    return (
+      <div className="sdz-card">
+        <p>スポットIDが指定されていません。</p>
+        <button type="button" onClick={() => navigate('/')}>
+          一覧へ戻る
+        </button>
+      </div>
+    );
+  }
+
+  if (sdzDetailLoading) {
+    return <p>スポット詳細を読み込み中...</p>;
+  }
+
+  if (sdzDetailError) {
+    return (
+      <div className="sdz-error">
+        詳細取得エラー: {sdzDetailError}
+        <div style={{ marginTop: 8 }}>
+          <button type="button" onClick={() => navigate('/')}>
+            一覧へ戻る
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!sdzDetail) {
+    return (
+      <div className="sdz-card">
+        <p>該当するスポットが見つかりませんでした。</p>
+        <button type="button" onClick={() => navigate('/')}>
+          一覧へ戻る
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="sdz-card sdz-detail">
+      <div className="sdz-detail-header">
+        <div>
+          <h2>{sdzDetail.name}</h2>
+          <div className="sdz-meta">
+            投稿者: {sdzDetail.userId} / 位置: {formatCoords(sdzDetail.location)}
+            / 作成: {sdzDetail.createdAt}
+          </div>
+        </div>
+        <button type="button" onClick={() => navigate('/')}>
+          一覧へ戻る
+        </button>
+      </div>
+      {sdzDetail.description && <p>{sdzDetail.description}</p>}
+      {sdzDetail.tags && sdzDetail.tags.length > 0 && (
+        <div className="sdz-tags">
+          {sdzDetail.tags.map((tag) => (
+            <span key={tag} className="sdz-tag">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+      <div>
+        <strong>写真</strong>
+        {sdzDetail.images?.length ? (
+          <div className="sdz-image-grid">
+            {sdzDetail.images.map((imageUrl) => (
+              <img
+                key={imageUrl}
+                src={imageUrl}
+                alt={`${sdzDetail.name}の画像`}
+                className="sdz-image"
+                loading="lazy"
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="sdz-meta">画像はまだ登録されていません。</p>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function App() {
@@ -27,12 +160,38 @@ function App() {
   const [loginPassword, setLoginPassword] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
+  const [sdzSearchText, setSdzSearchText] = useState('');
+  const [sdzSelectedTag, setSdzSelectedTag] = useState('all');
 
   const subtitle = useMemo(
     () => `API base: ${apiUrl}（GET /sdz/spots を表示中）`,
-    [],
+    [apiUrl],
   );
   const isEmailPending = user && !user.emailVerified;
+  const sdzAvailableTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    spots.forEach((spot) => {
+      spot.tags?.forEach((tag) => tagSet.add(tag));
+    });
+    return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
+  }, [spots]);
+  const sdzFilteredSpots = useMemo(() => {
+    const normalizedQuery = sdzSearchText.trim().toLowerCase();
+    return spots.filter((spot) => {
+      if (sdzSelectedTag !== 'all' && !spot.tags?.includes(sdzSelectedTag)) {
+        return false;
+      }
+      if (!normalizedQuery) return true;
+      const nameMatch = spot.name.toLowerCase().includes(normalizedQuery);
+      const descMatch = spot.description
+        ? spot.description.toLowerCase().includes(normalizedQuery)
+        : false;
+      const tagMatch = spot.tags?.some((tag) =>
+        tag.toLowerCase().includes(normalizedQuery),
+      );
+      return nameMatch || descMatch || tagMatch;
+    });
+  }, [spots, sdzSearchText, sdzSelectedTag]);
 
   const fetchSpots = async (signal?: AbortSignal) => {
     try {
@@ -105,6 +264,11 @@ function App() {
   };
 
   const handleRefresh = () => fetchSpots();
+  const handleResetFilters = () => {
+    setSdzSearchText('');
+    setSdzSelectedTag('all');
+  };
+  const navigate = useNavigate();
 
   return (
     <div className="sdz-container">
@@ -220,27 +384,97 @@ function App() {
       {error && <div className="sdz-error">エラー: {error}</div>}
       {loading && <p>読み込み中...</p>}
 
-      {!loading && !error && spots.length === 0 && <p>スポットがまだありません。</p>}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              {!loading && !error && spots.length === 0 && (
+                <p>スポットがまだありません。</p>
+              )}
 
-      {spots.map((spot) => (
-        <div key={spot.spotId} className="sdz-card">
-          <h3>{spot.name}</h3>
-          <div className="sdz-meta">
-            投稿者: {spot.userId} / 位置: {formatCoords(spot.location)} / 作成:{' '}
-            {spot.createdAt}
-          </div>
-          {spot.description && <p>{spot.description}</p>}
-          {spot.tags && spot.tags.length > 0 && (
-            <div className="sdz-tags">
-              {spot.tags.map((tag) => (
-                <span key={tag} className="sdz-tag">
-                  {tag}
-                </span>
+              {!loading && !error && spots.length > 0 && (
+                <div className="sdz-card sdz-controls">
+                  <div className="sdz-controls-row">
+                    <div className="sdz-controls-col">
+                      <label htmlFor="sdz-search">キーワード</label>
+                      <input
+                        id="sdz-search"
+                        type="text"
+                        placeholder="スポット名・タグ・説明文で検索"
+                        value={sdzSearchText}
+                        onChange={(e) => setSdzSearchText(e.target.value)}
+                      />
+                    </div>
+                    <div className="sdz-controls-col">
+                      <label htmlFor="sdz-tag">タグ</label>
+                      <select
+                        id="sdz-tag"
+                        value={sdzSelectedTag}
+                        onChange={(e) => setSdzSelectedTag(e.target.value)}
+                      >
+                        <option value="all">すべて</option>
+                        {sdzAvailableTags.map((tag) => (
+                          <option key={tag} value={tag}>
+                            {tag}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="sdz-controls-col sdz-controls-meta">
+                      <span>
+                        表示中: {sdzFilteredSpots.length} / {spots.length}
+                      </span>
+                      <button type="button" onClick={handleResetFilters}>
+                        クリア
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!loading &&
+                !error &&
+                spots.length > 0 &&
+                sdzFilteredSpots.length === 0 && (
+                  <p>条件に一致するスポットがありません。</p>
+                )}
+
+              {sdzFilteredSpots.map((spot) => (
+                <div key={spot.spotId} className="sdz-card">
+                  <div className="sdz-card-header">
+                    <h3>{spot.name}</h3>
+                    <button
+                      type="button"
+                      onClick={() => navigate(`/spots/${spot.spotId}`)}
+                    >
+                      詳細を見る
+                    </button>
+                  </div>
+                  <div className="sdz-meta">
+                    投稿者: {spot.userId} / 位置: {formatCoords(spot.location)} /
+                    作成: {spot.createdAt}
+                  </div>
+                  {spot.description && <p>{spot.description}</p>}
+                  {spot.tags && spot.tags.length > 0 && (
+                    <div className="sdz-tags">
+                      {spot.tags.map((tag) => (
+                        <span key={tag} className="sdz-tag">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
-            </div>
-          )}
-        </div>
-      ))}
+            </>
+          }
+        />
+        <Route
+          path="/spots/:spotId"
+          element={<SdzSpotDetailPage spots={spots} apiUrl={apiUrl} />}
+        />
+      </Routes>
     </div>
   );
 }
