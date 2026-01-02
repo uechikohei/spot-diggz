@@ -10,6 +10,8 @@ export interface SdzSpot {
   location?: SdzSpotLocation;
   tags: string[];
   images: string[];
+  trustLevel: 'verified' | 'unverified';
+  trustSources?: string[];
   userId: string;
   createdAt: string;
   updatedAt: string;
