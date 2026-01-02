@@ -64,7 +64,10 @@ fn map_validation_error(err: SdzSpotValidationError) -> SdzApiError {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::infrastructure::in_memory_spot_repository::SdzInMemorySpotRepository;
+    use crate::{
+        domain::models::SdzSpotTrustLevel,
+        infrastructure::in_memory_spot_repository::SdzInMemorySpotRepository,
+    };
 
     fn build_input() -> CreateSpotInput {
         CreateSpotInput {
@@ -94,6 +97,11 @@ mod tests {
         assert_eq!(result.sdz_user_id, "user-1");
         assert!(!result.sdz_spot_id.is_empty());
         assert_eq!(result.tags.len(), 1);
+        assert!(matches!(
+            result.sdz_trust_level,
+            SdzSpotTrustLevel::Unverified
+        ));
+        assert!(result.sdz_trust_sources.is_empty());
         assert!(repo
             .find_by_id(&result.sdz_spot_id)
             .await

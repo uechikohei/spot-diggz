@@ -25,7 +25,10 @@ impl SdzListSpotsUseCase {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::infrastructure::in_memory_spot_repository::SdzInMemorySpotRepository;
+    use crate::{
+        domain::models::SdzSpotTrustLevel,
+        infrastructure::in_memory_spot_repository::SdzInMemorySpotRepository,
+    };
     use chrono::{FixedOffset, TimeZone};
 
     #[tokio::test]
@@ -48,6 +51,8 @@ mod tests {
             location: None,
             tags: vec![],
             images: vec![],
+            sdz_trust_level: SdzSpotTrustLevel::Unverified,
+            sdz_trust_sources: vec![],
             sdz_user_id: "user".into(),
             created_at: tz.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap(),
             updated_at: tz.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap(),

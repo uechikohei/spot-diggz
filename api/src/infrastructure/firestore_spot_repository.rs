@@ -5,7 +5,7 @@ use serde_json::{json, Map};
 
 use crate::{
     application::use_cases::spot_repository::SdzSpotRepository,
-    domain::models::{SdzSpot, SdzSpotLocation},
+    domain::models::{SdzSpot, SdzSpotLocation, SdzSpotTrustLevel},
     presentation::error::SdzApiError,
 };
 
@@ -174,6 +174,10 @@ struct FirestoreSpotFields {
     user_id: Option<StringField>,
     tags: Option<ArrayField>,
     images: Option<ArrayField>,
+    #[serde(rename = "trustLevel")]
+    trust_level: Option<StringField>,
+    #[serde(rename = "trustSources")]
+    trust_sources: Option<ArrayField>,
     location: Option<MapField>,
     #[serde(rename = "createdAt")]
     created_at: Option<TimestampField>,
@@ -244,6 +248,13 @@ impl FirestoreSpotDoc {
             .into_iter()
             .map(|v| v.string_value)
             .collect();
+        let trust_sources = fields
+            .trust_sources
+            .and_then(|f| f.array_value.values)
+            .unwrap_or_default()
+            .into_iter()
+            .map(|v| v.string_value)
+            .collect();
         let location = fields.location.and_then(|loc| {
             let mv = loc.map_value.fields?;
             let lat = mv.lat?.double_value;
@@ -265,6 +276,8 @@ impl FirestoreSpotDoc {
             location,
             tags,
             images,
+            sdz_trust_level: parse_trust_level(fields.trust_level.map(|s| s.string_value)),
+            sdz_trust_sources: trust_sources,
             sdz_user_id: fields.user_id.map(|s| s.string_value).unwrap_or_default(),
             created_at,
             updated_at,
@@ -305,6 +318,21 @@ fn build_firestore_doc(spot: &SdzSpot) -> Result<serde_json::Value, SdzApiError>
             json!({ "arrayValue": { "values": images_values } }),
         );
     }
+    fields.insert(
+        "trustLevel".into(),
+        json!({ "stringValue": trust_level_as_str(&spot.sdz_trust_level) }),
+    );
+    if !spot.sdz_trust_sources.is_empty() {
+        let trust_values: Vec<serde_json::Value> = spot
+            .sdz_trust_sources
+            .iter()
+            .map(|s| json!({ "stringValue": s }))
+            .collect();
+        fields.insert(
+            "trustSources".into(),
+            json!({ "arrayValue": { "values": trust_values } }),
+        );
+    }
     if let Some(loc) = &spot.location {
         fields.insert(
             "location".into(),
@@ -332,6 +360,20 @@ fn build_firestore_doc(spot: &SdzSpot) -> Result<serde_json::Value, SdzApiError>
 
 fn parse_timestamp(ts: Option<String>) -> Option<chrono::DateTime<chrono::FixedOffset>> {
     ts.and_then(|s| chrono::DateTime::parse_from_rfc3339(&s).ok())
+}
+
+fn parse_trust_level(value: Option<String>) -> SdzSpotTrustLevel {
+    match value.as_deref() {
+        Some("verified") => SdzSpotTrustLevel::Verified,
+        _ => SdzSpotTrustLevel::Unverified,
+    }
+}
+
+fn trust_level_as_str(level: &SdzSpotTrustLevel) -> &'static str {
+    match level {
+        SdzSpotTrustLevel::Verified => "verified",
+        SdzSpotTrustLevel::Unverified => "unverified",
+    }
 }
 
 fn map_status(
