@@ -5,7 +5,10 @@ export type AuthContextValue = {
   user: User | null;
   idToken: string | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
+  loginWithEmail: (email: string, password: string) => Promise<void>;
+  signupWithEmail: (email: string, password: string) => Promise<void>;
+  resendVerification: () => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -13,6 +16,9 @@ export const AuthContext = createContext<AuthContextValue>({
   user: null,
   idToken: null,
   loading: true,
-  login: async () => {},
+  loginWithGoogle: async () => {},
+  loginWithEmail: async () => {},
+  signupWithEmail: async () => {},
+  resendVerification: async () => {},
   logout: async () => {},
 });
