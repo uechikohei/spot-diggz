@@ -95,7 +95,8 @@ COPY .devcontainer/setup.sh /workspace/.devcontainer/setup.sh
 RUN chmod +x /workspace/.devcontainer/setup.sh
 
 # ユーザー設定（Codespacesではvscodeユーザーがデフォルト）
-RUN usermod -aG docker vscode \
+RUN groupadd -r docker || true \
+    && usermod -aG docker vscode \
     && echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> /home/vscode/.bashrc \
     && echo 'export PATH="$HOME/.nvm/versions/node/v${NODE_VERSION}/bin:$PATH"' >> /home/vscode/.bashrc \
     && echo 'source ~/.nvm/nvm.sh' >> /home/vscode/.bashrc \
