@@ -77,8 +77,10 @@ RUN . ~/.nvm/nvm.sh \
     nodemon
 
 # Rust開発ツール追加インストール
+# cargo-binstallで事前ビルド済みバイナリを優先し、CIのメモリ負荷を軽減する
 RUN . $HOME/.cargo/env \
-    && cargo install \
+    && curl -fsSL https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash \
+    && cargo binstall -y \
     cargo-watch \
     cargo-edit \
     cargo-audit \
