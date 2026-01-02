@@ -259,7 +259,7 @@ jobs:
     name: 🎭 Deploy to Staging
     runs-on: ubuntu-latest
     needs: [rust-ci, react-ci, terraform-ci]
-    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    if: false
     environment: staging
     
     steps:
