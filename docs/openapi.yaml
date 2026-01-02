@@ -204,6 +204,7 @@ components:
         - name
         - tags
         - images
+        - trustLevel
         - userId
         - createdAt
         - updatedAt
@@ -224,6 +225,17 @@ components:
             type: string
         images:
           type: array
+          items:
+            type: string
+        trustLevel:
+          type: string
+          description: Spot trust level (verified/unverified)
+          enum:
+            - verified
+            - unverified
+        trustSources:
+          type: array
+          description: External sources (YouTube/official site) for verified spots
           items:
             type: string
         userId:
