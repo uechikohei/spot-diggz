@@ -10,12 +10,8 @@ function formatCoords(location?: SdzSpot['location']) {
 }
 
 function App() {
-<<<<<<< HEAD
-  const { user, login, logout, loading: authLoading } = useAuth();
-=======
   const {
     user,
-    idToken,
     loginWithGoogle,
     loginWithEmail,
     signupWithEmail,
@@ -23,31 +19,14 @@ function App() {
     logout,
     loading: authLoading,
   } = useAuth();
->>>>>>> origin/develop
   const [spots, setSpots] = useState<SdzSpot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
-<<<<<<< HEAD
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-=======
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
-  const [creating, setCreating] = useState(false);
-  const [createError, setCreateError] = useState<string | null>(null);
-  const [form, setForm] = useState({
-    name: '',
-    description: '',
-    lat: '',
-    lng: '',
-    tags: '',
-    image: null as File | null,
-  });
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
->>>>>>> origin/develop
 
   const subtitle = useMemo(
     () => `API base: ${apiUrl}（GET /sdz/spots を表示中）`,
@@ -198,9 +177,6 @@ function App() {
         )}
       </div>
 
-<<<<<<< HEAD
-      {user && (
-=======
       {/* 未認証ユーザー向けの案内（専用ビュー） */}
       {isEmailPending && (
         <div className="sdz-card" style={{ marginBottom: 16 }}>
@@ -226,7 +202,6 @@ function App() {
       {/* 認証済みユーザー専用コンテンツ */}
       {!isEmailPending && user && (
         /* 新規/更新ボタンプレースホルダ */
->>>>>>> origin/develop
         <div className="sdz-card" style={{ marginBottom: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
             <div>

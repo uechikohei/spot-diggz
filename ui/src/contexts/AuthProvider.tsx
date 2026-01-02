@@ -1,20 +1,13 @@
-/* eslint-disable react-refresh/only-export-components */
 import {
-  onAuthStateChanged,
   GoogleAuthProvider,
-  signInWithPopup,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
+  onAuthStateChanged,
   sendEmailVerification,
+  signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
 } from 'firebase/auth';
-<<<<<<< HEAD:ui/src/contexts/AuthProvider.tsx
-import { useEffect, useMemo, useState } from 'react';
-import { auth } from '../firebase';
-import { AuthContext } from './auth-context';
-=======
-import { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react';
-import { auth } from '../firebase';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   doc,
   getDoc,
@@ -22,31 +15,8 @@ import {
   serverTimestamp,
   setDoc,
 } from 'firebase/firestore';
-
-type AuthContextValue = {
-  user: User | null;
-  idToken: string | null;
-  loading: boolean;
-  loginWithGoogle: () => Promise<void>;
-  loginWithEmail: (email: string, password: string) => Promise<void>;
-  signupWithEmail: (email: string, password: string) => Promise<void>;
-  resendVerification: () => Promise<void>;
-  logout: () => Promise<void>;
-};
-
-const AuthContext = createContext<AuthContextValue>({
-  user: null,
-  idToken: null,
-  loading: true,
-  loginWithGoogle: async () => {},
-  loginWithEmail: async () => {},
-  signupWithEmail: async () => {},
-  resendVerification: async () => {},
-  logout: async () => {},
-});
-
-export const useAuth = () => useContext(AuthContext);
->>>>>>> origin/develop:ui/src/contexts/AuthContext.tsx
+import { auth } from '../firebase';
+import { AuthContext } from './auth-context';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState(auth.currentUser);

@@ -1,5 +1,8 @@
 # spot-diggz API アーキテクチャ計画
 
+## OpenAPI 定義
+- `docs/openapi.yaml`
+
 ## STAR: API開発の目的と狙い
 ### Situation
 - Rustスクラッチ実装でCloud Run上にデプロイするマイクロサービスを構築する計画がある。
