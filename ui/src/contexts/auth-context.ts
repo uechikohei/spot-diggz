@@ -9,6 +9,7 @@ export type AuthContextValue = {
   loginWithEmail: (email: string, password: string) => Promise<void>;
   signupWithEmail: (email: string, password: string) => Promise<void>;
   resendVerification: () => Promise<void>;
+  sendPasswordReset: () => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -20,5 +21,6 @@ export const AuthContext = createContext<AuthContextValue>({
   loginWithEmail: async () => {},
   signupWithEmail: async () => {},
   resendVerification: async () => {},
+  sendPasswordReset: async () => {},
   logout: async () => {},
 });

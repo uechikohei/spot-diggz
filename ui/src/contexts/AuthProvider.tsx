@@ -3,6 +3,7 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
@@ -129,6 +130,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
+  const sendPasswordReset = useCallback(async () => {
+    if (!auth.currentUser?.email) {
+      throw new Error('再設定用のメールアドレスが見つかりません。');
+    }
+    await sendPasswordResetEmail(auth, auth.currentUser.email);
+  }, []);
+
   const value = useMemo(
     () => ({
       user,
@@ -138,9 +146,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       loginWithEmail,
       signupWithEmail,
       resendVerification,
+      sendPasswordReset,
       logout,
     }),
-    [user, idToken, loading, loginWithGoogle, loginWithEmail, signupWithEmail, resendVerification, logout],
+    [
+      user,
+      idToken,
+      loading,
+      loginWithGoogle,
+      loginWithEmail,
+      signupWithEmail,
+      resendVerification,
+      sendPasswordReset,
+      logout,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
