@@ -46,11 +46,7 @@
 - **How**: Configは`sdz_config`モジュールで環境変数（Secret Manager連携）を読み込み、依存注入は構造体パターンで実施。FireStoreアクセスは`google-cloud-firestore`互換クライアント、MapKit/Google Maps連携はREST/gRPCクライアントを用意する。
 
 ## ランタイム環境変数（API）
-- `SDZ_AUTH_PROJECT_ID`: Firebase/Identity PlatformのプロジェクトID（例: sdz-dev）
-- `SDZ_USE_FIRESTORE`: 1でFirestore利用（未設定ならインメモリ）
-- `SDZ_FIRESTORE_PROJECT_ID`: FirestoreプロジェクトID（省略時は`SDZ_AUTH_PROJECT_ID`）
-- `SDZ_FIRESTORE_TOKEN`: Firestore REST用Bearerトークン（開発時は`gcloud auth print-access-token`）
-- `SDZ_CORS_ALLOWED_ORIGINS`: 許可オリジンのカンマ区切り（未設定時はlocalhost:3000のみ）
+最新の一覧は `README.md` の「環境変数（API）」と `docs/DEVELOPMENT_SETUP.md` を参照。
 
 ## Firestore 命名・ID方針
 - データベース: `(default)`（環境はプロジェクト分離で管理: sdz-dev/stg/prod）
