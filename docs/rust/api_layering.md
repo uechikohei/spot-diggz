@@ -42,11 +42,7 @@ api/
 6. 結果をJSON化してレスポンスとして返す。
 
 ## 環境変数（API実行時）
-- `SDZ_AUTH_PROJECT_ID` … Firebase/Identity PlatformのプロジェクトID
-- `SDZ_USE_FIRESTORE` … 1でFirestore利用（未設定ならインメモリ）
-- `SDZ_FIRESTORE_PROJECT_ID` … FirestoreプロジェクトID（省略時は`SDZ_AUTH_PROJECT_ID`）
-- `SDZ_FIRESTORE_TOKEN` … Firestore REST用Bearerトークン
-- `SDZ_CORS_ALLOWED_ORIGINS` … 許可オリジン（カンマ区切り、未設定時はlocalhost:3000）
+最新の一覧は `README.md` の「環境変数（API）」と `docs/DEVELOPMENT_SETUP.md` を参照。
 
 ## Firestore 設計メモ
 - データベース: `(default)` を利用し、環境はGCPプロジェクト分離で管理（sdz-dev/stg/prod）。
