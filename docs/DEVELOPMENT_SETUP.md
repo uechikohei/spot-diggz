@@ -18,7 +18,7 @@ spot-diggzプロジェクトは、GitHub Codespacesとローカル VS Codeを連
 # GitHubリポジトリページから
 1. 「Code」ボタンをクリック
 2. 「Codespaces」タブを選択
-3. 「Create codespace on feature/replace」をクリック
+3. 「Create codespace on develop」をクリック
 ```
 
 ### 2. 自動セットアップ
@@ -37,8 +37,15 @@ Codespacesが起動すると、`.devcontainer/setup.sh`が自動実行され、�
 
 ```bash
 # 個別サービス起動
-cd api && cargo run          # Rust API サーバー (ポート8080)
-cd ui && npm run dev         # React 開発サーバー (ポート3000)
+cd api
+set -a
+source ./.env
+set +a
+export SDZ_FIRESTORE_TOKEN=$(gcloud auth print-access-token)
+cargo run                     # Rust API サーバー (ポート8080)
+
+cd ../ui
+npm run dev                   # React 開発サーバー (ポート3000)
 ```
 
 ## 💻 ローカル VS Code 連携
@@ -117,23 +124,17 @@ gcloud config set project sdz-dev  # 開発環境プロジェクト
 ### 環境変数設定（API）
 
 ```bash
-# Rust API用の例
+# Rust API用の例（api/.env）
 cd api
-cat > .env << 'EOF'
-RUST_LOG=debug
-SDZ_AUTH_PROJECT_ID=sdz-dev                # Firebase/Identity PlatformのプロジェクトID
-SDZ_USE_FIRESTORE=1                        # 1でFirestore利用（未設定ならインメモリ）
-SDZ_FIRESTORE_PROJECT_ID=sdz-dev           # 省略時はSDZ_AUTH_PROJECT_ID
-SDZ_FIRESTORE_TOKEN=$(gcloud auth print-access-token)   # Firestore REST用のBearerトークン
-SDZ_CORS_ALLOWED_ORIGINS=http://localhost:3000          # カンマ区切りで追加
-SDZ_STORAGE_BUCKET=sdz-dev-img-bucket                   # 画像アップロード先バケット
-SDZ_STORAGE_SERVICE_ACCOUNT_EMAIL=sdz-dev-api@sdz-dev.iam.gserviceaccount.com
-SDZ_STORAGE_SIGNED_URL_EXPIRES_SECS=900                # 署名URL有効期限(秒)
-EOF
+cp .env.example .env
+# .env を編集して自分の値に置き換える（コミットしない）
 
-# UI用の例
-cd ../ui  
-cat > .env << 'EOF'
+# Firestoreトークンは期限があるため起動時に都度export
+export SDZ_FIRESTORE_TOKEN=$(gcloud auth print-access-token)
+
+# UI用の例（ui/.env.local）
+cd ../ui
+cat > .env.local << 'EOF'
 VITE_SDZ_API_URL=http://localhost:8080
 VITE_FIREBASE_API_KEY=your_api_key
 VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
@@ -255,7 +256,7 @@ git push
 
 ### 複数Codespaces運用
 
-- **開発用**: feature/replace ブランチ
+- **開発用**: develop ブランチ
 - **実験用**: feature/experiment ブランチ  
 - **本番確認用**: master ブランチ
 
