@@ -41,4 +41,9 @@ terraform apply -var-file=environments/dev/terraform.tfvars
 
 ## 補足
 - `sdz-{env}-img-bucket` を Storage バケット命名の標準とする。
+- `sdz-{env}-ui-bucket` を UIホスティング用バケット命名の標準とする。
+- Firebase Web App の displayName は `sdz-fb-{env}` を標準とする。
 - Firebase Web App は常に作成し、iOS/Android は bundle/package が設定された場合のみ作成する。
+- Cloud Run / Artifact Registry も IaC に含める（アプリのデプロイはCI/CDで行う）。
+- `sdz_ui_public_members` で UI バケットの公開権限を付与する。組織ポリシーで `allUsers` が禁止の場合は `domain:321dev.org` などに切り替える。
+- `sdz_enable_cloud_run=false` の間は Cloud Run の作成をスキップする。イメージが Artifact Registry に push 済みになったら `true` に切り替える。

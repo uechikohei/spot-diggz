@@ -5,6 +5,12 @@
 - クライアント（Web/モバイル）はCloud RunのURLまたはカスタムドメイン経由でAPIへリクエストする。
 - FirestoreやCloud StorageといったGCPマネージドサービスへはRustアプリから直接アクセスする。
 
+## 命名規則（環境別）
+- Cloud Run サービス名: `sdz-{stage}-api`
+- Cloud Run イメージ: `{region}-docker.pkg.dev/sdz-{stage}/sdz-{stage}-api/sdz-api:latest`
+- UIホスティングバケット: `sdz-{stage}-ui-bucket`
+- 画像保存バケット: `sdz-{stage}-img-bucket`
+
 ## 2. なぜAPI Gatewayが不要なのか / 使う場合はいつか (Why)
 - Cloud RunはHTTP(S)エンドポイントを自動で提供し、スケーリング・TLS終端・コンテナ実行管理を担うため、必須でAPI Gatewayを挟む必要はない。
 - 追加でAPI Gateway/Cloud Endpointsを利用することで以下が実現できる:
@@ -81,3 +87,4 @@ resource "google_cloud_run_service" "sdz_api" {
 - サービスメッシュ（Anthos Service Mesh）を利用してmTLSやゼロトラスト構成を学習。
 - サードパーティAPIを呼ぶGatewayを別サービスに切り出し、バックエンド同士のサービス分割を検討。
 - UIカスタムドメインを`spot-diggz.321dev.org`、APIを`api.spot-diggz.321dev.org`のように分離し、CORS/認証ヘッダーの制御を整理する。
+- Cloud CDNは開発では使わず、staging/prodで必要に応じて後付けする。
