@@ -49,6 +49,7 @@ cd ui && npm run dev     # localhost:3000
 - 開発環境セットアップ: `docs/DEVELOPMENT_SETUP.md`
 - PR作成時は `.github/workflows/ci.yml` に定義されたユニットテストが自動実行される
 - ローカルでの起動手順は下記の「動作確認手順（ローカル起動）」を参照
+- Terraformのバージョンは `.terraform-version` で固定（tfenv想定）
 
 <details>
 <summary>動作確認手順（ローカル起動）</summary>

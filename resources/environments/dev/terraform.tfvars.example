@@ -1,0 +1,10 @@
+sdz_project_id         = "sdz-dev"
+sdz_region             = "asia-northeast1"
+sdz_firestore_location = "asia-northeast1"
+sdz_storage_bucket     = "sdz-dev-img-bucket"
+
+sdz_web_app_display_name = "spot-diggz web"
+
+# iOS/Androidは必要になったら設定する
+# sdz_android_package_name = "com.example.spotdiggz"
+# sdz_ios_bundle_id        = "org.example.spotdiggz"

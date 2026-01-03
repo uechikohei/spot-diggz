@@ -90,6 +90,22 @@ spot-diggz/
 └── spot-diggz.code-workspace  # VS Code ワークスペース設定
 ```
 
+## 🧰 ローカル環境のTerraform（tfenv）
+
+Codespacesとバージョンを揃えるため、`.terraform-version` を参照して固定する。
+
+```bash
+# tfenvのインストール（macOS想定）
+brew install tfenv
+
+# リポジトリのバージョンをインストール＆適用
+tfenv install
+tfenv use
+
+# バージョン確認
+terraform version
+```
+
 ### VS Code タスク
 
 `Ctrl+Shift+P` > `Tasks: Run Task` で以下のタスクを実行：
