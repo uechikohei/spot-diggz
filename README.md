@@ -44,15 +44,22 @@ cd api && cargo run      # localhost:8080
 cd ui && npm run dev     # localhost:3000
 ```
 
+## 🧭 開発のすすめかた
+
+- 開発環境セットアップ: `docs/DEVELOPMENT_SETUP.md`
+- PR作成時は `.github/workflows/ci.yml` に定義されたユニットテストが自動実行される
+- ローカルでの起動手順は下記の「動作確認手順（ローカル起動）」を参照
+
 <details>
 <summary>動作確認手順（ローカル起動）</summary>
 
 1) Rust API起動
 ```bash
 cd api
-export SDZ_USE_FIRESTORE=1
-export SDZ_AUTH_PROJECT_ID=sdz-dev
-export SDZ_FIRESTORE_PROJECT_ID=sdz-dev
+# api/.env に必要な値を設定済みであること
+set -a
+source ./.env
+set +a
 export SDZ_FIRESTORE_TOKEN=$(gcloud auth print-access-token)
 cargo run
 ```
@@ -82,13 +89,13 @@ export SDZ_TEST_USER_PASSWORD="YOUR_TEST_PASSWORD"
 
 2) Firebase Auth REST APIでIDトークン取得
 ```bash
+payload=$(jq -n --arg email "${SDZ_TEST_USER_EMAIL}" \
+  --arg password "${SDZ_TEST_USER_PASSWORD}" \
+  '{email:$email,password:$password,returnSecureToken:true}')
+
 SDZ_ID_TOKEN=$(curl -sS "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${SDZ_FIREBASE_WEB_API_KEY}" \
   -H "Content-Type: application/json" \
-  -d "{
-    \"email\": \"${SDZ_TEST_USER_EMAIL}\",
-    \"password\": \"${SDZ_TEST_USER_PASSWORD}\",
-    \"returnSecureToken\": true
-  }" | jq -r '.idToken')
+  -d "${payload}" | jq -r '.idToken')
 ```
 
 3) CRUDスモークテスト実行
@@ -113,12 +120,13 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/fires
 - `gh project item-add 2 --owner uechikohei --url \"ISSUE_URL\"` IssueをProjectに追加する
 - `gh project item-edit --project-id PVT_kwHOAx5dHc4BLgT- --id ITEM_ID --field-id PVTSSF_lAHOAx5dHc4BLgT-zg7DwBA --single-select-option-id OPTION_ID` ProjectのPriorityを更新する
 - `SDZ_ID_TOKEN=... SDZ_API_URL=... ./scripts/firestore_crud_smoke.sh` Firestore実運用のCRUDをAPI経由でスモークテストする（`X-SDZ-Client: ios`付き）
-- `SDZ_ID_TOKEN=$(curl -sS "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${SDZ_FIREBASE_WEB_API_KEY}" -H "Content-Type: application/json" -d "{\"email\":\"${SDZ_TEST_USER_EMAIL}\",\"password\":\"${SDZ_TEST_USER_PASSWORD}\",\"returnSecureToken\":true}" | jq -r '.idToken')` Firebase Auth REST APIでIDトークンを取得する
+- `payload=$(jq -n --arg email "${SDZ_TEST_USER_EMAIL}" --arg password "${SDZ_TEST_USER_PASSWORD}" '{email:$email,password:$password,returnSecureToken:true}'); SDZ_ID_TOKEN=$(curl -sS "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${SDZ_FIREBASE_WEB_API_KEY}" -H "Content-Type: application/json" -d "${payload}" | jq -r '.idToken')` Firebase Auth REST APIでIDトークンを取得する
 
 </details>
 
 ## ⚙️ 環境変数（API）
 
+- `api/.env.example` をコピーして `api/.env` を作成する（秘匿情報はコミットしない）
 - `SDZ_AUTH_PROJECT_ID` … Firebase/Identity PlatformのプロジェクトID（例: sdz-dev）
 - `SDZ_USE_FIRESTORE` … `1` でFirestore利用、未設定ならインメモリ
 - `SDZ_FIRESTORE_PROJECT_ID` … FirestoreのプロジェクトID（省略時はSDZ_AUTH_PROJECT_IDを使用）
@@ -128,6 +136,8 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/fires
 - `SDZ_STORAGE_SERVICE_ACCOUNT_EMAIL` … 署名URL生成に使うサービスアカウントのメール
 - `SDZ_STORAGE_SIGNED_URL_EXPIRES_SECS` … 署名URLの有効期限（秒、デフォルト900）
 - `SDZ_STORAGE_SIGNING_TOKEN` … 署名URL生成に使うアクセストークン（未設定時はSDZ_FIRESTORE_TOKENやメタデータ経由）
+  
+UIの環境変数（`VITE_*`）は `ui/.env.local` に設定する。例は `docs/DEVELOPMENT_SETUP.md` を参照。
 
 ## 📚 Documentation
 
