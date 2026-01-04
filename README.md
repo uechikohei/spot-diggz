@@ -144,6 +144,8 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/fires
 - `terraform fmt -recursive` Terraformのフォーマットを整形する
 - `terraform init -backend=false` Terraformをローカル検証用に初期化する
 - `terraform validate` Terraformの設定を検証する
+- `gh run list --branch feature/p2-iac-cicd --limit 5` 特定ブランチのGitHub Actions実行履歴を確認する
+- `gh run view RUN_ID --log-failed` 指定ランの失敗ログのみを確認する
 
 </details>
 
