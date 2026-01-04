@@ -162,6 +162,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/fires
 - `cat resources/environments/dev/terraform.tfvars.example` dev環境のtfvars例を確認する
 - `git switch develop` developブランチへ切り替える
 - `git switch -c feature/wif-terraform` 作業用ブランチを新規作成して切り替える
+- `git switch -c feature/cloudbuild-permissions` Cloud Build権限調整の作業用ブランチを作成する
 - `rg -n "cloudbuild|cloud build|gcloud builds|Cloud Build" -S .` Cloud Build関連の定義や記載を検索する
 - `ls resources/cloudbuild/*.yaml` Cloud Buildの設定ファイル一覧を確認する
 - `gcloud builds submit --project "sdz-dev" --config resources/cloudbuild/cloudbuild_api.yaml --substitutions _PROJECT_ID="sdz-dev",_REGION="asia-northeast1",_STAGE="dev",_API_IMAGE="asia-northeast1-docker.pkg.dev/sdz-dev/sdz-dev-api/sdz-api:latest",_DEPLOY_SA_RESOURCE="projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com"` Cloud BuildでAPIのビルド・デプロイを実行する
