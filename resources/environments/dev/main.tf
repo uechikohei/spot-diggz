@@ -36,7 +36,7 @@ resource "google_storage_bucket" "sdz_spot_media" {
   location = var.sdz_region
 
   uniform_bucket_level_access = true
-  public_access_prevention    = "enforced"
+  public_access_prevention    = "inherited"
 
   depends_on = [google_project_service.sdz_services]
 }
@@ -113,6 +113,13 @@ resource "google_storage_bucket_iam_member" "sdz_api_storage_admin" {
   member = "serviceAccount:${google_service_account.sdz_dev_api_sa.email}"
 }
 
+resource "google_storage_bucket_iam_member" "sdz_spot_media_public_read" {
+  for_each = toset(var.sdz_media_public_members)
+  bucket   = google_storage_bucket.sdz_spot_media.name
+  role     = "roles/storage.objectViewer"
+  member   = each.value
+}
+
 resource "google_cloud_run_service" "sdz_api" {
   count    = var.sdz_enable_cloud_run ? 1 : 0
   name     = "sdz-${var.sdz_stage}-api"
@@ -124,6 +131,34 @@ resource "google_cloud_run_service" "sdz_api" {
       service_account_name = google_service_account.sdz_dev_api_sa.email
       containers {
         image = var.sdz_api_image
+        env {
+          name  = "SDZ_AUTH_PROJECT_ID"
+          value = var.sdz_auth_project_id
+        }
+        env {
+          name  = "SDZ_USE_FIRESTORE"
+          value = var.sdz_use_firestore ? "1" : "0"
+        }
+        env {
+          name  = "SDZ_FIRESTORE_PROJECT_ID"
+          value = var.sdz_firestore_project_id
+        }
+        env {
+          name  = "SDZ_CORS_ALLOWED_ORIGINS"
+          value = var.sdz_cors_allowed_origins
+        }
+        env {
+          name  = "SDZ_STORAGE_BUCKET"
+          value = var.sdz_storage_bucket
+        }
+        env {
+          name  = "SDZ_STORAGE_SERVICE_ACCOUNT_EMAIL"
+          value = var.sdz_storage_service_account_email
+        }
+        env {
+          name  = "SDZ_STORAGE_SIGNED_URL_EXPIRES_SECS"
+          value = tostring(var.sdz_storage_signed_url_expires_secs)
+        }
       }
     }
   }

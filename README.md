@@ -47,6 +47,7 @@ cd ui && npm run dev     # localhost:3000
 ## 🧭 開発のすすめかた
 
 - 開発環境セットアップ: `docs/DEVELOPMENT_SETUP.md`
+- CD設計: `docs/cd_architecture.md`
 - PR作成時は `.github/workflows/ci.yml` に定義されたユニットテストが自動実行される
 - ローカルでの起動手順は下記の「動作確認手順（ローカル起動）」を参照
 - Terraformのバージョンは `.terraform-version` で固定（tfenv想定）
@@ -122,6 +123,27 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/fires
 - `gh project item-edit --project-id PVT_kwHOAx5dHc4BLgT- --id ITEM_ID --field-id PVTSSF_lAHOAx5dHc4BLgT-zg7DwBA --single-select-option-id OPTION_ID` ProjectのPriorityを更新する
 - `SDZ_ID_TOKEN=... SDZ_API_URL=... ./scripts/firestore_crud_smoke.sh` Firestore実運用のCRUDをAPI経由でスモークテストする（`X-SDZ-Client: ios`付き）
 - `payload=$(jq -n --arg email "${SDZ_TEST_USER_EMAIL}" --arg password "${SDZ_TEST_USER_PASSWORD}" '{email:$email,password:$password,returnSecureToken:true}'); SDZ_ID_TOKEN=$(curl -sS "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${SDZ_FIREBASE_WEB_API_KEY}" -H "Content-Type: application/json" -d "${payload}" | jq -r '.idToken')` Firebase Auth REST APIでIDトークンを取得する
+- `ls` リポジトリ直下のファイル一覧を確認する
+- `cat docs/cd_architecture.md` CD設計ドキュメントの内容を確認する
+- `rg -n "開発のすすめかた|開発の進め方|開発" README.md` README内の開発導線の位置を検索する
+- `cat README.md` README全体の記載内容を確認する
+- `git status -sb` 変更状況と現在ブランチを短く確認する
+- `rg --files .github/workflows` GitHub Actionsのワークフローファイルを列挙する
+- `cat .github/workflows/ci.yml` CI設定の詳細を確認する
+- `cargo fmt -- --check` Rustのフォーマットをチェックする
+- `cargo clippy -- -D warnings` RustのLintを警告扱いで実行する
+- `cargo test --verbose` Rustのユニットテストを詳細ログ付きで実行する
+- `cargo build --release --verbose` Rustのリリースビルドを詳細ログ付きで実行する
+- `test -f ui/package-lock.json && echo "package-lock.json exists"` UIのlockfile有無を確認する
+- `npm ci` UIの依存関係をlockfile通りにインストールする
+- `npm run lint` UIのLintを実行する
+- `npm run type-check` UIの型チェックを実行する
+- `npm test -- --coverage --watch=false` UIのユニットテストをカバレッジ付きで実行する
+- `npm run build` UIの本番ビルドを実行する
+- `terraform fmt -check -recursive` Terraformのフォーマット差分をチェックする
+- `terraform fmt -recursive` Terraformのフォーマットを整形する
+- `terraform init -backend=false` Terraformをローカル検証用に初期化する
+- `terraform validate` Terraformの設定を検証する
 
 </details>
 
