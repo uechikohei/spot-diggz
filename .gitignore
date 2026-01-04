@@ -8,3 +8,6 @@
 /ui/build/
 /ui/dist/
 /ui/coverage/
+/resources/.terraform/
+/resources/environments/**/terraform.tfvars
+/resources/terraform.tfstate*
