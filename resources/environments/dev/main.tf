@@ -192,8 +192,14 @@ resource "google_storage_bucket_iam_member" "sdz_deploy_ui_storage_admin" {
 
 resource "google_storage_bucket_iam_member" "sdz_deploy_cloudbuild_source_reader" {
   bucket = var.sdz_cloudbuild_source_bucket
-  role   = "roles/storage.objectViewer"
+  role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${google_service_account.sdz_dev_deploy_sa.email}"
+}
+
+resource "google_project_iam_member" "sdz_deploy_service_usage_consumer" {
+  project = var.sdz_project_id
+  role    = "roles/serviceusage.serviceUsageConsumer"
+  member  = "serviceAccount:${google_service_account.sdz_dev_deploy_sa.email}"
 }
 
 resource "google_storage_bucket_iam_member" "sdz_spot_media_public_read" {
