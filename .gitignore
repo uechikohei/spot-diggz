@@ -2,6 +2,7 @@
 /api/target/
 /api/.env
 /ui/.env
+/ui/.env.local
 /ui/node_modules/
 /ui/.vite/
 /ui/.next/
