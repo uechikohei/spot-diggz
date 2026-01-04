@@ -6,12 +6,18 @@ resource "google_project_service" "sdz_services" {
     "iam.googleapis.com",
     "identitytoolkit.googleapis.com",
     "artifactregistry.googleapis.com",
+    "iamcredentials.googleapis.com",
     "run.googleapis.com",
     "storage.googleapis.com",
+    "sts.googleapis.com",
   ])
 
   service            = each.value
   disable_on_destroy = false
+}
+
+data "google_project" "sdz_project" {
+  project_id = var.sdz_project_id
 }
 
 resource "google_firebase_project" "sdz_firebase" {
@@ -91,6 +97,36 @@ resource "google_service_account" "sdz_dev_terraform_sa" {
   project      = var.sdz_project_id
 }
 
+resource "google_iam_workload_identity_pool" "sdz_github" {
+  count                     = var.sdz_enable_wif ? 1 : 0
+  project                   = var.sdz_project_id
+  workload_identity_pool_id = var.sdz_wif_pool_id
+  display_name              = "sdz-github-pool"
+  description               = "GitHub Actions OIDC pool"
+}
+
+resource "google_iam_workload_identity_pool_provider" "sdz_github" {
+  count                              = var.sdz_enable_wif ? 1 : 0
+  project                            = var.sdz_project_id
+  workload_identity_pool_id          = var.sdz_wif_pool_id
+  workload_identity_pool_provider_id = var.sdz_wif_provider_id
+  display_name                       = "sdz-github-provider"
+  description                        = "GitHub Actions OIDC provider"
+
+  oidc {
+    issuer_uri = "https://token.actions.githubusercontent.com"
+  }
+
+  attribute_mapping = {
+    "google.subject"       = "assertion.sub"
+    "attribute.repository" = "assertion.repository"
+    "attribute.ref"        = "assertion.ref"
+    "attribute.actor"      = "assertion.actor"
+  }
+
+  attribute_condition = var.sdz_github_ref != "" ? "attribute.repository == \"${var.sdz_github_repository}\" && attribute.ref == \"${var.sdz_github_ref}\"" : "attribute.repository == \"${var.sdz_github_repository}\""
+}
+
 resource "google_service_account" "sdz_firebase_adminsdk_sa" {
   account_id   = "firebase-adminsdk-fbsvc"
   display_name = "Firebase Admin SDK Service Agent"
@@ -103,16 +139,61 @@ resource "google_service_account_iam_member" "sdz_api_sa_token_creator" {
   member             = "serviceAccount:${google_service_account.sdz_dev_api_sa.email}"
 }
 
+resource "google_service_account_iam_member" "sdz_deploy_sa_cloud_build_user" {
+  service_account_id = google_service_account.sdz_dev_deploy_sa.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${data.google_project.sdz_project.number}@cloudbuild.gserviceaccount.com"
+}
+
+resource "google_service_account_iam_member" "sdz_api_sa_deploy_user" {
+  service_account_id = google_service_account.sdz_dev_api_sa.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.sdz_dev_deploy_sa.email}"
+}
+
+resource "google_project_iam_member" "sdz_deploy_run_admin" {
+  project = var.sdz_project_id
+  role    = "roles/run.admin"
+  member  = "serviceAccount:${google_service_account.sdz_dev_deploy_sa.email}"
+}
+
+resource "google_project_iam_member" "sdz_deploy_artifact_writer" {
+  project = var.sdz_project_id
+  role    = "roles/artifactregistry.writer"
+  member  = "serviceAccount:${google_service_account.sdz_dev_deploy_sa.email}"
+}
+
 resource "google_project_iam_member" "sdz_api_firestore_user" {
   project = var.sdz_project_id
   role    = "roles/datastore.user"
   member  = "serviceAccount:${google_service_account.sdz_dev_api_sa.email}"
 }
 
+resource "google_service_account_iam_member" "sdz_deploy_sa_wif" {
+  count              = var.sdz_enable_wif ? 1 : 0
+  service_account_id = google_service_account.sdz_dev_deploy_sa.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "principalSet://iam.googleapis.com/projects/${data.google_project.sdz_project.number}/locations/global/workloadIdentityPools/${var.sdz_wif_pool_id}/attribute.repository/${var.sdz_github_repository}"
+
+  depends_on = [google_iam_workload_identity_pool_provider.sdz_github]
+}
+
 resource "google_storage_bucket_iam_member" "sdz_api_storage_admin" {
   bucket = google_storage_bucket.sdz_spot_media.name
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${google_service_account.sdz_dev_api_sa.email}"
+}
+
+resource "google_storage_bucket_iam_member" "sdz_deploy_ui_storage_admin" {
+  bucket = google_storage_bucket.sdz_ui_bucket.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.sdz_dev_deploy_sa.email}"
+}
+
+resource "google_storage_bucket_iam_member" "sdz_deploy_cloudbuild_source_reader" {
+  bucket = var.sdz_cloudbuild_source_bucket
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:${google_service_account.sdz_dev_deploy_sa.email}"
 }
 
 resource "google_storage_bucket_iam_member" "sdz_spot_media_public_read" {

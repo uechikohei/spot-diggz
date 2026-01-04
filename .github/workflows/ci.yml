@@ -222,38 +222,51 @@ jobs:
     name: 🚀 Deploy to Development
     runs-on: ubuntu-latest
     needs: [rust-ci, react-ci, terraform-ci]
-    if: github.ref == 'refs/heads/feature/replace' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     environment: development
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      SDZ_GCP_PROJECT_ID: sdz-dev
+      SDZ_GCP_REGION: asia-northeast1
+      SDZ_STAGE: dev
+      SDZ_API_IMAGE: asia-northeast1-docker.pkg.dev/sdz-dev/sdz-dev-api/sdz-api:latest
+      SDZ_UI_BUCKET: sdz-dev-ui-bucket
+      SDZ_VITE_SDZ_API_URL: ${{ secrets.SDZ_DEV_API_URL }}
+      SDZ_VITE_FIREBASE_API_KEY: ${{ secrets.SDZ_DEV_FIREBASE_API_KEY }}
+      SDZ_VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.SDZ_DEV_FIREBASE_AUTH_DOMAIN }}
+      SDZ_VITE_FIREBASE_PROJECT_ID: ${{ secrets.SDZ_DEV_FIREBASE_PROJECT_ID }}
+      SDZ_WIF_PROVIDER: projects/1053202159855/locations/global/workloadIdentityPools/sdz-dev-github-pool/providers/sdz-dev-github-provider
+      SDZ_WIF_SERVICE_ACCOUNT: sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com
+      SDZ_DEPLOY_SA_RESOURCE: projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com
     
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
         
-      - name: 🔐 Authenticate to Google Cloud
+      - name: 🔐 Authenticate to Google Cloud (WIF)
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY_DEV }}
+          workload_identity_provider: ${{ env.SDZ_WIF_PROVIDER }}
+          service_account: ${{ env.SDZ_WIF_SERVICE_ACCOUNT }}
           
       - name: ☁️ Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
-        
-      - name: 🏗️ Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.6.6
           
-      - name: 🌍 Deploy infrastructure
-        working-directory: ./resources
+      - name: 📦 Trigger Cloud Build (API)
         run: |
-          terraform init
-          terraform workspace select dev || terraform workspace new dev
-          terraform plan -var-file=environments/dev/terraform.tfvars
-          terraform apply -auto-approve -var-file=environments/dev/terraform.tfvars
-          
-      - name: 📱 Deploy applications
+          gcloud builds submit \
+            --project "${SDZ_GCP_PROJECT_ID}" \
+            --config resources/cloudbuild/cloudbuild_api.yaml \
+            --substitutions _PROJECT_ID="${SDZ_GCP_PROJECT_ID}",_REGION="${SDZ_GCP_REGION}",_STAGE="${SDZ_STAGE}",_API_IMAGE="${SDZ_API_IMAGE}",_DEPLOY_SA_RESOURCE="${SDZ_DEPLOY_SA_RESOURCE}"
+
+      - name: 📦 Trigger Cloud Build (UI)
         run: |
-          echo "🚀 Deploying applications to development environment..."
-          # TODO: Cloud Run デプロイメント追加
+          gcloud builds submit \
+            --project "${SDZ_GCP_PROJECT_ID}" \
+            --config resources/cloudbuild/cloudbuild_ui.yaml \
+            --substitutions _UI_BUCKET="${SDZ_UI_BUCKET}",_DEPLOY_SA_RESOURCE="${SDZ_DEPLOY_SA_RESOURCE}",_VITE_SDZ_API_URL="${SDZ_VITE_SDZ_API_URL}",_VITE_FIREBASE_API_KEY="${SDZ_VITE_FIREBASE_API_KEY}",_VITE_FIREBASE_AUTH_DOMAIN="${SDZ_VITE_FIREBASE_AUTH_DOMAIN}",_VITE_FIREBASE_PROJECT_ID="${SDZ_VITE_FIREBASE_PROJECT_ID}"
 
   # ステージング環境デプロイ（手動承認）
   deploy-staging:
