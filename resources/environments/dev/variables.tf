@@ -18,6 +18,12 @@ variable "sdz_storage_bucket" {
   description = "Cloud Storage bucket name for spot media"
 }
 
+variable "sdz_media_public_members" {
+  type        = list(string)
+  description = "Members granted storage.objectViewer on media bucket (empty to skip)"
+  default     = []
+}
+
 variable "sdz_ui_bucket" {
   type        = string
   description = "Cloud Storage bucket name for UI hosting"
@@ -32,6 +38,42 @@ variable "sdz_ui_public_members" {
 variable "sdz_api_image" {
   type        = string
   description = "Container image for Cloud Run"
+}
+
+variable "sdz_cors_allowed_origins" {
+  type        = string
+  description = "Comma-separated allowed origins for API CORS"
+  default     = ""
+}
+
+variable "sdz_auth_project_id" {
+  type        = string
+  description = "Firebase Auth project ID for JWT validation"
+  default     = ""
+}
+
+variable "sdz_use_firestore" {
+  type        = bool
+  description = "Enable Firestore repositories in API"
+  default     = true
+}
+
+variable "sdz_firestore_project_id" {
+  type        = string
+  description = "Firestore project ID (defaults to auth project if empty)"
+  default     = ""
+}
+
+variable "sdz_storage_service_account_email" {
+  type        = string
+  description = "Service account email used for signed URL generation"
+  default     = ""
+}
+
+variable "sdz_storage_signed_url_expires_secs" {
+  type        = number
+  description = "Signed URL expiration seconds"
+  default     = 900
 }
 
 variable "sdz_enable_cloud_run" {
