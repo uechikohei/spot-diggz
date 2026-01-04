@@ -131,6 +131,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/fires
 - `rg -n "開発のすすめかた|開発の進め方|開発" README.md` README内の開発導線の位置を検索する
 - `cat README.md` README全体の記載内容を確認する
 - `git status -sb` 変更状況と現在ブランチを短く確認する
+- `git commit -m "MESSAGE"` 変更内容をコミットする
 - `git commit --amend` 直前のコミット内容を修正する
 - `git push --force-with-lease` リモートの最新を確認した上で履歴を書き換えてpushする
 - `git push -u origin feature/wif-terraform` 作業ブランチをリモートへ初回pushする
@@ -146,12 +147,16 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/fires
 - `npm run type-check` UIの型チェックを実行する
 - `npm test -- --coverage --watch=false` UIのユニットテストをカバレッジ付きで実行する
 - `npm run build` UIの本番ビルドを実行する
+- `brew install tfsec trivy colima docker docker-credential-helper` ローカルでtfsec/trivy/Docker環境を用意する
+- `colima start` ローカルのDockerデーモン（Colima）を起動する
+- `docker build -f .devcontainer/Dockerfile .` devcontainer用Dockerイメージのビルドを検証する
 - `terraform fmt -check -recursive` Terraformのフォーマット差分をチェックする
 - `terraform fmt -recursive` Terraformのフォーマットを整形する
 - `terraform init` Terraformの初期化を行う
 - `terraform plan -var-file=environments/dev/terraform.tfvars` dev環境の実行計画を確認する
 - `terraform init -backend=false` Terraformをローカル検証用に初期化する
 - `terraform validate` Terraformの設定を検証する
+- `tfsec resources` Terraform設定のセキュリティスキャンを実行する
 - `gh run list --branch feature/p2-iac-cicd --limit 5` 特定ブランチのGitHub Actions実行履歴を確認する
 - `gh run view RUN_ID --log-failed` 指定ランの失敗ログのみを確認する
 - `rg -n "workload identity|workload_identity|workloadIdentity|iam_workload|oidc|federation" -S resources` WIF関連の設定がTerraformに存在するか検索する
@@ -162,11 +167,13 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/fires
 - `cat resources/environments/dev/terraform.tfvars.example` dev環境のtfvars例を確認する
 - `git switch develop` developブランチへ切り替える
 - `git switch -c feature/wif-terraform` 作業用ブランチを新規作成して切り替える
+- `git switch -c feature/cloudbuild-permissions` Cloud Build権限調整の作業用ブランチを作成する
 - `rg -n "cloudbuild|cloud build|gcloud builds|Cloud Build" -S .` Cloud Build関連の定義や記載を検索する
 - `ls resources/cloudbuild/*.yaml` Cloud Buildの設定ファイル一覧を確認する
 - `gcloud builds submit --project "sdz-dev" --config resources/cloudbuild/cloudbuild_api.yaml --substitutions _PROJECT_ID="sdz-dev",_REGION="asia-northeast1",_STAGE="dev",_API_IMAGE="asia-northeast1-docker.pkg.dev/sdz-dev/sdz-dev-api/sdz-api:latest",_DEPLOY_SA_RESOURCE="projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com"` Cloud BuildでAPIのビルド・デプロイを実行する
 - `gcloud builds submit --project "sdz-dev" --config resources/cloudbuild/cloudbuild_ui.yaml --substitutions _UI_BUCKET="sdz-dev-ui-bucket",_DEPLOY_SA_RESOURCE="projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com",_VITE_SDZ_API_URL="https://sdz-dev-api-xxxxx.a.run.app",_VITE_FIREBASE_API_KEY="***",_VITE_FIREBASE_AUTH_DOMAIN="***",_VITE_FIREBASE_PROJECT_ID="sdz-dev"` Cloud BuildでUIのビルド・配信を実行する
 - `set -a; source ui/.env.local; set +a; gcloud builds submit --project "sdz-dev" --config resources/cloudbuild/cloudbuild_ui.yaml --substitutions _UI_BUCKET="sdz-dev-ui-bucket",_DEPLOY_SA_RESOURCE="projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com",_VITE_SDZ_API_URL="${VITE_SDZ_API_URL}",_VITE_FIREBASE_API_KEY="${VITE_FIREBASE_API_KEY}",_VITE_FIREBASE_AUTH_DOMAIN="${VITE_FIREBASE_AUTH_DOMAIN}",_VITE_FIREBASE_PROJECT_ID="${VITE_FIREBASE_PROJECT_ID}"` ui/.env.local の VITE_* を読み込んでCloud BuildでUIのビルド・配信を実行する
+- `trivy fs .` リポジトリ全体の脆弱性/シークレットスキャンを実行する
 
 </details>
 
