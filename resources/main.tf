@@ -25,6 +25,12 @@ module "sdz_dev" {
   sdz_firestore_project_id            = var.sdz_firestore_project_id
   sdz_storage_service_account_email   = var.sdz_storage_service_account_email
   sdz_storage_signed_url_expires_secs = var.sdz_storage_signed_url_expires_secs
+  sdz_cloudbuild_source_bucket        = var.sdz_cloudbuild_source_bucket
+  sdz_enable_wif                      = var.sdz_enable_wif
+  sdz_wif_pool_id                     = var.sdz_wif_pool_id
+  sdz_wif_provider_id                 = var.sdz_wif_provider_id
+  sdz_github_repository               = var.sdz_github_repository
+  sdz_github_ref                      = var.sdz_github_ref
   sdz_enable_cloud_run                = var.sdz_enable_cloud_run
   sdz_firestore_location              = var.sdz_firestore_location
   sdz_web_app_display_name            = var.sdz_web_app_display_name

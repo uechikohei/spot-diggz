@@ -184,7 +184,7 @@ services:
     environment:
       POSTGRES_DB: spot_diggz_dev
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
