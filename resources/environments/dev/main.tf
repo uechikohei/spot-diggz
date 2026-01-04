@@ -31,6 +31,7 @@ resource "google_firestore_database" "sdz_firestore" {
   depends_on = [google_firebase_project.sdz_firebase]
 }
 
+#tfsec:ignore:google-storage-bucket-encryption-customer-key Public assets bucket; CMEK not required for this use case.
 resource "google_storage_bucket" "sdz_spot_media" {
   name     = var.sdz_storage_bucket
   location = var.sdz_region
@@ -41,6 +42,7 @@ resource "google_storage_bucket" "sdz_spot_media" {
   depends_on = [google_project_service.sdz_services]
 }
 
+#tfsec:ignore:google-storage-bucket-encryption-customer-key Static hosting bucket; CMEK not required for this use case.
 resource "google_storage_bucket" "sdz_ui_bucket" {
   name     = var.sdz_ui_bucket
   location = var.sdz_region
