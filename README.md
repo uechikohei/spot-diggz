@@ -129,6 +129,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/fires
 - `rg -n "開発のすすめかた|開発の進め方|開発" README.md` README内の開発導線の位置を検索する
 - `cat README.md` README全体の記載内容を確認する
 - `git status -sb` 変更状況と現在ブランチを短く確認する
+- `git push -u origin feature/wif-terraform` 作業ブランチをリモートへ初回pushする
 - `rg --files .github/workflows` GitHub Actionsのワークフローファイルを列挙する
 - `cat .github/workflows/ci.yml` CI設定の詳細を確認する
 - `cargo fmt -- --check` Rustのフォーマットをチェックする
