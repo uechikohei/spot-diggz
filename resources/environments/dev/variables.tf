@@ -76,6 +76,37 @@ variable "sdz_storage_signed_url_expires_secs" {
   default     = 900
 }
 
+variable "sdz_cloudbuild_source_bucket" {
+  type        = string
+  description = "Cloud Build source bucket name for build inputs"
+}
+
+variable "sdz_enable_wif" {
+  type        = bool
+  description = "Enable Workload Identity Federation for GitHub Actions"
+  default     = false
+}
+
+variable "sdz_wif_pool_id" {
+  type        = string
+  description = "Workload Identity Pool ID"
+}
+
+variable "sdz_wif_provider_id" {
+  type        = string
+  description = "Workload Identity Provider ID"
+}
+
+variable "sdz_github_repository" {
+  type        = string
+  description = "GitHub repository in owner/name format"
+}
+
+variable "sdz_github_ref" {
+  type        = string
+  description = "GitHub ref for WIF condition (e.g. refs/heads/develop). Empty disables ref check"
+}
+
 variable "sdz_enable_cloud_run" {
   type        = bool
   description = "Create Cloud Run service (requires image to exist)"

@@ -119,6 +119,9 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/fires
 - `gh project item-list 2 --owner uechikohei --limit 50 --format json | jq -r '.items[] | \"#\\(.content.number) \\(.content.title) | Priority: \\(.priority) | Status: \\(.status) | URL: \\(.content.url)\"'` Project課題の一覧を表示する
 - `gh issue view ISSUE_NUMBER -R uechikohei/spot-diggz --json title,body,url` Issue本文を取得する
 - `gh issue create -R uechikohei/spot-diggz -t \"TITLE\" -b \"BODY\"` Issueを作成する
+- `gh pr create -R uechikohei/spot-diggz -t \"TITLE\" -b \"BODY\"` Pull Requestを作成する
+- `gh pr reopen ISSUE_NUMBER -R uechikohei/spot-diggz` Close済みのPull Requestを再オープンする
+- `gh pr edit ISSUE_NUMBER -R uechikohei/spot-diggz --base develop` Pull Requestのベースブランチを変更する
 - `gh project item-add 2 --owner uechikohei --url \"ISSUE_URL\"` IssueをProjectに追加する
 - `gh project item-edit --project-id PVT_kwHOAx5dHc4BLgT- --id ITEM_ID --field-id PVTSSF_lAHOAx5dHc4BLgT-zg7DwBA --single-select-option-id OPTION_ID` ProjectのPriorityを更新する
 - `SDZ_ID_TOKEN=... SDZ_API_URL=... ./scripts/firestore_crud_smoke.sh` Firestore実運用のCRUDをAPI経由でスモークテストする（`X-SDZ-Client: ios`付き）
@@ -128,6 +131,9 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/fires
 - `rg -n "開発のすすめかた|開発の進め方|開発" README.md` README内の開発導線の位置を検索する
 - `cat README.md` README全体の記載内容を確認する
 - `git status -sb` 変更状況と現在ブランチを短く確認する
+- `git commit --amend` 直前のコミット内容を修正する
+- `git push --force-with-lease` リモートの最新を確認した上で履歴を書き換えてpushする
+- `git push -u origin feature/wif-terraform` 作業ブランチをリモートへ初回pushする
 - `rg --files .github/workflows` GitHub Actionsのワークフローファイルを列挙する
 - `cat .github/workflows/ci.yml` CI設定の詳細を確認する
 - `cargo fmt -- --check` Rustのフォーマットをチェックする
@@ -142,10 +148,25 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/fires
 - `npm run build` UIの本番ビルドを実行する
 - `terraform fmt -check -recursive` Terraformのフォーマット差分をチェックする
 - `terraform fmt -recursive` Terraformのフォーマットを整形する
+- `terraform init` Terraformの初期化を行う
+- `terraform plan -var-file=environments/dev/terraform.tfvars` dev環境の実行計画を確認する
 - `terraform init -backend=false` Terraformをローカル検証用に初期化する
 - `terraform validate` Terraformの設定を検証する
 - `gh run list --branch feature/p2-iac-cicd --limit 5` 特定ブランチのGitHub Actions実行履歴を確認する
 - `gh run view RUN_ID --log-failed` 指定ランの失敗ログのみを確認する
+- `rg -n "workload identity|workload_identity|workloadIdentity|iam_workload|oidc|federation" -S resources` WIF関連の設定がTerraformに存在するか検索する
+- `ls resources` Terraform配下の構成を一覧で確認する
+- `cat resources/environments/dev/main.tf` dev環境のTerraform定義を確認する
+- `cat resources/variables.tf` Terraformのルート変数を確認する
+- `cat resources/main.tf` Terraformのルートモジュール配線を確認する
+- `cat resources/environments/dev/terraform.tfvars.example` dev環境のtfvars例を確認する
+- `git switch develop` developブランチへ切り替える
+- `git switch -c feature/wif-terraform` 作業用ブランチを新規作成して切り替える
+- `rg -n "cloudbuild|cloud build|gcloud builds|Cloud Build" -S .` Cloud Build関連の定義や記載を検索する
+- `ls resources/cloudbuild/*.yaml` Cloud Buildの設定ファイル一覧を確認する
+- `gcloud builds submit --project "sdz-dev" --config resources/cloudbuild/cloudbuild_api.yaml --substitutions _PROJECT_ID="sdz-dev",_REGION="asia-northeast1",_STAGE="dev",_API_IMAGE="asia-northeast1-docker.pkg.dev/sdz-dev/sdz-dev-api/sdz-api:latest",_DEPLOY_SA_RESOURCE="projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com"` Cloud BuildでAPIのビルド・デプロイを実行する
+- `gcloud builds submit --project "sdz-dev" --config resources/cloudbuild/cloudbuild_ui.yaml --substitutions _UI_BUCKET="sdz-dev-ui-bucket",_DEPLOY_SA_RESOURCE="projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com",_VITE_SDZ_API_URL="https://sdz-dev-api-xxxxx.a.run.app",_VITE_FIREBASE_API_KEY="***",_VITE_FIREBASE_AUTH_DOMAIN="***",_VITE_FIREBASE_PROJECT_ID="sdz-dev"` Cloud BuildでUIのビルド・配信を実行する
+- `set -a; source ui/.env.local; set +a; gcloud builds submit --project "sdz-dev" --config resources/cloudbuild/cloudbuild_ui.yaml --substitutions _UI_BUCKET="sdz-dev-ui-bucket",_DEPLOY_SA_RESOURCE="projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com",_VITE_SDZ_API_URL="${VITE_SDZ_API_URL}",_VITE_FIREBASE_API_KEY="${VITE_FIREBASE_API_KEY}",_VITE_FIREBASE_AUTH_DOMAIN="${VITE_FIREBASE_AUTH_DOMAIN}",_VITE_FIREBASE_PROJECT_ID="${VITE_FIREBASE_PROJECT_ID}"` ui/.env.local の VITE_* を読み込んでCloud BuildでUIのビルド・配信を実行する
 
 </details>
 
