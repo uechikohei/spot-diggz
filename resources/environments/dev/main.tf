@@ -146,6 +146,12 @@ resource "google_service_account_iam_member" "sdz_deploy_sa_cloud_build_user" {
   member             = "serviceAccount:${data.google_project.sdz_project.number}@cloudbuild.gserviceaccount.com"
 }
 
+resource "google_service_account_iam_member" "sdz_deploy_sa_self_user" {
+  service_account_id = google_service_account.sdz_dev_deploy_sa.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.sdz_dev_deploy_sa.email}"
+}
+
 resource "google_service_account_iam_member" "sdz_api_sa_deploy_user" {
   service_account_id = google_service_account.sdz_dev_api_sa.name
   role               = "roles/iam.serviceAccountUser"
