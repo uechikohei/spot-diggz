@@ -227,6 +227,12 @@ resource "google_project_iam_member" "sdz_deploy_service_usage_consumer" {
   member  = "serviceAccount:${google_service_account.sdz_dev_deploy_sa.email}"
 }
 
+resource "google_project_iam_member" "sdz_deploy_log_writer" {
+  project = var.sdz_project_id
+  role    = "roles/logging.logWriter"
+  member  = "serviceAccount:${google_service_account.sdz_dev_deploy_sa.email}"
+}
+
 resource "google_storage_bucket_iam_member" "sdz_cloudbuild_sa_source_admin" {
   bucket = var.sdz_cloudbuild_source_bucket
   role   = "roles/storage.objectAdmin"
