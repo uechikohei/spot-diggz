@@ -253,6 +253,13 @@ jobs:
           
       - name: ☁️ Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
+
+      - name: 🔍 Debug GCP auth context
+        run: |
+          gcloud auth list
+          gcloud config list
+          gsutil -D ls gs://${SDZ_GCP_PROJECT_ID}_cloudbuild || true
+          gsutil -D ls gs://${SDZ_GCP_PROJECT_ID}_cloudbuild/source || true
           
       - name: 📦 Trigger Cloud Build (API)
         run: |
