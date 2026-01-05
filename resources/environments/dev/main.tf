@@ -202,6 +202,18 @@ resource "google_project_iam_member" "sdz_deploy_service_usage_consumer" {
   member  = "serviceAccount:${google_service_account.sdz_dev_deploy_sa.email}"
 }
 
+resource "google_storage_bucket_iam_member" "sdz_cloudbuild_sa_source_admin" {
+  bucket = var.sdz_cloudbuild_source_bucket
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${data.google_project.sdz_project.number}@cloudbuild.gserviceaccount.com"
+}
+
+resource "google_project_iam_member" "sdz_cloudbuild_sa_service_usage_consumer" {
+  project = var.sdz_project_id
+  role    = "roles/serviceusage.serviceUsageConsumer"
+  member  = "serviceAccount:${data.google_project.sdz_project.number}@cloudbuild.gserviceaccount.com"
+}
+
 resource "google_storage_bucket_iam_member" "sdz_spot_media_public_read" {
   for_each = toset(var.sdz_media_public_members)
   bucket   = google_storage_bucket.sdz_spot_media.name
