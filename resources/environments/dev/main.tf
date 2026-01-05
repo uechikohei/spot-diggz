@@ -10,6 +10,7 @@ resource "google_project_service" "sdz_services" {
     "run.googleapis.com",
     "storage.googleapis.com",
     "sts.googleapis.com",
+    "cloudbuild.googleapis.com",
   ])
 
   service            = each.value
@@ -163,6 +164,12 @@ resource "google_project_iam_member" "sdz_deploy_artifact_writer" {
   member  = "serviceAccount:${google_service_account.sdz_dev_deploy_sa.email}"
 }
 
+resource "google_project_iam_member" "sdz_deploy_cloudbuild_submitter" {
+  project = var.sdz_project_id
+  role    = "roles/cloudbuild.builds.editor"
+  member  = "serviceAccount:${google_service_account.sdz_dev_deploy_sa.email}"
+}
+
 resource "google_project_iam_member" "sdz_api_firestore_user" {
   project = var.sdz_project_id
   role    = "roles/datastore.user"
@@ -196,6 +203,18 @@ resource "google_storage_bucket_iam_member" "sdz_deploy_cloudbuild_source_reader
   member = "serviceAccount:${google_service_account.sdz_dev_deploy_sa.email}"
 }
 
+resource "google_storage_bucket_iam_member" "sdz_deploy_cloudbuild_bucket_reader" {
+  bucket = var.sdz_cloudbuild_source_bucket
+  role   = "roles/storage.legacyBucketReader"
+  member = "serviceAccount:${google_service_account.sdz_dev_deploy_sa.email}"
+}
+
+resource "google_storage_bucket_iam_member" "sdz_deploy_cloudbuild_bucket_writer" {
+  bucket = var.sdz_cloudbuild_source_bucket
+  role   = "roles/storage.legacyBucketWriter"
+  member = "serviceAccount:${google_service_account.sdz_dev_deploy_sa.email}"
+}
+
 resource "google_project_iam_member" "sdz_deploy_service_usage_consumer" {
   project = var.sdz_project_id
   role    = "roles/serviceusage.serviceUsageConsumer"
@@ -205,6 +224,18 @@ resource "google_project_iam_member" "sdz_deploy_service_usage_consumer" {
 resource "google_storage_bucket_iam_member" "sdz_cloudbuild_sa_source_admin" {
   bucket = var.sdz_cloudbuild_source_bucket
   role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${data.google_project.sdz_project.number}@cloudbuild.gserviceaccount.com"
+}
+
+resource "google_storage_bucket_iam_member" "sdz_cloudbuild_sa_bucket_reader" {
+  bucket = var.sdz_cloudbuild_source_bucket
+  role   = "roles/storage.legacyBucketReader"
+  member = "serviceAccount:${data.google_project.sdz_project.number}@cloudbuild.gserviceaccount.com"
+}
+
+resource "google_storage_bucket_iam_member" "sdz_cloudbuild_sa_bucket_writer" {
+  bucket = var.sdz_cloudbuild_source_bucket
+  role   = "roles/storage.legacyBucketWriter"
   member = "serviceAccount:${data.google_project.sdz_project.number}@cloudbuild.gserviceaccount.com"
 }
 
