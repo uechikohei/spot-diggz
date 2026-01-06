@@ -148,6 +148,8 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `cat -n FILE` 行番号付きでファイル内容を確認する
 - `sed -n '1,200p' FILE` ファイルの先頭200行を確認する
 - `git status -sb` 変更状況と現在ブランチを短く確認する
+- `git fetch origin` リモートの最新情報を取得する
+- `git merge origin/develop` developの変更を取り込み、競合を解消する
 - `git add README.md` READMEの変更のみをステージする
 - `git diff FILE` 指定ファイルの差分を確認する
 - `git commit -m "MESSAGE"` 変更内容をコミットする
