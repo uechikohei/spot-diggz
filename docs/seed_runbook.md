@@ -8,8 +8,8 @@ CI/CD や Cloud Build からは実行しない（自動流入を防止するた�
 ## 前提
 
 - GCP 認証が完了していること
-- `sdz_seed_spots.sh` をリポジトリ直下で実行する
-- `sample/` 配下の画像を使用する
+- `web/sdz_seed_spots.sh` を実行する
+- `web/sample/` 配下の画像を使用する
 - Firestore の `spots` コレクションは全削除される
 
 ## 手順
@@ -35,8 +35,8 @@ export TEST_USER_PASSWORD="YOUR_TEST_PASSWORD"
 
 4) seed 実行
 ```bash
-chmod +x ./sdz_seed_spots.sh
-./sdz_seed_spots.sh
+chmod +x ./web/sdz_seed_spots.sh
+./web/sdz_seed_spots.sh
 ```
 
 5) 反映確認
@@ -47,6 +47,6 @@ gsutil ls gs://sdz-dev-img-bucket/spots
 
 ## 注意点
 
-- `sdz_seed_spots.sh` は Firestore の `spots` を全削除してから再投入する。
+- `web/sdz_seed_spots.sh` は Firestore の `spots` を全削除してから再投入する。
 - API URL はスクリプト内で固定しているため、変更があれば更新する。
-- CI/CD や Cloud Build から `sdz_seed_spots.sh` は呼び出していないことを維持する。
+- CI/CD や Cloud Build から `web/sdz_seed_spots.sh` は呼び出していないことを維持する。

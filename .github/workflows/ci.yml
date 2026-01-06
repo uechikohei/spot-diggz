@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./api
+        working-directory: ./web/api
     
     steps:
       - name: 📥 Checkout repository
@@ -36,7 +36,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            target
+            web/api/target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./ui
+        working-directory: ./web/ui
         
     steps:
       - name: 📥 Checkout repository
@@ -81,7 +81,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: ui/package-lock.json
+          cache-dependency-path: web/ui/package-lock.json
           
       - name: 📦 Install dependencies
         if: steps.lockfile.outputs.exists == 'yes'
@@ -107,7 +107,7 @@ jobs:
         if: steps.lockfile.outputs.exists == 'yes'
         uses: codecov/codecov-action@v3
         with:
-          directory: ./ui/coverage
+          directory: ./web/ui/coverage
 
   # Terraform 設定検証
   terraform-ci:
@@ -115,7 +115,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./resources
+        working-directory: ./web/resources
         
     steps:
       - name: 📥 Checkout repository
@@ -135,7 +135,7 @@ jobs:
       - name: 🛡️ Security scan
         uses: aquasecurity/tfsec-action@v1.0.3
         with:
-          working_directory: resources
+          working_directory: web/resources
 
   # Docker イメージビルド
   docker-ci:
@@ -266,7 +266,7 @@ jobs:
         run: |
           gcloud builds submit \
             --project "${SDZ_GCP_PROJECT_ID}" \
-            --config resources/cloudbuild/cloudbuild_api.yaml \
+            --config web/resources/cloudbuild/cloudbuild_api.yaml \
             --gcs-source-staging-dir=gs://${SDZ_GCP_PROJECT_ID}_cloudbuild/source \
             --verbosity=debug \
             --substitutions _PROJECT_ID="${SDZ_GCP_PROJECT_ID}",_REGION="${SDZ_GCP_REGION}",_STAGE="${SDZ_STAGE}",_API_IMAGE="${SDZ_API_IMAGE}",_DEPLOY_SA_RESOURCE="${SDZ_DEPLOY_SA_RESOURCE}"
@@ -275,7 +275,7 @@ jobs:
         run: |
           gcloud builds submit \
             --project "${SDZ_GCP_PROJECT_ID}" \
-            --config resources/cloudbuild/cloudbuild_ui.yaml \
+            --config web/resources/cloudbuild/cloudbuild_ui.yaml \
             --gcs-source-staging-dir=gs://${SDZ_GCP_PROJECT_ID}_cloudbuild/source \
             --verbosity=debug \
             --substitutions _UI_BUCKET="${SDZ_UI_BUCKET}",_DEPLOY_SA_RESOURCE="${SDZ_DEPLOY_SA_RESOURCE}",_VITE_SDZ_API_URL="${SDZ_VITE_SDZ_API_URL}",_VITE_FIREBASE_API_KEY="${SDZ_VITE_FIREBASE_API_KEY}",_VITE_FIREBASE_AUTH_DOMAIN="${SDZ_VITE_FIREBASE_AUTH_DOMAIN}",_VITE_FIREBASE_PROJECT_ID="${SDZ_VITE_FIREBASE_PROJECT_ID}"

@@ -357,7 +357,7 @@ sdz_cloud_run.tf, sdz_firestore.tf
 
 **階層対応ディレクトリ構成**:
 ```
-resources/
+web/resources/
 ├── organization/          # 組織・フォルダ管理
 │   ├── main.tf           # 組織ノード・フォルダ定義
 │   ├── policies.tf       # 組織ポリシー
@@ -537,20 +537,23 @@ graph LR
 **モノレポ構成**:
 ```
 project-root/
-├── resources/              # インフラ構成（Terraform）
-│   ├── modules/            # 再利用可能モジュール
-│   └── environments/       # 環境別設定
-├── src/
+├── web/                   # Webアプリ（API/UI/IaC）
 │   ├── api/               # バックエンド（Rust）
-│   │   ├── src/           
-│   │   ├── Dockerfile     
-│   │   └── Cargo.toml     
-│   └── ui/                # フロントエンド（React）
-│       ├── src/           
-│       ├── public/        
-│       └── package.json   
+│   │   ├── src/
+│   │   ├── Dockerfile
+│   │   └── Cargo.toml
+│   ├── ui/                # フロントエンド（React）
+│   │   ├── src/
+│   │   ├── public/
+│   │   └── package.json
+│   ├── resources/         # インフラ構成（Terraform）
+│   │   ├── modules/        # 再利用可能モジュール
+│   │   └── environments/   # 環境別設定
+│   ├── scripts/           # 自動化スクリプト
+│   └── sample/            # Seed用画像サンプル
 ├── docs/                  # プロジェクトドキュメント
-├── scripts/               # 自動化スクリプト
+├── IOS/                   # iOSアプリ（予定）
+├── Android/               # Androidアプリ（予定）
 ├── .github/               # CI/CDワークフロー
 └── docker-compose.yml     # ローカル開発環境
 ```

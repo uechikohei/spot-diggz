@@ -14,7 +14,7 @@ options:
 steps:
   - name: node:20
     id: build-ui
-    dir: ui
+    dir: web/ui
     entrypoint: bash
     env:
       - VITE_SDZ_API_URL=${_VITE_SDZ_API_URL}
@@ -31,5 +31,5 @@ steps:
     args:
       - -c
       - |
-        gsutil -m rsync -r -d ui/dist gs://${_UI_BUCKET}
-        gsutil -h "Cache-Control:no-cache, max-age=0" cp ui/dist/index.html gs://${_UI_BUCKET}/index.html
+        gsutil -m rsync -r -d web/ui/dist gs://${_UI_BUCKET}
+        gsutil -h "Cache-Control:no-cache, max-age=0" cp web/ui/dist/index.html gs://${_UI_BUCKET}/index.html

@@ -13,7 +13,16 @@ source ~/.cargo/env 2>/dev/null || true
 
 # ディレクトリ構造作成
 echo "📁 プロジェクト構造を作成中..."
-mkdir -p {src/{api,ui},resources/{modules,environments/{dev,stg,prod}},docs,scripts,.github/workflows}
+mkdir -p \
+    web/api \
+    web/ui \
+    web/resources/modules \
+    web/resources/environments/{dev,stg,prod} \
+    web/scripts \
+    docs \
+    .github/workflows \
+    IOS \
+    Android
 
 # Git設定確認・初期化
 echo "🔧 Git設定を確認中..."
@@ -32,9 +41,9 @@ if command -v rustc &> /dev/null; then
     echo "✅ Cargo version: $(cargo --version)"
     
     # Rust APIディレクトリ初期化
-    if [ ! -f api/Cargo.toml ]; then
+    if [ ! -f web/api/Cargo.toml ]; then
         echo "📦 Rust APIプロジェクトを初期化中..."
-        cd api
+        cd web/api
     cargo init --name sdz_api --bin .
         
         # 基本的な依存関係を追加
@@ -68,9 +77,9 @@ if command -v node &> /dev/null; then
     echo "✅ npm version: $(npm --version)"
     
     # React UIディレクトリ初期化
-    if [ ! -f ui/package.json ]; then
+    if [ ! -f web/ui/package.json ]; then
         echo "⚛️ React UIプロジェクトを初期化中..."
-        cd ui
+        cd web/ui
         npx create-react-app . --template typescript
         
         # 追加依存関係インストール
@@ -97,11 +106,11 @@ if command -v terraform &> /dev/null; then
     echo "✅ Terraform version: $(terraform --version | head -n1)"
     
     # Terraformモジュール初期化
-    if [ ! -f resources/main.tf ]; then
+    if [ ! -f web/resources/main.tf ]; then
         echo "🌍 Terraformプロジェクトを初期化中..."
         
         # メインTerraformファイル作成
-        cat > resources/main.tf << 'EOF'
+        cat > web/resources/main.tf << 'EOF'
 # spot-diggz Infrastructure
 terraform {
   required_version = ">= 1.6"
@@ -146,7 +155,7 @@ EOF
 
         # 環境別設定ファイル作成
         for env in dev stg prod; do
-            cat > resources/environments/$env/terraform.tfvars << EOF
+            cat > web/resources/environments/$env/terraform.tfvars << EOF
 project_id  = "sdz-$env"
 region      = "asia-northeast1"
 environment = "$env"
@@ -249,7 +258,7 @@ cat > .vscode/tasks.json << 'EOF'
       "command": "cargo",
       "args": ["build"],
       "options": {
-        "cwd": "${workspaceFolder}/api"
+        "cwd": "${workspaceFolder}/web/api"
       },
       "group": "build",
       "presentation": {
@@ -264,7 +273,7 @@ cat > .vscode/tasks.json << 'EOF'
       "command": "npm",
       "args": ["start"],
       "options": {
-        "cwd": "${workspaceFolder}/ui"
+        "cwd": "${workspaceFolder}/web/ui"
       },
       "group": "build",
       "presentation": {
@@ -279,7 +288,7 @@ cat > .vscode/tasks.json << 'EOF'
       "command": "terraform",
       "args": ["plan"],
       "options": {
-        "cwd": "${workspaceFolder}/resources"
+        "cwd": "${workspaceFolder}/web/resources"
       },
       "group": "build"
     }
@@ -296,9 +305,9 @@ cat > .vscode/launch.json << 'EOF'
       "name": "Debug Rust API",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/api/target/debug/sdz_api",
+      "program": "${workspaceFolder}/web/api/target/debug/sdz_api",
       "args": [],
-      "cwd": "${workspaceFolder}/api",
+      "cwd": "${workspaceFolder}/web/api",
       "sourceLanguages": ["rust"]
     }
   ]
@@ -307,9 +316,9 @@ EOF
 
 # 開発用スクリプト作成
 echo "📝 開発用スクリプトを作成中..."
-mkdir -p scripts
+mkdir -p web/scripts
 
-cat > scripts/dev-start.sh << 'EOF'
+cat > web/scripts/dev-start.sh << 'EOF'
 #!/bin/bash
 # 開発環境一括起動スクリプト
 
@@ -323,11 +332,11 @@ echo "📦 PostgreSQL: localhost:5432"
 echo "🔴 Redis: localhost:6379"
 echo ""
 echo "次のコマンドで開発を開始:"
-echo "  cd api && cargo run    # Rust API"
-echo "  cd ui && npm start     # React UI"
+echo "  cd web/api && cargo run    # Rust API"
+echo "  cd web/ui && npm start     # React UI"
 EOF
 
-cat > scripts/dev-stop.sh << 'EOF'
+cat > web/scripts/dev-stop.sh << 'EOF'
 #!/bin/bash
 # 開発環境停止スクリプト
 
@@ -336,7 +345,7 @@ docker-compose -f docker-compose.dev.yml down
 echo "✅ 開発環境を停止しました"
 EOF
 
-chmod +x scripts/*.sh
+chmod +x web/scripts/*.sh
 
 # .gitignore更新
 echo "📝 .gitignoreを更新中..."
@@ -398,8 +407,8 @@ echo ""
 echo "📋 次のステップ:"
 echo "1. GitHub Codespacesまたはローカル VS Codeで開発を開始"
 echo "2. Google Cloud CLI認証: gcloud auth login"
-echo "3. 開発サービス起動: ./scripts/dev-start.sh"
-echo "4. API開発: cd api && cargo run"
-echo "5. UI開発: cd ui && npm start"
+echo "3. 開発サービス起動: ./web/scripts/dev-start.sh"
+echo "4. API開発: cd web/api && cargo run"
+echo "5. UI開発: cd web/ui && npm start"
 echo ""
 echo "📚 詳細なドキュメントはCLAUDE.mdを参照してください"
