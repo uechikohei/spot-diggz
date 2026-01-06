@@ -27,21 +27,30 @@
 ```
 spot-diggz/
 ├── .devcontainer/          # GitHub Codespaces設定
-├── api/                   # 🦀 Rust APIサーバー
-├── ui/                    # ⚛️ React UIアプリ
-├── resources/             # 🏗️ Terraform Infrastructure
+├── .github/               # GitHub Actionsなど
+├── web/                   # Webアプリ（API/UI/IaC）
+│   ├── api/               # 🦀 Rust APIサーバー
+│   ├── ui/                # ⚛️ React UIアプリ
+│   ├── resources/         # 🏗️ Terraform Infrastructure
+│   ├── scripts/           # 🔧 開発用スクリプト
+│   └── sample/            # 🧪 Seed用画像サンプル
 ├── docs/                  # 📚 ドキュメント
-└── scripts/               # 🔧 開発用スクリプト
+├── IOS/                   # iOSアプリ（予定）
+├── Android/               # Androidアプリ（予定）
+├── AGENTS.md              # Codex運用ルール
+├── .gitignore             # 追跡対象外ファイル
+├── README.md              # リポジトリ概要
+└── spot-diggz.code-workspace  # VS Code ワークスペース設定
 ```
 
 ## 🔧 Development Commands
 
 ```bash
 # API開発
-cd api && cargo run      # localhost:8080
+cd web/api && cargo run  # localhost:8080
 
 # UI開発  
-cd ui && npm run dev     # localhost:3000
+cd web/ui && npm run dev # localhost:3000
 ```
 
 ## 🧭 開発のすすめかた
@@ -51,15 +60,15 @@ cd ui && npm run dev     # localhost:3000
 - dev seed運用ルール: `docs/seed_runbook.md`
 - PR作成時は `.github/workflows/ci.yml` に定義されたユニットテストが自動実行される
 - ローカルでの起動手順は下記の「動作確認手順（ローカル起動）」を参照
-- Terraformのバージョンは `.terraform-version` で固定（tfenv想定）
+- Terraformのバージョンは `web/.terraform-version` で固定（tfenv想定）
 
 <details>
 <summary>動作確認手順（ローカル起動）</summary>
 
 1) Rust API起動
 ```bash
-cd api
-# api/.env に必要な値を設定済みであること
+cd web/api
+# web/api/.env に必要な値を設定済みであること
 set -a
 source ./.env
 set +a
@@ -69,7 +78,7 @@ cargo run
 
 2) React UI起動（別ターミナル）
 ```bash
-cd ui
+cd web/ui
 npm install
 npm run dev
 ```
@@ -103,7 +112,7 @@ SDZ_ID_TOKEN=$(curl -sS "https://identitytoolkit.googleapis.com/v1/accounts:sign
 
 3) CRUDスモークテスト実行
 ```bash
-SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/firestore_crud_smoke.sh
+SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/firestore_crud_smoke.sh
 ```
 
 4) 正常動作チェック
@@ -126,12 +135,17 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/fires
 - `gh pr edit ISSUE_NUMBER -R uechikohei/spot-diggz --base develop` Pull Requestのベースブランチを変更する
 - `gh project item-add 2 --owner uechikohei --url \"ISSUE_URL\"` IssueをProjectに追加する
 - `gh project item-edit --project-id PVT_kwHOAx5dHc4BLgT- --id ITEM_ID --field-id PVTSSF_lAHOAx5dHc4BLgT-zg7DwBA --single-select-option-id OPTION_ID` ProjectのPriorityを更新する
-- `SDZ_ID_TOKEN=... SDZ_API_URL=... ./scripts/firestore_crud_smoke.sh` Firestore実運用のCRUDをAPI経由でスモークテストする（`X-SDZ-Client: ios`付き）
+- `SDZ_ID_TOKEN=... SDZ_API_URL=... ./web/scripts/firestore_crud_smoke.sh` Firestore実運用のCRUDをAPI経由でスモークテストする（`X-SDZ-Client: ios`付き）
 - `payload=$(jq -n --arg email "${SDZ_TEST_USER_EMAIL}" --arg password "${SDZ_TEST_USER_PASSWORD}" '{email:$email,password:$password,returnSecureToken:true}'); SDZ_ID_TOKEN=$(curl -sS "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${SDZ_FIREBASE_WEB_API_KEY}" -H "Content-Type: application/json" -d "${payload}" | jq -r '.idToken')` Firebase Auth REST APIでIDトークンを取得する
 - `ls` リポジトリ直下のファイル一覧を確認する
+- `ls -a` 隠しファイルを含めて一覧を確認する
 - `cat docs/cd_architecture.md` CD設計ドキュメントの内容を確認する
 - `rg -n "開発のすすめかた|開発の進め方|開発" README.md` README内の開発導線の位置を検索する
+- `rg -n "api/|ui/|resources/|scripts/|sdz_seed_spots|\\.terraform-version" README.md` README内の旧パス参照を確認する
+- `rg -n "cd api|cd ui|api/\\.env|ui/\\.env" docs/DEVELOPMENT_SETUP.md` DEVELOPMENT_SETUPの旧パス参照を確認する
 - `cat README.md` README全体の記載内容を確認する
+- `cat -n FILE` 行番号付きでファイル内容を確認する
+- `sed -n '1,200p' FILE` ファイルの先頭200行を確認する
 - `git status -sb` 変更状況と現在ブランチを短く確認する
 - `git diff FILE` 指定ファイルの差分を確認する
 - `git commit -m "MESSAGE"` 変更内容をコミットする
@@ -139,13 +153,14 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/fires
 - `git branch -m NEW_NAME` 現在のブランチ名を変更する
 - `git push --force-with-lease` リモートの最新を確認した上で履歴を書き換えてpushする
 - `git push -u origin feature/wif-terraform` 作業ブランチをリモートへ初回pushする
+- `touch IOS/.gitkeep Android/.gitkeep` 空ディレクトリをGitで追跡するためのファイルを作成する
 - `rg --files .github/workflows` GitHub Actionsのワークフローファイルを列挙する
 - `cat .github/workflows/ci.yml` CI設定の詳細を確認する
 - `cargo fmt -- --check` Rustのフォーマットをチェックする
 - `cargo clippy -- -D warnings` RustのLintを警告扱いで実行する
 - `cargo test --verbose` Rustのユニットテストを詳細ログ付きで実行する
 - `cargo build --release --verbose` Rustのリリースビルドを詳細ログ付きで実行する
-- `test -f ui/package-lock.json && echo "package-lock.json exists"` UIのlockfile有無を確認する
+- `test -f web/ui/package-lock.json && echo "package-lock.json exists"` UIのlockfile有無を確認する
 - `npm ci` UIの依存関係をlockfile通りにインストールする
 - `npm run lint` UIのLintを実行する
 - `npm run type-check` UIの型チェックを実行する
@@ -157,30 +172,41 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/fires
 - `terraform fmt -check -recursive` Terraformのフォーマット差分をチェックする
 - `terraform fmt -recursive` Terraformのフォーマットを整形する
 - `terraform init` Terraformの初期化を行う
-- `terraform plan -var-file=environments/dev/terraform.tfvars` dev環境の実行計画を確認する
+- `terraform plan -var-file=web/resources/environments/dev/terraform.tfvars` dev環境の実行計画を確認する
 - `terraform init -backend=false` Terraformをローカル検証用に初期化する
 - `terraform validate` Terraformの設定を検証する
-- `tfsec resources` Terraform設定のセキュリティスキャンを実行する
+- `tfsec web/resources` Terraform設定のセキュリティスキャンを実行する
 - `gh run list --branch feature/p2-iac-cicd --limit 5` 特定ブランチのGitHub Actions実行履歴を確認する
 - `gh run view RUN_ID --log-failed` 指定ランの失敗ログのみを確認する
 - `gh issue list --limit 10` Issue一覧を直近10件で表示する
 - `gh label list --limit 200` 既存ラベル一覧を確認する
-- `rg -n "workload identity|workload_identity|workloadIdentity|iam_workload|oidc|federation" -S resources` WIF関連の設定がTerraformに存在するか検索する
-- `ls resources` Terraform配下の構成を一覧で確認する
-- `cat resources/environments/dev/main.tf` dev環境のTerraform定義を確認する
-- `cat resources/variables.tf` Terraformのルート変数を確認する
-- `cat resources/main.tf` Terraformのルートモジュール配線を確認する
-- `cat resources/environments/dev/terraform.tfvars.example` dev環境のtfvars例を確認する
+- `rg -n "workload identity|workload_identity|workloadIdentity|iam_workload|oidc|federation" -S web/resources` WIF関連の設定がTerraformに存在するか検索する
+- `ls web/resources` Terraform配下の構成を一覧で確認する
+- `cat web/resources/environments/dev/main.tf` dev環境のTerraform定義を確認する
+- `cat web/resources/variables.tf` Terraformのルート変数を確認する
+- `cat web/resources/main.tf` Terraformのルートモジュール配線を確認する
+- `cat web/resources/environments/dev/terraform.tfvars.example` dev環境のtfvars例を確認する
 - `git switch develop` developブランチへ切り替える
 - `git switch -c feature/wif-terraform` 作業用ブランチを新規作成して切り替える
 - `git switch -c feature/cloudbuild-permissions` Cloud Build権限調整の作業用ブランチを作成する
 - `git switch -c feature/ios-prep` iOS関連の作業用ブランチを新規作成して切り替える
 - `rg -n "cloudbuild|cloud build|gcloud builds|Cloud Build" -S .` Cloud Build関連の定義や記載を検索する
 - `rg -n "codeql-action" .github/workflows` CodeQL Actionの利用箇所を検索する
-- `ls resources/cloudbuild/*.yaml` Cloud Buildの設定ファイル一覧を確認する
-- `gcloud builds submit --project "sdz-dev" --config resources/cloudbuild/cloudbuild_api.yaml --substitutions _PROJECT_ID="sdz-dev",_REGION="asia-northeast1",_STAGE="dev",_API_IMAGE="asia-northeast1-docker.pkg.dev/sdz-dev/sdz-dev-api/sdz-api:latest",_DEPLOY_SA_RESOURCE="projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com"` Cloud BuildでAPIのビルド・デプロイを実行する
-- `gcloud builds submit --project "sdz-dev" --config resources/cloudbuild/cloudbuild_ui.yaml --substitutions _UI_BUCKET="sdz-dev-ui-bucket",_DEPLOY_SA_RESOURCE="projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com",_VITE_SDZ_API_URL="https://sdz-dev-api-xxxxx.a.run.app",_VITE_FIREBASE_API_KEY="***",_VITE_FIREBASE_AUTH_DOMAIN="***",_VITE_FIREBASE_PROJECT_ID="sdz-dev"` Cloud BuildでUIのビルド・配信を実行する
-- `set -a; source ui/.env.local; set +a; gcloud builds submit --project "sdz-dev" --config resources/cloudbuild/cloudbuild_ui.yaml --substitutions _UI_BUCKET="sdz-dev-ui-bucket",_DEPLOY_SA_RESOURCE="projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com",_VITE_SDZ_API_URL="${VITE_SDZ_API_URL}",_VITE_FIREBASE_API_KEY="${VITE_FIREBASE_API_KEY}",_VITE_FIREBASE_AUTH_DOMAIN="${VITE_FIREBASE_AUTH_DOMAIN}",_VITE_FIREBASE_PROJECT_ID="${VITE_FIREBASE_PROJECT_ID}"` ui/.env.local の VITE_* を読み込んでCloud BuildでUIのビルド・配信を実行する
+- `rg -n "ui/|resources/|api/" .github/workflows/ci.yml` CI内のパス参照を確認する
+- `rg -n "api/|ui/|resources/|scripts/" spot-diggz.code-workspace` Workspace設定内のパス参照を確認する
+- `rg -n "api/|ui/|resources/|scripts/" .devcontainer/setup.sh` devcontainerセットアップ内のパス参照を確認する
+- `rg -n "api/|ui/|resources/|scripts/" .devcontainer/Dockerfile .devcontainer/devcontainer.json .devcontainer/setup.sh` devcontainer関連のパス参照をまとめて確認する
+- `rg -n "api/|ui/|resources/|scripts/" .devcontainer/Dockerfile .devcontainer/devcontainer.json` devcontainerファイル内の旧パス参照を確認する
+- `rg -n "api/|ui/|resources/|scripts/|sample/|sdz_seed_spots.sh|firebase.json|firestore.rules|\\.terraform-version|\\.firebaserc|cloudbuild_api.yaml|cloudbuild_ui.yaml" -S .` 移行対象のパス参照を横断検索する
+- `rg -n "api/|ui/|resources/|scripts/|sample/|sdz_seed_spots.sh|firebase.json|firestore.rules|\\.terraform-version|\\.firebaserc" -S README.md docs AGENTS.md .github spot-diggz.code-workspace` 主要ファイルのパス参照をまとめて確認する
+- `rg -n -P "(?<!web/)api/|(?<!web/)ui/|(?<!web/)resources/|(?<!web/)scripts/|(?<!web/)sample/|(?<!web/)sdz_seed_spots\\.sh|(?<!web/)firebase\\.json|(?<!web/)firestore\\.rules|(?<!web/)\\.terraform-version|(?<!web/)\\.firebaserc" -S --glob '!web/**'` web配下以外に旧パス参照が残っていないか確認する
+- `rg -n "api/|ui/|resources/|scripts/|sample/|sdz_seed_spots.sh|firebase.json|firestore.rules|\\.terraform-version|\\.firebaserc" -S --glob '!web/**'` web配下を除外したパス参照をざっくり確認する
+- `rg -n "dev-start\\.sh|dev-stop\\.sh" -S .` 開発一括起動スクリプトの参照箇所を確認する
+- `rg -n "resources/|api/|ui/|scripts/|sample/|sdz_seed_spots.sh" AGENTS.md` AGENTS.md内の旧パス参照を検索する
+- `ls web/resources/cloudbuild/*.yaml` Cloud Buildの設定ファイル一覧を確認する
+- `gcloud builds submit --project "sdz-dev" --config web/resources/cloudbuild/cloudbuild_api.yaml --substitutions _PROJECT_ID="sdz-dev",_REGION="asia-northeast1",_STAGE="dev",_API_IMAGE="asia-northeast1-docker.pkg.dev/sdz-dev/sdz-dev-api/sdz-api:latest",_DEPLOY_SA_RESOURCE="projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com"` Cloud BuildでAPIのビルド・デプロイを実行する
+- `gcloud builds submit --project "sdz-dev" --config web/resources/cloudbuild/cloudbuild_ui.yaml --substitutions _UI_BUCKET="sdz-dev-ui-bucket",_DEPLOY_SA_RESOURCE="projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com",_VITE_SDZ_API_URL="https://sdz-dev-api-xxxxx.a.run.app",_VITE_FIREBASE_API_KEY="***",_VITE_FIREBASE_AUTH_DOMAIN="***",_VITE_FIREBASE_PROJECT_ID="sdz-dev"` Cloud BuildでUIのビルド・配信を実行する
+- `set -a; source web/ui/.env.local; set +a; gcloud builds submit --project "sdz-dev" --config web/resources/cloudbuild/cloudbuild_ui.yaml --substitutions _UI_BUCKET="sdz-dev-ui-bucket",_DEPLOY_SA_RESOURCE="projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com",_VITE_SDZ_API_URL="${VITE_SDZ_API_URL}",_VITE_FIREBASE_API_KEY="${VITE_FIREBASE_API_KEY}",_VITE_FIREBASE_AUTH_DOMAIN="${VITE_FIREBASE_AUTH_DOMAIN}",_VITE_FIREBASE_PROJECT_ID="${VITE_FIREBASE_PROJECT_ID}"` web/ui/.env.local の VITE_* を読み込んでCloud BuildでUIのビルド・配信を実行する
 - `rg -n "sdz_seed_spots|seed_spots" -S .` seedスクリプトの参照箇所を検索する
 - `trivy fs .` リポジトリ全体の脆弱性/シークレットスキャンを実行する
 
@@ -188,7 +214,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/fires
 
 ## ⚙️ 環境変数（API）
 
-- `api/.env.example` をコピーして `api/.env` を作成する（秘匿情報はコミットしない）
+- `web/api/.env.example` をコピーして `web/api/.env` を作成する（秘匿情報はコミットしない）
 - `SDZ_AUTH_PROJECT_ID` … Firebase/Identity PlatformのプロジェクトID（例: sdz-dev）
 - `SDZ_USE_FIRESTORE` … `1` でFirestore利用、未設定ならインメモリ
 - `SDZ_FIRESTORE_PROJECT_ID` … FirestoreのプロジェクトID（省略時はSDZ_AUTH_PROJECT_IDを使用）
@@ -199,7 +225,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./scripts/fires
 - `SDZ_STORAGE_SIGNED_URL_EXPIRES_SECS` … 署名URLの有効期限（秒、デフォルト900）
 - `SDZ_STORAGE_SIGNING_TOKEN` … 署名URL生成に使うアクセストークン（未設定時はSDZ_FIRESTORE_TOKENやメタデータ経由）
   
-UIの環境変数（`VITE_*`）は `ui/.env.local` に設定する。例は `docs/DEVELOPMENT_SETUP.md` を参照。
+UIの環境変数（`VITE_*`）は `web/ui/.env.local` に設定する。例は `docs/DEVELOPMENT_SETUP.md` を参照。
 
 ## 📚 Documentation
 

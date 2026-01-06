@@ -37,7 +37,7 @@ Codespacesが起動すると、`.devcontainer/setup.sh`が自動実行され、�
 
 ```bash
 # 個別サービス起動
-cd api
+cd web/api
 set -a
 source ./.env
 set +a
@@ -82,23 +82,32 @@ spot-diggz/
 │   ├── devcontainer.json   # VS Code + 拡張機能設定
 │   ├── Dockerfile          # 開発環境イメージ
 │   └── setup.sh           # 自動セットアップスクリプト
-├── api/                   # 🦀 Rust APIサーバー
-├── ui/                    # ⚛️ React UIアプリ
-├── resources/             # 🏗️ Terraform インフラ
+├── .github/               # GitHub Actionsなど
+├── web/                   # Webアプリ（API/UI/IaC）
+│   ├── api/               # 🦀 Rust APIサーバー
+│   ├── ui/                # ⚛️ React UIアプリ
+│   ├── resources/         # 🏗️ Terraform インフラ
+│   ├── scripts/           # 🔧 開発用スクリプト
+│   └── sample/            # 🧪 Seed用の画像サンプル
 ├── docs/                  # 📚 ドキュメント
-├── scripts/               # 🔧 開発用スクリプト
+├── IOS/                   # iOSアプリ（予定）
+├── Android/               # Androidアプリ（予定）
+├── AGENTS.md              # Codex運用ルール
+├── .gitignore             # 追跡対象外ファイル
+├── README.md              # リポジトリ概要
 └── spot-diggz.code-workspace  # VS Code ワークスペース設定
 ```
 
 ## 🧰 ローカル環境のTerraform（tfenv）
 
-Codespacesとバージョンを揃えるため、`.terraform-version` を参照して固定する。
+Codespacesとバージョンを揃えるため、`web/.terraform-version` を参照して固定する。
 
 ```bash
 # tfenvのインストール（macOS想定）
 brew install tfenv
 
 # リポジトリのバージョンをインストール＆適用
+cd web
 tfenv install
 tfenv use
 
@@ -140,15 +149,15 @@ gcloud config set project sdz-dev  # 開発環境プロジェクト
 ### 環境変数設定（API）
 
 ```bash
-# Rust API用の例（api/.env）
-cd api
+# Rust API用の例（web/api/.env）
+cd web/api
 cp .env.example .env
 # .env を編集して自分の値に置き換える（コミットしない）
 
 # Firestoreトークンは期限があるため起動時に都度export
 export SDZ_FIRESTORE_TOKEN=$(gcloud auth print-access-token)
 
-# UI用の例（ui/.env.local）
+# UI用の例（web/ui/.env.local）
 cd ../ui
 cat > .env.local << 'EOF'
 VITE_SDZ_API_URL=http://localhost:8080
@@ -179,7 +188,7 @@ rustc --version
 cargo --version
 
 # 依存関係更新
-cd api
+cd web/api
 cargo update
 ```
 
@@ -187,7 +196,7 @@ cargo update
 
 ```bash
 # npm キャッシュクリア
-cd ui
+cd web/ui
 npm cache clean --force
 rm -rf node_modules package-lock.json
 npm install
@@ -218,8 +227,8 @@ docker ps -a
 cat /tmp/codespace-creation.log
 
 # アプリケーションログ
-cd api && cargo run          # Rust ログ
-cd ui && npm run dev         # React ログ
+cd web/api && cargo run       # Rust ログ
+cd web/ui && npm run dev      # React ログ
 ```
 
 ## 📱 モバイル開発
