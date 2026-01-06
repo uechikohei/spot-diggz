@@ -1,24 +1,40 @@
-# リポジトリ構成方針（将来案）
+# リポジトリ構成方針
 
-spot-diggz を将来的にモノレポ管理する場合の構成案を整理する。
-現時点の優先度は低く、移行は別課題で検討する。
+spot-diggz は web/ 配下に Web版（API/UI/IaC/運用スクリプト）を集約し、
+モバイルは ios/android で分離するモノレポ構成を採用する。
 
 ## 現状
-- `api/` : Rust API
-- `ui/` : React UI
-- `resources/` : Terraform / インフラ
 
-## 将来案（モノレポ化）
+- `web/` : Webアプリ一式（API/UI/IaC/スクリプト/seed資材）
+- `ios/` : iOSアプリ（準備中）
+- `android/` : Androidアプリ（準備中）
+- `docs/` : 設計/運用ドキュメント
+- `AGENTS.md` : Codex向け運用ルール
+
 ```
 spot-diggz/
+  .devcontainer/
+  .github/
   web/
     api/
     ui/
     resources/
+    scripts/
+    sample/
+    sdz_seed_spots.sh
+    firebase.json
+    firestore.rules
+    .firebaserc
+    .terraform-version
   ios/
   android/
+  docs/
+  AGENTS.md
+  .gitignore
+  README.md
+  spot-diggz.code-workspace
 ```
 
 ## 補足
-- 既存構成を即時変更する予定はない
-- iOS / Android が本格着手になったタイミングで再検討する
+- Terraform / Firebase の設定ファイルは web/ に集約する。
+- seed用の画像とスクリプトも web/ 配下にまとめる。

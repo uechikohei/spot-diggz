@@ -21,7 +21,7 @@
     }
   }
   ```
-- 上記を Firebase CLI でデプロイ（`firebase deploy --only firestore:rules --project sdz-dev`）。
+- 上記を Firebase CLI でデプロイ（`cd web && firebase deploy --only firestore:rules --project sdz-dev`）。
 
 ## 再発防止のヒント
 - ルールで許可されないクエリ（コレクション全件スキャン等）をアプリに組み込まない。

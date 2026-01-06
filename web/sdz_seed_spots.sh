@@ -1,3 +1,7 @@
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SDZ_SAMPLE_DIR="${SCRIPT_DIR}/sample"
+export SDZ_SAMPLE_DIR
+
 cat <<'EOF' > /tmp/sdz_seed_spots.sh
 #!/usr/bin/env bash
 set -euo pipefail
@@ -7,6 +11,7 @@ set -euo pipefail
 : "${YOUR_FIREBASE_WEB_API_KEY:?missing}"
 : "${TEST_USER_ID:?missing}"
 : "${TEST_USER_PASSWORD:?missing}"
+: "${SDZ_SAMPLE_DIR:?missing}"
 
 SDZ_PROJECT_ID="sdz-dev"
 SDZ_API_URL="https://sdz-dev-api-btg4pixilq-an.a.run.app"
@@ -40,10 +45,10 @@ done
 
 # ===== 2) 画像アップロード → APIでスポット作成 =====
 spots=(
-  "dev-smoke-1|sample/dev-smoke-1.png|35.6812|139.7671"
-  "dev-smoke-2|sample/dev-smoke-2.png|35.6812|139.7671"
-  "dev-smoke-3|sample/dev-smoke-3.png|35.6812|139.7671"
-  "dev-smoke-spot|sample/dev-smoke-spot.png|35.6812|139.7671"
+  "dev-smoke-1|${SDZ_SAMPLE_DIR}/dev-smoke-1.png|35.6812|139.7671"
+  "dev-smoke-2|${SDZ_SAMPLE_DIR}/dev-smoke-2.png|35.6812|139.7671"
+  "dev-smoke-3|${SDZ_SAMPLE_DIR}/dev-smoke-3.png|35.6812|139.7671"
+  "dev-smoke-spot|${SDZ_SAMPLE_DIR}/dev-smoke-spot.png|35.6812|139.7671"
 )
 
 for item in "${spots[@]}"; do
