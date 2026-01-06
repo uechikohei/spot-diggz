@@ -1,8 +1,8 @@
 # 🛹 spot-diggz
 
-**スケートスポット検索・シェアアプリケーションのモダンリプレイス版**
+**スケートスポット検索・シェアアプリケーションのリプレイスプロジェクト**
 
-旧SkateSpotSearchをRust + TypeScript + GCPでフルリニューアル！
+旧SkateSpotSearchをRust + TypeScript + GCPで再構築
 
 ## 🚀 Quick Start (GitHub Codespaces)
 
@@ -35,8 +35,8 @@ spot-diggz/
 │   ├── scripts/           # 🔧 開発用スクリプト
 │   └── sample/            # 🧪 Seed用画像サンプル
 ├── docs/                  # 📚 ドキュメント
-├── IOS/                   # iOSアプリ（予定）
-├── Android/               # Androidアプリ（予定）
+├── ios/                   # iOSアプリ（予定）
+├── android/               # Androidアプリ（予定）
 ├── AGENTS.md              # Codex運用ルール
 ├── .gitignore             # 追跡対象外ファイル
 ├── README.md              # リポジトリ概要
@@ -156,7 +156,10 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `git push --force-with-lease` リモートの最新を確認した上で履歴を書き換えてpushする
 - `git push -u origin feature/wif-terraform` 作業ブランチをリモートへ初回pushする
 - `git push -u origin feature/tiddy-repo` 作業ブランチをリモートへ初回pushする
-- `touch IOS/.gitkeep Android/.gitkeep` 空ディレクトリをGitで追跡するためのファイルを作成する
+- `touch ios/.gitkeep android/.gitkeep` 空ディレクトリをGitで追跡するためのファイルを作成する
+- `rg -n "IOS|Android" -S .` iOS/Androidの表記揺れや参照箇所を検索する
+- `git mv IOS ios_tmp && git mv ios_tmp ios` iosディレクトリにリネームする（大小文字のみ変更する場合の安全策）
+- `git mv Android android_tmp && git mv android_tmp android` androidディレクトリにリネームする（大小文字のみ変更する場合の安全策）
 - `rg --files .github/workflows` GitHub Actionsのワークフローファイルを列挙する
 - `cat .github/workflows/ci.yml` CI設定の詳細を確認する
 - `cargo fmt -- --check` Rustのフォーマットをチェックする

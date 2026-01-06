@@ -90,8 +90,8 @@ spot-diggz/
 │   ├── scripts/           # 🔧 開発用スクリプト
 │   └── sample/            # 🧪 Seed用の画像サンプル
 ├── docs/                  # 📚 ドキュメント
-├── IOS/                   # iOSアプリ（予定）
-├── Android/               # Androidアプリ（予定）
+├── ios/                   # iOSアプリ（予定）
+├── android/               # Androidアプリ（予定）
 ├── AGENTS.md              # Codex運用ルール
 ├── .gitignore             # 追跡対象外ファイル
 ├── README.md              # リポジトリ概要
