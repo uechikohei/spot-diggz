@@ -134,7 +134,7 @@
         "command": "cargo",
         "args": ["build"],
         "options": {
-        "cwd": "${workspaceFolder}/api"
+        "cwd": "${workspaceFolder}/web/api"
         },
         "group": "build",
         "presentation": {
@@ -151,7 +151,7 @@
         "command": "cargo",
         "args": ["run"],
         "options": {
-        "cwd": "${workspaceFolder}/api"
+        "cwd": "${workspaceFolder}/web/api"
         },
         "group": "build",
         "presentation": {
@@ -168,7 +168,7 @@
         "command": "cargo",
         "args": ["test"],
         "options": {
-        "cwd": "${workspaceFolder}/api"
+        "cwd": "${workspaceFolder}/web/api"
         },
         "group": "test",
         "presentation": {
@@ -184,7 +184,7 @@
         "command": "npm",
         "args": ["install"],
         "options": {
-        "cwd": "${workspaceFolder}/ui"
+        "cwd": "${workspaceFolder}/web/ui"
         },
         "group": "build",
         "presentation": {
@@ -200,7 +200,7 @@
         "command": "npm",
         "args": ["start"],
         "options": {
-        "cwd": "${workspaceFolder}/ui"
+        "cwd": "${workspaceFolder}/web/ui"
         },
         "group": "build",
         "presentation": {
@@ -217,7 +217,7 @@
         "command": "npm",
         "args": ["run", "build"],
         "options": {
-        "cwd": "${workspaceFolder}/ui"
+        "cwd": "${workspaceFolder}/web/ui"
         },
         "group": "build",
         "presentation": {
@@ -233,7 +233,7 @@
         "command": "npm",
         "args": ["test"],
         "options": {
-        "cwd": "${workspaceFolder}/ui"
+        "cwd": "${workspaceFolder}/web/ui"
         },
         "group": "test",
         "presentation": {
@@ -249,7 +249,7 @@
         "command": "terraform",
         "args": ["init"],
         "options": {
-          "cwd": "${workspaceFolder}/resources"
+          "cwd": "${workspaceFolder}/web/resources"
         },
         "group": "build",
         "presentation": {
@@ -265,7 +265,7 @@
         "command": "terraform",
         "args": ["plan"],
         "options": {
-          "cwd": "${workspaceFolder}/resources"
+          "cwd": "${workspaceFolder}/web/resources"
         },
         "group": "build",
         "presentation": {
@@ -278,7 +278,7 @@
       {
         "label": "🚀 Start Development Environment",
         "type": "shell",
-        "command": "./scripts/dev-start.sh",
+        "command": "./web/scripts/dev-start.sh",
         "options": {
           "cwd": "${workspaceFolder}"
         },
@@ -293,7 +293,7 @@
       {
         "label": "🛑 Stop Development Environment",
         "type": "shell",
-        "command": "./scripts/dev-stop.sh",
+        "command": "./web/scripts/dev-stop.sh",
         "options": {
           "cwd": "${workspaceFolder}"
         },
@@ -314,9 +314,9 @@
         "name": "🦀 Debug Rust API",
         "type": "lldb",
         "request": "launch",
-        "program": "${workspaceFolder}/api/target/debug/sdz_api",
+        "program": "${workspaceFolder}/web/api/target/debug/sdz_api",
         "args": [],
-        "cwd": "${workspaceFolder}/api",
+        "cwd": "${workspaceFolder}/web/api",
         "sourceLanguages": ["rust"],
         "console": "integratedTerminal"
       }

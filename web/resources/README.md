@@ -1,11 +1,11 @@
 # spot-diggz Terraform（dev）
 
 ## 概要
-`resources/` は dev 環境向けの IaC を管理する。既存の GCP リソースがある場合は **先に import** してから apply を行う。
+`web/resources/` は dev 環境向けの IaC を管理する。既存の GCP リソースがある場合は **先に import** してから apply を行う。
 
 ## 初期セットアップ
 ```bash
-cd resources
+cd web/resources
 terraform init
 ```
 
