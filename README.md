@@ -131,6 +131,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `gh issue create -R uechikohei/spot-diggz -t \"TITLE\" -b \"BODY\"` Issueを作成する
 - `gh issue edit ISSUE_NUMBER -R uechikohei/spot-diggz --title \"TITLE\" --body-file PATH` Issueのタイトル/本文を更新する
 - `gh pr create -R uechikohei/spot-diggz -t \"TITLE\" -b \"BODY\"` Pull Requestを作成する
+- `gh pr create -R uechikohei/spot-diggz --base develop --head feature/tiddy-repo -t \"TITLE\" -F /tmp/pr-body.md` ベース/ヘッドを指定し、本文をファイルで指定してPull Requestを作成する
 - `gh pr reopen ISSUE_NUMBER -R uechikohei/spot-diggz` Close済みのPull Requestを再オープンする
 - `gh pr edit ISSUE_NUMBER -R uechikohei/spot-diggz --base develop` Pull Requestのベースブランチを変更する
 - `gh project item-add 2 --owner uechikohei --url \"ISSUE_URL\"` IssueをProjectに追加する
@@ -147,12 +148,14 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `cat -n FILE` 行番号付きでファイル内容を確認する
 - `sed -n '1,200p' FILE` ファイルの先頭200行を確認する
 - `git status -sb` 変更状況と現在ブランチを短く確認する
+- `git add README.md` READMEの変更のみをステージする
 - `git diff FILE` 指定ファイルの差分を確認する
 - `git commit -m "MESSAGE"` 変更内容をコミットする
 - `git commit --amend` 直前のコミット内容を修正する
 - `git branch -m NEW_NAME` 現在のブランチ名を変更する
 - `git push --force-with-lease` リモートの最新を確認した上で履歴を書き換えてpushする
 - `git push -u origin feature/wif-terraform` 作業ブランチをリモートへ初回pushする
+- `git push -u origin feature/tiddy-repo` 作業ブランチをリモートへ初回pushする
 - `touch IOS/.gitkeep Android/.gitkeep` 空ディレクトリをGitで追跡するためのファイルを作成する
 - `rg --files .github/workflows` GitHub Actionsのワークフローファイルを列挙する
 - `cat .github/workflows/ci.yml` CI設定の詳細を確認する
