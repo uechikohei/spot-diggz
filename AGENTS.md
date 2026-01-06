@@ -552,8 +552,8 @@ project-root/
 │   ├── scripts/           # 自動化スクリプト
 │   └── sample/            # Seed用画像サンプル
 ├── docs/                  # プロジェクトドキュメント
-├── IOS/                   # iOSアプリ（予定）
-├── Android/               # Androidアプリ（予定）
+├── ios/                   # iOSアプリ（予定）
+├── android/               # Androidアプリ（予定）
 ├── .github/               # CI/CDワークフロー
 └── docker-compose.yml     # ローカル開発環境
 ```
