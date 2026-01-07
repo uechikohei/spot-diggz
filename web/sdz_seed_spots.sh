@@ -11,10 +11,10 @@ set -euo pipefail
 : "${YOUR_FIREBASE_WEB_API_KEY:?missing}"
 : "${TEST_USER_ID:?missing}"
 : "${TEST_USER_PASSWORD:?missing}"
+: "${SDZ_API_URL:?missing}"
 : "${SDZ_SAMPLE_DIR:?missing}"
 
 SDZ_PROJECT_ID="sdz-dev"
-SDZ_API_URL="https://sdz-dev-api-btg4pixilq-an.a.run.app"
 
 # Firestore REST用トークン（削除処理にのみ使用）
 FIRESTORE_TOKEN="$(gcloud auth print-access-token)"
@@ -29,6 +29,13 @@ SDZ_ID_TOKEN="$(curl -sS \
   -d "${payload}" | jq -r '.idToken')"
 
 echo "ID token length: ${#SDZ_ID_TOKEN}"
+
+# ===== 0) API疎通確認 =====
+health_status="$(curl -sS -o /dev/null -w "%{http_code}" "${SDZ_API_URL}/sdz/health")"
+if [ "${health_status}" != "200" ]; then
+  echo "ERROR: API health check failed (HTTP ${health_status})"
+  exit 1
+fi
 
 # ===== 1) Firestore /spots を全削除 =====
 echo "Delete all spots..."
