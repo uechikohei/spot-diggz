@@ -11,6 +11,7 @@ CI/CD や Cloud Build からは実行しない（自動流入を防止するた�
 - `web/sdz_seed_spots.sh` を実行する
 - `web/sample/` 配下の画像を使用する
 - Firestore の `spots` コレクションは全削除される
+- `SDZ_API_URL` を実行環境に合わせて指定する
 
 ## 手順
 
@@ -31,11 +32,18 @@ gsutil -m rm "gs://sdz-dev-img-bucket/spots/**"
 export YOUR_FIREBASE_WEB_API_KEY="YOUR_FIREBASE_WEB_API_KEY"
 export TEST_USER_ID="YOUR_TEST_EMAIL"
 export TEST_USER_PASSWORD="YOUR_TEST_PASSWORD"
+set -a
+source web/ui/.env.local
+set +a
+export SDZ_API_URL="${VITE_SDZ_API_URL}"
 ```
 
-4) seed 実行
+4) seed 実行（引数指定の例）
 ```bash
-chmod +x ./web/sdz_seed_spots.sh
+YOUR_FIREBASE_WEB_API_KEY="YOUR_FIREBASE_WEB_API_KEY" \
+TEST_USER_ID="YOUR_TEST_EMAIL" \
+TEST_USER_PASSWORD="YOUR_TEST_PASSWORD" \
+SDZ_API_URL="${VITE_SDZ_API_URL}" \
 ./web/sdz_seed_spots.sh
 ```
 
@@ -48,5 +56,5 @@ gsutil ls gs://sdz-dev-img-bucket/spots
 ## 注意点
 
 - `web/sdz_seed_spots.sh` は Firestore の `spots` を全削除してから再投入する。
-- API URL はスクリプト内で固定しているため、変更があれば更新する。
+- API URL は `SDZ_API_URL` で指定する。
 - CI/CD や Cloud Build から `web/sdz_seed_spots.sh` は呼び出していないことを維持する。
