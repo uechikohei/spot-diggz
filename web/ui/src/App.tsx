@@ -79,13 +79,20 @@ function SdzSpotDetailPage({
     setSdzDetailError(null);
     fetch(`${apiUrl}/sdz/spots/${spotId}`)
       .then((res) => {
-        if (!res.ok) {
-          throw new Error(`Failed to fetch spot: ${res.status}`);
+        if (res.status === 404) {
+          return null;
         }
-        return res.json();
+        if (!res.ok) {
+          throw new Error(`スポットの取得に失敗しました (HTTP ${res.status})`);
+        }
+        return res.json() as Promise<SdzSpot>;
       })
-      .then((data: SdzSpot) => {
+      .then((data) => {
         if (!isActive) return;
+        if (!data) {
+          setSdzDetail(null);
+          return;
+        }
         setSdzDetail(data);
       })
       .catch((err) => {
