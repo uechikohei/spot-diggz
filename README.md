@@ -161,6 +161,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `git push --force-with-lease` リモートの最新を確認した上で履歴を書き換えてpushする
 - `git push -u origin feature/wif-terraform` 作業ブランチをリモートへ初回pushする
 - `git push -u origin feature/tiddy-repo` 作業ブランチをリモートへ初回pushする
+- `git push -u origin hotfix/NAME` hotfixブランチをリモートへ初回pushする
 - `touch ios/.gitkeep android/.gitkeep` 空ディレクトリをGitで追跡するためのファイルを作成する
 - `rg -n "IOS|Android" -S .` iOS/Androidの表記揺れや参照箇所を検索する
 - `git mv IOS ios_tmp && git mv ios_tmp ios` iosディレクトリにリネームする（大小文字のみ変更する場合の安全策）
