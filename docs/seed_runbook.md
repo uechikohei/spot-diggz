@@ -32,12 +32,18 @@ gsutil -m rm "gs://sdz-dev-img-bucket/spots/**"
 export YOUR_FIREBASE_WEB_API_KEY="YOUR_FIREBASE_WEB_API_KEY"
 export TEST_USER_ID="YOUR_TEST_EMAIL"
 export TEST_USER_PASSWORD="YOUR_TEST_PASSWORD"
-export SDZ_API_URL="https://sdz-dev-api-xxxxx.asia-northeast1.run.app"
+set -a
+source web/ui/.env.local
+set +a
+export SDZ_API_URL="${VITE_SDZ_API_URL}"
 ```
 
-4) seed 実行
+4) seed 実行（引数指定の例）
 ```bash
-chmod +x ./web/sdz_seed_spots.sh
+YOUR_FIREBASE_WEB_API_KEY="YOUR_FIREBASE_WEB_API_KEY" \
+TEST_USER_ID="YOUR_TEST_EMAIL" \
+TEST_USER_PASSWORD="YOUR_TEST_PASSWORD" \
+SDZ_API_URL="${VITE_SDZ_API_URL}" \
 ./web/sdz_seed_spots.sh
 ```
 
