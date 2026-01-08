@@ -35,7 +35,7 @@ spot-diggz/
 │   ├── scripts/           # 🔧 開発用スクリプト
 │   └── sample/            # 🧪 Seed用画像サンプル
 ├── docs/                  # 📚 ドキュメント
-├── ios/                   # iOSアプリ（予定）
+├── iOS/                   # iOSアプリ（予定）
 ├── android/               # Androidアプリ（予定）
 ├── AGENTS.md              # Codex運用ルール
 ├── .gitignore             # 追跡対象外ファイル
@@ -172,9 +172,10 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `git push -u origin feature/tiddy-repo` 作業ブランチをリモートへ初回pushする
 - `git push -u origin hotfix/NAME` hotfixブランチをリモートへ初回pushする
 - `git push origin v0.1.0-web-mvp` 指定タグをリモートへpushする
-- `touch ios/.gitkeep android/.gitkeep` 空ディレクトリをGitで追跡するためのファイルを作成する
-- `rg -n "IOS|Android" -S .` iOS/Androidの表記揺れや参照箇所を検索する
-- `git mv IOS ios_tmp && git mv ios_tmp ios` iosディレクトリにリネームする（大小文字のみ変更する場合の安全策）
+- `touch iOS/.gitkeep android/.gitkeep` 空ディレクトリをGitで追跡するためのファイルを作成する
+- `rg -n "ios/" -S .` iOSディレクトリ参照の有無を検索する
+- `rg -n "iOS|Android" -S .` iOS/Androidの表記揺れや参照箇所を検索する
+- `git mv ios ios_tmp && git mv ios_tmp iOS` iOSディレクトリへリネームする（大小文字のみ変更する場合の安全策）
 - `git mv Android android_tmp && git mv android_tmp android` androidディレクトリにリネームする（大小文字のみ変更する場合の安全策）
 - `curl -sS -o /dev/null -w "%{http_code}\n" "URL"` APIのHTTPステータスだけを確認する
 - `curl -sS "URL" | head -c 200` APIレスポンスの先頭を確認する
