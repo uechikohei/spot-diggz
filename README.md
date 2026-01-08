@@ -158,6 +158,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `git tag -a v0.1.0-web-mvp -m "web mvp dev release"` web版MVPのリリースタグを作成する
 - `git switch -c hotfix/NAME` hotfixブランチを作成して切り替える
 - `git add README.md` READMEの変更のみをステージする
+- `git add PATH` 指定ファイルをステージする
 - `git diff FILE` 指定ファイルの差分を確認する
 - `git commit -m "MESSAGE"` 変更内容をコミットする
 - `git commit --amend` 直前のコミット内容を修正する
