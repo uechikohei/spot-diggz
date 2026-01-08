@@ -159,6 +159,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `git switch -c hotfix/NAME` hotfixブランチを作成して切り替える
 - `git add README.md` READMEの変更のみをステージする
 - `git add PATH` 指定ファイルをステージする
+- `git rm -r PATH` 指定ディレクトリ配下のファイルを削除してステージする
 - `git diff FILE` 指定ファイルの差分を確認する
 - `git commit -m "MESSAGE"` 変更内容をコミットする
 - `git commit --amend` 直前のコミット内容を修正する
