@@ -21,7 +21,7 @@ describe('App', () => {
   });
 
   it('renders list heading', () => {
-    global.fetch = vi.fn().mockResolvedValue({
+    globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => [],
     } as Response);
@@ -38,7 +38,7 @@ describe('App', () => {
   });
 
   it('toggles favorites in list', async () => {
-    global.fetch = vi.fn().mockResolvedValue({
+    globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => [
         {
@@ -73,7 +73,7 @@ describe('App', () => {
   });
 
   it('shows favorites page', async () => {
-    global.fetch = vi.fn().mockResolvedValue({
+    globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => [
         {
