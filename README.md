@@ -151,7 +151,10 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `git fetch origin` リモートの最新情報を取得する
 - `git merge origin/develop` developの変更を取り込み、競合を解消する
 - `git switch develop` developブランチへ切り替える
+- `git switch master` masterブランチへ切り替える
 - `git pull --ff-only` リモート更新をfast-forwardで取り込む
+- `git merge develop` developの変更をmasterへ取り込む
+- `git tag -a v0.1.0-web-mvp -m "web mvp dev release"` web版MVPのリリースタグを作成する
 - `git switch -c hotfix/NAME` hotfixブランチを作成して切り替える
 - `git add README.md` READMEの変更のみをステージする
 - `git diff FILE` 指定ファイルの差分を確認する
@@ -159,9 +162,11 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `git commit --amend` 直前のコミット内容を修正する
 - `git branch -m NEW_NAME` 現在のブランチ名を変更する
 - `git push --force-with-lease` リモートの最新を確認した上で履歴を書き換えてpushする
+- `git push origin master` masterブランチをリモートへpushする
 - `git push -u origin feature/wif-terraform` 作業ブランチをリモートへ初回pushする
 - `git push -u origin feature/tiddy-repo` 作業ブランチをリモートへ初回pushする
 - `git push -u origin hotfix/NAME` hotfixブランチをリモートへ初回pushする
+- `git push origin v0.1.0-web-mvp` 指定タグをリモートへpushする
 - `touch ios/.gitkeep android/.gitkeep` 空ディレクトリをGitで追跡するためのファイルを作成する
 - `rg -n "IOS|Android" -S .` iOS/Androidの表記揺れや参照箇所を検索する
 - `git mv IOS ios_tmp && git mv ios_tmp ios` iosディレクトリにリネームする（大小文字のみ変更する場合の安全策）
