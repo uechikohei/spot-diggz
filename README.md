@@ -135,16 +135,28 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `gh pr view PR_NUMBER -R uechikohei/spot-diggz --json title,author,baseRefName,headRefName,state,mergeable,mergeStateStatus,labels,files` Pull Requestの概要と変更ファイルをJSONで確認する
 - `gh pr reopen ISSUE_NUMBER -R uechikohei/spot-diggz` Close済みのPull Requestを再オープンする
 - `gh pr edit ISSUE_NUMBER -R uechikohei/spot-diggz --base develop` Pull Requestのベースブランチを変更する
+- `gh project field-list 2 --owner uechikohei --format json` Projectのフィールドと選択肢IDを確認する
 - `gh project item-add 2 --owner uechikohei --url \"ISSUE_URL\"` IssueをProjectに追加する
+- `gh project item-add 2 --owner uechikohei --url \"ISSUE_URL\" --format json` IssueをProjectに追加し、項目IDを取得する
 - `gh project item-edit --project-id PVT_kwHOAx5dHc4BLgT- --id ITEM_ID --field-id PVTSSF_lAHOAx5dHc4BLgT-zg7DwBA --single-select-option-id OPTION_ID` ProjectのPriorityを更新する
 - `SDZ_ID_TOKEN=... SDZ_API_URL=... ./web/scripts/firestore_crud_smoke.sh` Firestore実運用のCRUDをAPI経由でスモークテストする（`X-SDZ-Client: ios`付き）
 - `payload=$(jq -n --arg email "${SDZ_TEST_USER_EMAIL}" --arg password "${SDZ_TEST_USER_PASSWORD}" '{email:$email,password:$password,returnSecureToken:true}'); SDZ_ID_TOKEN=$(curl -sS "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${SDZ_FIREBASE_WEB_API_KEY}" -H "Content-Type: application/json" -d "${payload}" | jq -r '.idToken')` Firebase Auth REST APIでIDトークンを取得する
+- `date +%Y-%m-%d` 起票日のYYYY-MM-DDを取得する
 - `ls` リポジトリ直下のファイル一覧を確認する
 - `ls -a` 隠しファイルを含めて一覧を確認する
 - `cat docs/cd_architecture.md` CD設計ドキュメントの内容を確認する
 - `rg -n "開発のすすめかた|開発の進め方|開発" README.md` README内の開発導線の位置を検索する
 - `rg -n "api/|ui/|resources/|scripts/|sdz_seed_spots|\\.terraform-version" README.md` README内の旧パス参照を確認する
 - `rg -n "cd api|cd ui|api/\\.env|ui/\\.env" docs/DEVELOPMENT_SETUP.md` DEVELOPMENT_SETUPの旧パス参照を確認する
+- `rg -n "API URL|run.app|SDZ_API_URL|VITE_SDZ_API_URL" docs/DEVELOPMENT_SETUP.md` API URL関連の記載箇所を検索する
+- `rg -n "sdz-dev|run.app|api" docs/cd_architecture.md` CD設計内のAPI関連記載を検索する
+- `rg -n "SDZ_API_URL|VITE_SDZ_API_URL|run.app|sdz-dev-api|Cloud Run|cloud run|Base URL|base url" docs README.md web -g"*.md" -g"*.yaml" -g"*.yml" -g"*.env*"` API URLやCloud Runの記載をドキュメントと設定ファイル横断で確認する
+- `rg -n "SDZ|sdz|api" web/ui/src` UI側のAPI/SDZ関連の実装箇所を検索する
+- `rg -n "Authorization|Bearer" web/ui/src` UI側の認証ヘッダー利用有無を確認する
+- `rg -n "User" web/ui/src/types` UIの型定義でUser関連があるか確認する
+- `rg -n "sdz" web/api/src` API側のsdz関連実装を横断検索する
+- `rg -n "xcodeproj|xcworkspace|xcuserdata" .gitignore` .gitignoreのXcode関連除外設定を確認する
+- `rg --files iOS/Data iOS/Domain iOS/Presentation` iOS配下の実装ファイル一覧を確認する
 - `cat README.md` README全体の記載内容を確認する
 - `cat -n FILE` 行番号付きでファイル内容を確認する
 - `sed -n '1,200p' FILE` ファイルの先頭200行を確認する
@@ -156,9 +168,11 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `git pull --ff-only` リモート更新をfast-forwardで取り込む
 - `git merge develop` developの変更をmasterへ取り込む
 - `git tag -a v0.1.0-web-mvp -m "web mvp dev release"` web版MVPのリリースタグを作成する
+- `git switch -c feature/NAME` featureブランチを作成して切り替える
 - `git switch -c hotfix/NAME` hotfixブランチを作成して切り替える
 - `git add README.md` READMEの変更のみをステージする
 - `git add PATH` 指定ファイルをステージする
+- `git add -A` 変更の追加・削除をまとめてステージする
 - `git rm -r PATH` 指定ディレクトリ配下のファイルを削除してステージする
 - `git diff FILE` 指定ファイルの差分を確認する
 - `git commit -m "MESSAGE"` 変更内容をコミットする
@@ -178,6 +192,8 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `rg -n "iOS|Android" -S .` iOS/Androidの表記揺れや参照箇所を検索する
 - `git mv ios ios_tmp && git mv ios_tmp iOS` iOSディレクトリへリネームする（大小文字のみ変更する場合の安全策）
 - `git mv Android android_tmp && git mv android_tmp android` androidディレクトリにリネームする（大小文字のみ変更する場合の安全策）
+- `mv SOURCE DEST` ファイル/ディレクトリを移動する
+- `rmdir DIR` 空のディレクトリを削除する
 - `curl -sS -o /dev/null -w "%{http_code}\n" "URL"` APIのHTTPステータスだけを確認する
 - `curl -sS "URL" | head -c 200` APIレスポンスの先頭を確認する
 - `rg --files .github/workflows` GitHub Actionsのワークフローファイルを列挙する
