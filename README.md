@@ -132,9 +132,11 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `gh issue edit ISSUE_NUMBER -R uechikohei/spot-diggz --title \"TITLE\" --body-file PATH` Issueのタイトル/本文を更新する
 - `gh pr create -R uechikohei/spot-diggz -t \"TITLE\" -b \"BODY\"` Pull Requestを作成する
 - `gh pr create -R uechikohei/spot-diggz --base develop --head feature/tiddy-repo -t \"TITLE\" -F /tmp/pr-body.md` ベース/ヘッドを指定し、本文をファイルで指定してPull Requestを作成する
+- `gh pr create -R uechikohei/spot-diggz --base develop --head hotfix/NAME -t \"TITLE\" -b \"BODY\"` hotfixブランチからdevelop向けのPull Requestを作成する
 - `gh pr view PR_NUMBER -R uechikohei/spot-diggz --json title,author,baseRefName,headRefName,state,mergeable,mergeStateStatus,labels,files` Pull Requestの概要と変更ファイルをJSONで確認する
 - `gh pr reopen ISSUE_NUMBER -R uechikohei/spot-diggz` Close済みのPull Requestを再オープンする
 - `gh pr edit ISSUE_NUMBER -R uechikohei/spot-diggz --base develop` Pull Requestのベースブランチを変更する
+- `gh pr merge PR_NUMBER -R uechikohei/spot-diggz --merge` Pull Requestをマージ（merge commit）する
 - `gh project field-list 2 --owner uechikohei --format json` Projectのフィールドと選択肢IDを確認する
 - `gh project item-add 2 --owner uechikohei --url \"ISSUE_URL\"` IssueをProjectに追加する
 - `gh project item-add 2 --owner uechikohei --url \"ISSUE_URL\" --format json` IssueをProjectに追加し、項目IDを取得する
@@ -155,6 +157,9 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `rg -n "Authorization|Bearer" web/ui/src` UI側の認証ヘッダー利用有無を確認する
 - `rg -n "User" web/ui/src/types` UIの型定義でUser関連があるか確認する
 - `rg -n "sdz" web/api/src` API側のsdz関連実装を横断検索する
+- `rg -n "Cloud Run|cloud run|run.app|ingress|allUsers|iam|invoker" -S web docs .github` Cloud Run公開設定の痕跡をドキュメントと設定で確認する
+- `rg -n "cloud_run|run.invoker|allUsers|invoker|ingress" -S web/resources` TerraformのCloud Run公開/IAM設定を確認する
+- `rg -n "SdzApiClient|SdzEnvironment|SdzAppState|fetchSpots|fetchSpot" iOS/spot-diggz` iOSのAPI連携関連コードをまとめて検索する
 - `rg -n "xcodeproj|xcworkspace|xcuserdata" .gitignore` .gitignoreのXcode関連除外設定を確認する
 - `rg --files iOS/Data iOS/Domain iOS/Presentation` iOS配下の実装ファイル一覧を確認する
 - `cat README.md` README全体の記載内容を確認する
@@ -165,6 +170,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `git merge origin/develop` developの変更を取り込み、競合を解消する
 - `git switch develop` developブランチへ切り替える
 - `git switch master` masterブランチへ切り替える
+- `git switch feature/NAME` 既存のfeatureブランチへ切り替える
 - `git pull --ff-only` リモート更新をfast-forwardで取り込む
 - `git merge develop` developの変更をmasterへ取り込む
 - `git tag -a v0.1.0-web-mvp -m "web mvp dev release"` web版MVPのリリースタグを作成する
@@ -178,6 +184,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `git commit -m "MESSAGE"` 変更内容をコミットする
 - `git commit --amend` 直前のコミット内容を修正する
 - `git stash push -m "MESSAGE"` 作業中の変更をスタッシュへ退避する
+- `git stash push -u -m "MESSAGE"` 未追跡ファイルも含めてスタッシュへ退避する
 - `git stash pop` 退避した変更を作業ツリーへ戻す
 - `git branch -m NEW_NAME` 現在のブランチ名を変更する
 - `git push --force-with-lease` リモートの最新を確認した上で履歴を書き換えてpushする
@@ -198,6 +205,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `curl -sS "URL" | head -c 200` APIレスポンスの先頭を確認する
 - `rg --files .github/workflows` GitHub Actionsのワークフローファイルを列挙する
 - `cat .github/workflows/ci.yml` CI設定の詳細を確認する
+- `cargo fmt` Rustのフォーマットを整形する
 - `cargo fmt -- --check` Rustのフォーマットをチェックする
 - `cargo clippy -- -D warnings` RustのLintを警告扱いで実行する
 - `cargo test --verbose` Rustのユニットテストを詳細ログ付きで実行する
