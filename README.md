@@ -194,6 +194,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `curl -sS "URL" | head -c 200` APIレスポンスの先頭を確認する
 - `rg --files .github/workflows` GitHub Actionsのワークフローファイルを列挙する
 - `cat .github/workflows/ci.yml` CI設定の詳細を確認する
+- `cargo fmt` Rustのフォーマットを整形する
 - `cargo fmt -- --check` Rustのフォーマットをチェックする
 - `cargo clippy -- -D warnings` RustのLintを警告扱いで実行する
 - `cargo test --verbose` Rustのユニットテストを詳細ログ付きで実行する

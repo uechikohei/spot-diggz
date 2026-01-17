@@ -156,7 +156,9 @@ fn build_state() -> SdzAppState {
                 );
             }
         } else {
-            tracing::warn!("SDZ_USE_FIRESTORE=1 but project_id missing. Falling back to in-memory.");
+            tracing::warn!(
+                "SDZ_USE_FIRESTORE=1 but project_id missing. Falling back to in-memory."
+            );
         }
     }
 
