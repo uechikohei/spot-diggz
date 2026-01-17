@@ -188,6 +188,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `git stash pop` 退避した変更を作業ツリーへ戻す
 - `git branch -m NEW_NAME` 現在のブランチ名を変更する
 - `git push --force-with-lease` リモートの最新を確認した上で履歴を書き換えてpushする
+- `git push` 現在のブランチを追跡先へpushする
 - `git push origin master` masterブランチをリモートへpushする
 - `git push origin develop` developブランチをリモートへpushする
 - `git push -u origin feature/wif-terraform` 作業ブランチをリモートへ初回pushする
