@@ -11,12 +11,12 @@ use crate::{
 
 pub struct SdzFirestoreSpotRepository {
     project_id: String,
-    bearer_token: String,
+    bearer_token: Option<String>,
     http: Client,
 }
 
 impl SdzFirestoreSpotRepository {
-    pub fn new(project_id: String, bearer_token: String) -> Result<Self, SdzApiError> {
+    pub fn new(project_id: String, bearer_token: Option<String>) -> Result<Self, SdzApiError> {
         let http = Client::builder().build().map_err(|e| {
             tracing::error!("Failed to build reqwest client: {:?}", e);
             SdzApiError::Internal
@@ -35,11 +35,12 @@ impl SdzFirestoreSpotRepository {
         );
 
         let body = build_firestore_doc(spot)?;
+        let token = self.resolve_token().await?;
 
         let resp = self
             .http
             .patch(url)
-            .bearer_auth(&self.bearer_token)
+            .bearer_auth(token)
             .json(&body)
             .send()
             .await
@@ -56,10 +57,11 @@ impl SdzFirestoreSpotRepository {
             "https://firestore.googleapis.com/v1/projects/{}/databases/(default)/documents/spots/{}",
             self.project_id, spot_id
         );
+        let token = self.resolve_token().await?;
         let resp = self
             .http
             .get(url)
-            .bearer_auth(&self.bearer_token)
+            .bearer_auth(token)
             .send()
             .await
             .map_err(|e| {
@@ -118,10 +120,11 @@ impl SdzSpotRepository for SdzFirestoreSpotRepository {
             }
         });
 
+        let token = self.resolve_token().await?;
         let resp = self
             .http
             .post(url)
-            .bearer_auth(&self.bearer_token)
+            .bearer_auth(token)
             .json(&body)
             .send()
             .await
@@ -159,6 +162,49 @@ impl SdzSpotRepository for SdzFirestoreSpotRepository {
         }
         Ok(spots)
     }
+
+    async fn resolve_token(&self) -> Result<String, SdzApiError> {
+        if let Some(token) = self
+            .bearer_token
+            .as_ref()
+            .filter(|token| !token.trim().is_empty())
+        {
+            return Ok(token.to_string());
+        }
+        if let Ok(token) = std::env::var("SDZ_FIRESTORE_TOKEN") {
+            if !token.trim().is_empty() {
+                return Ok(token);
+            }
+        }
+        self.fetch_metadata_token().await
+    }
+
+    async fn fetch_metadata_token(&self) -> Result<String, SdzApiError> {
+        let metadata_url = "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token";
+        let resp = self
+            .http
+            .get(metadata_url)
+            .header("Metadata-Flavor", "Google")
+            .send()
+            .await
+            .map_err(|e| {
+                tracing::error!("Failed to fetch metadata token: {:?}", e);
+                SdzApiError::Internal
+            })?;
+
+        if !resp.status().is_success() {
+            let body = resp.text().await.unwrap_or_default();
+            tracing::error!("Metadata token error: {}", body);
+            return Err(SdzApiError::Internal);
+        }
+
+        let token = resp.json::<SdzMetadataToken>().await.map_err(|e| {
+            tracing::error!("Failed to parse metadata token: {:?}", e);
+            SdzApiError::Internal
+        })?;
+
+        Ok(token.access_token)
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -195,6 +241,12 @@ struct StringField {
 struct DoubleField {
     #[serde(rename = "doubleValue")]
     double_value: f64,
+}
+
+#[derive(Debug, Deserialize)]
+struct SdzMetadataToken {
+    #[serde(rename = "access_token")]
+    access_token: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
