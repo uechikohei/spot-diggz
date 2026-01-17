@@ -2,6 +2,7 @@ import SwiftUI
 
 /// Home screen displaying a list of skate spots with search functionality.
 struct HomeView: View {
+    @EnvironmentObject var appState: SdzAppState
     @State private var searchText: String = ""
     @State private var spots: [SdzSpot] = []
     @State private var isLoading: Bool = false
@@ -65,15 +66,21 @@ struct HomeView: View {
     private func fetchSpots() {
         isLoading = true
         errorMessage = nil
-        // TODO: Replace with actual API call.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.isLoading = false
-            // Dummy data for previewing.
-            self.spots = [
-                SdzSpot.sample(id: "1", name: "パークA"),
-                SdzSpot.sample(id: "2", name: "ストリートB"),
-                SdzSpot.sample(id: "3", name: "スポットC"),
-            ]
+        let apiClient = SdzApiClient(environment: appState.environment)
+        Task {
+            do {
+                let result = try await apiClient.fetchSpots()
+                await MainActor.run {
+                    self.spots = result
+                    self.isLoading = false
+                }
+            } catch {
+                let message = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+                await MainActor.run {
+                    self.errorMessage = message
+                    self.isLoading = false
+                }
+            }
         }
     }
 }
@@ -82,6 +89,7 @@ struct HomeView: View {
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
+            .environmentObject(SdzAppState())
     }
 }
 #endif

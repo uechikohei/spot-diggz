@@ -6,5 +6,5 @@ struct SdzCreateSpotInput: Codable {
     let description: String?
     let location: SdzSpotLocation?
     let tags: [String]?
-    let images: [Data]?
+    let images: [String]?
 }

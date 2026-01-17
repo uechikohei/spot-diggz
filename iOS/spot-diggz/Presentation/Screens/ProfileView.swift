@@ -7,10 +7,17 @@ struct ProfileView: View {
     @State private var user: SdzUser = SdzUser(userId: "u1", displayName: "Sample User", email: "sample@example.com")
     @State private var mySpots: [SdzSpot] = []
     @State private var favorites: [SdzSpot] = []
+    @State private var errorMessage: String?
 
     var body: some View {
         NavigationView {
             List {
+                if let errorMessage = errorMessage {
+                    Section {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                    }
+                }
                 Section {
                     VStack(alignment: .leading, spacing: 4) {
                         HStack {
@@ -72,13 +79,24 @@ struct ProfileView: View {
     }
 
     private func loadData() {
-        // TODO: Fetch user info, my spots, and favorites from API.
-        mySpots = [
-            SdzSpot.sample(id: "1", name: "マイスポット")
-        ]
-        favorites = [
-            SdzSpot.sample(id: "2", name: "お気に入りスポット")
-        ]
+        errorMessage = nil
+        let apiClient = SdzApiClient(environment: appState.environment, idToken: appState.idToken)
+
+        Task {
+            do {
+                let currentUser = try await apiClient.fetchCurrentUser()
+                await MainActor.run {
+                    self.user = currentUser
+                }
+            } catch {
+                let message = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+                await MainActor.run {
+                    self.errorMessage = message
+                }
+            }
+        }
+
+        // TODO: Fetch my spots and favorites from API once endpoints are available.
     }
 }
 

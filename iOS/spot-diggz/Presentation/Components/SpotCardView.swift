@@ -6,10 +6,28 @@ struct SpotCardView: View {
 
     var body: some View {
         HStack(alignment: .top) {
-            Rectangle()
-                .fill(Color.gray.opacity(0.3))
-                .frame(width: 80, height: 80)
-                .cornerRadius(8)
+            if let firstUrl = spot.images.first, let url = URL(string: firstUrl) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                            .frame(width: 80, height: 80)
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 80, height: 80)
+                            .clipped()
+                            .cornerRadius(8)
+                    case .failure:
+                        placeholderImage
+                    @unknown default:
+                        placeholderImage
+                    }
+                }
+            } else {
+                placeholderImage
+            }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(spot.name)
@@ -31,6 +49,13 @@ struct SpotCardView: View {
                 .foregroundColor(spot.trustLevel == .verified ? .green : .orange)
         }
         .padding(.vertical, 8)
+    }
+
+    private var placeholderImage: some View {
+        Rectangle()
+            .fill(Color.gray.opacity(0.3))
+            .frame(width: 80, height: 80)
+            .cornerRadius(8)
     }
 }
 
