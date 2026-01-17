@@ -132,6 +132,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `gh issue edit ISSUE_NUMBER -R uechikohei/spot-diggz --title \"TITLE\" --body-file PATH` Issueのタイトル/本文を更新する
 - `gh pr create -R uechikohei/spot-diggz -t \"TITLE\" -b \"BODY\"` Pull Requestを作成する
 - `gh pr create -R uechikohei/spot-diggz --base develop --head feature/tiddy-repo -t \"TITLE\" -F /tmp/pr-body.md` ベース/ヘッドを指定し、本文をファイルで指定してPull Requestを作成する
+- `gh pr create -R uechikohei/spot-diggz --base develop --head hotfix/NAME -t \"TITLE\" -b \"BODY\"` hotfixブランチからdevelop向けのPull Requestを作成する
 - `gh pr view PR_NUMBER -R uechikohei/spot-diggz --json title,author,baseRefName,headRefName,state,mergeable,mergeStateStatus,labels,files` Pull Requestの概要と変更ファイルをJSONで確認する
 - `gh pr reopen ISSUE_NUMBER -R uechikohei/spot-diggz` Close済みのPull Requestを再オープンする
 - `gh pr edit ISSUE_NUMBER -R uechikohei/spot-diggz --base develop` Pull Requestのベースブランチを変更する
