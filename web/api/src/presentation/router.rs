@@ -132,27 +132,31 @@ fn build_state() -> SdzAppState {
     let storage_repo: Arc<dyn SdzStorageRepository> = build_storage_repo();
     // 環境変数が整っていればFirestore実装を採用
     if std::env::var("SDZ_USE_FIRESTORE").ok().as_deref() == Some("1") {
-        if let (Ok(project_id), Ok(token)) = (
-            std::env::var("SDZ_FIRESTORE_PROJECT_ID")
-                .or_else(|_| std::env::var("SDZ_AUTH_PROJECT_ID")),
-            std::env::var("SDZ_FIRESTORE_TOKEN"),
-        ) {
-            if let (Ok(user_repo), Ok(spot_repo)) = (
-                SdzFirestoreUserRepository::new(project_id.clone(), token.clone()),
-                SdzFirestoreSpotRepository::new(project_id, token),
-            ) {
-                return SdzAppState {
-                    user_repo: Arc::new(user_repo),
-                    spot_repo: Arc::new(spot_repo),
-                    storage_repo,
-                };
+        if let Ok(project_id) = std::env::var("SDZ_FIRESTORE_PROJECT_ID")
+            .or_else(|_| std::env::var("SDZ_AUTH_PROJECT_ID"))
+        {
+            let token = std::env::var("SDZ_FIRESTORE_TOKEN").ok();
+            let on_cloud_run = std::env::var("K_SERVICE").is_ok();
+            if token.is_some() || on_cloud_run {
+                if let (Ok(user_repo), Ok(spot_repo)) = (
+                    SdzFirestoreUserRepository::new(project_id.clone(), token.clone()),
+                    SdzFirestoreSpotRepository::new(project_id, token),
+                ) {
+                    return SdzAppState {
+                        user_repo: Arc::new(user_repo),
+                        spot_repo: Arc::new(spot_repo),
+                        storage_repo,
+                    };
+                } else {
+                    tracing::warn!("Failed to init Firestore repo, falling back to in-memory");
+                }
             } else {
-                tracing::warn!("Failed to init Firestore repo, falling back to in-memory");
+                tracing::warn!(
+                    "SDZ_USE_FIRESTORE=1 but token missing and not Cloud Run. Falling back to in-memory."
+                );
             }
         } else {
-            tracing::warn!(
-                "SDZ_USE_FIRESTORE=1 but project_id/token missing. Falling back to in-memory."
-            );
+            tracing::warn!("SDZ_USE_FIRESTORE=1 but project_id missing. Falling back to in-memory.");
         }
     }
 

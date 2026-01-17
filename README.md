@@ -145,6 +145,18 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `rg -n "開発のすすめかた|開発の進め方|開発" README.md` README内の開発導線の位置を検索する
 - `rg -n "api/|ui/|resources/|scripts/|sdz_seed_spots|\\.terraform-version" README.md` README内の旧パス参照を確認する
 - `rg -n "cd api|cd ui|api/\\.env|ui/\\.env" docs/DEVELOPMENT_SETUP.md` DEVELOPMENT_SETUPの旧パス参照を確認する
+- `rg -n "API URL|run.app|SDZ_API_URL|VITE_SDZ_API_URL" docs/DEVELOPMENT_SETUP.md` API URL関連の記載箇所を検索する
+- `rg -n "sdz-dev|run.app|api" docs/cd_architecture.md` CD設計内のAPI関連記載を検索する
+- `rg -n "SDZ_API_URL|VITE_SDZ_API_URL|run.app|sdz-dev-api|Cloud Run|cloud run|Base URL|base url" docs README.md web -g"*.md" -g"*.yaml" -g"*.yml" -g"*.env*"` API URLやCloud Runの記載をドキュメントと設定ファイル横断で確認する
+- `rg -n "SDZ|sdz|api" web/ui/src` UI側のAPI/SDZ関連の実装箇所を検索する
+- `rg -n "Authorization|Bearer" web/ui/src` UI側の認証ヘッダー利用有無を確認する
+- `rg -n "User" web/ui/src/types` UIの型定義でUser関連があるか確認する
+- `rg -n "sdz" web/api/src` API側のsdz関連実装を横断検索する
+- `rg -n "Cloud Run|cloud run|run.app|ingress|allUsers|iam|invoker" -S web docs .github` Cloud Run公開設定の痕跡をドキュメントと設定で確認する
+- `rg -n "cloud_run|run.invoker|allUsers|invoker|ingress" -S web/resources` TerraformのCloud Run公開/IAM設定を確認する
+- `rg -n "SdzApiClient|SdzEnvironment|SdzAppState|fetchSpots|fetchSpot" iOS/spot-diggz` iOSのAPI連携関連コードをまとめて検索する
+- `rg -n "xcodeproj|xcworkspace|xcuserdata" .gitignore` .gitignoreのXcode関連除外設定を確認する
+- `rg --files iOS/Data iOS/Domain iOS/Presentation` iOS配下の実装ファイル一覧を確認する
 - `cat README.md` README全体の記載内容を確認する
 - `cat -n FILE` 行番号付きでファイル内容を確認する
 - `sed -n '1,200p' FILE` ファイルの先頭200行を確認する
