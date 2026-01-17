@@ -85,6 +85,49 @@ impl SdzFirestoreSpotRepository {
             }
         }
     }
+
+    async fn resolve_token(&self) -> Result<String, SdzApiError> {
+        if let Some(token) = self
+            .bearer_token
+            .as_ref()
+            .filter(|token| !token.trim().is_empty())
+        {
+            return Ok(token.to_string());
+        }
+        if let Ok(token) = std::env::var("SDZ_FIRESTORE_TOKEN") {
+            if !token.trim().is_empty() {
+                return Ok(token);
+            }
+        }
+        self.fetch_metadata_token().await
+    }
+
+    async fn fetch_metadata_token(&self) -> Result<String, SdzApiError> {
+        let metadata_url = "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token";
+        let resp = self
+            .http
+            .get(metadata_url)
+            .header("Metadata-Flavor", "Google")
+            .send()
+            .await
+            .map_err(|e| {
+                tracing::error!("Failed to fetch metadata token: {:?}", e);
+                SdzApiError::Internal
+            })?;
+
+        if !resp.status().is_success() {
+            let body = resp.text().await.unwrap_or_default();
+            tracing::error!("Metadata token error: {}", body);
+            return Err(SdzApiError::Internal);
+        }
+
+        let token = resp.json::<SdzMetadataToken>().await.map_err(|e| {
+            tracing::error!("Failed to parse metadata token: {:?}", e);
+            SdzApiError::Internal
+        })?;
+
+        Ok(token.access_token)
+    }
 }
 
 #[async_trait]
@@ -161,49 +204,6 @@ impl SdzSpotRepository for SdzFirestoreSpotRepository {
             }
         }
         Ok(spots)
-    }
-
-    async fn resolve_token(&self) -> Result<String, SdzApiError> {
-        if let Some(token) = self
-            .bearer_token
-            .as_ref()
-            .filter(|token| !token.trim().is_empty())
-        {
-            return Ok(token.to_string());
-        }
-        if let Ok(token) = std::env::var("SDZ_FIRESTORE_TOKEN") {
-            if !token.trim().is_empty() {
-                return Ok(token);
-            }
-        }
-        self.fetch_metadata_token().await
-    }
-
-    async fn fetch_metadata_token(&self) -> Result<String, SdzApiError> {
-        let metadata_url = "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token";
-        let resp = self
-            .http
-            .get(metadata_url)
-            .header("Metadata-Flavor", "Google")
-            .send()
-            .await
-            .map_err(|e| {
-                tracing::error!("Failed to fetch metadata token: {:?}", e);
-                SdzApiError::Internal
-            })?;
-
-        if !resp.status().is_success() {
-            let body = resp.text().await.unwrap_or_default();
-            tracing::error!("Metadata token error: {}", body);
-            return Err(SdzApiError::Internal);
-        }
-
-        let token = resp.json::<SdzMetadataToken>().await.map_err(|e| {
-            tracing::error!("Failed to parse metadata token: {:?}", e);
-            SdzApiError::Internal
-        })?;
-
-        Ok(token.access_token)
     }
 }
 

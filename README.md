@@ -132,6 +132,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `gh issue edit ISSUE_NUMBER -R uechikohei/spot-diggz --title \"TITLE\" --body-file PATH` Issueのタイトル/本文を更新する
 - `gh pr create -R uechikohei/spot-diggz -t \"TITLE\" -b \"BODY\"` Pull Requestを作成する
 - `gh pr create -R uechikohei/spot-diggz --base develop --head feature/tiddy-repo -t \"TITLE\" -F /tmp/pr-body.md` ベース/ヘッドを指定し、本文をファイルで指定してPull Requestを作成する
+- `gh pr create -R uechikohei/spot-diggz --base develop --head hotfix/NAME -t \"TITLE\" -b \"BODY\"` hotfixブランチからdevelop向けのPull Requestを作成する
 - `gh pr view PR_NUMBER -R uechikohei/spot-diggz --json title,author,baseRefName,headRefName,state,mergeable,mergeStateStatus,labels,files` Pull Requestの概要と変更ファイルをJSONで確認する
 - `gh pr reopen ISSUE_NUMBER -R uechikohei/spot-diggz` Close済みのPull Requestを再オープンする
 - `gh pr edit ISSUE_NUMBER -R uechikohei/spot-diggz --base develop` Pull Requestのベースブランチを変更する
@@ -176,6 +177,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `git commit -m "MESSAGE"` 変更内容をコミットする
 - `git commit --amend` 直前のコミット内容を修正する
 - `git stash push -m "MESSAGE"` 作業中の変更をスタッシュへ退避する
+- `git stash push -u -m "MESSAGE"` 未追跡ファイルも含めてスタッシュへ退避する
 - `git stash pop` 退避した変更を作業ツリーへ戻す
 - `git branch -m NEW_NAME` 現在のブランチ名を変更する
 - `git push --force-with-lease` リモートの最新を確認した上で履歴を書き換えてpushする
@@ -194,6 +196,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `curl -sS "URL" | head -c 200` APIレスポンスの先頭を確認する
 - `rg --files .github/workflows` GitHub Actionsのワークフローファイルを列挙する
 - `cat .github/workflows/ci.yml` CI設定の詳細を確認する
+- `cargo fmt` Rustのフォーマットを整形する
 - `cargo fmt -- --check` Rustのフォーマットをチェックする
 - `cargo clippy -- -D warnings` RustのLintを警告扱いで実行する
 - `cargo test --verbose` Rustのユニットテストを詳細ログ付きで実行する
