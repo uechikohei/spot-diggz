@@ -204,6 +204,8 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `rmdir DIR` 空のディレクトリを削除する
 - `curl -sS -o /dev/null -w "%{http_code}\n" "URL"` APIのHTTPステータスだけを確認する
 - `curl -sS "URL" | head -c 200` APIレスポンスの先頭を確認する
+- `gcloud run services describe sdz-dev-api --region asia-northeast1 --project sdz-dev --format "yaml(spec.template.spec.containers[0].env)"` Cloud Runの環境変数を確認する
+- `gcloud logging read 'resource.type="cloud_run_revision" AND resource.labels.service_name="sdz-dev-api" AND (textPayload:"SDZ_USE_FIRESTORE" OR textPayload:"Firestore")' --project sdz-dev --limit 50 --format "value(textPayload)"` Cloud RunのFirestore関連ログを確認する
 - `rg --files .github/workflows` GitHub Actionsのワークフローファイルを列挙する
 - `cat .github/workflows/ci.yml` CI設定の詳細を確認する
 - `cargo fmt` Rustのフォーマットを整形する
