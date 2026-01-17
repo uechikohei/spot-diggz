@@ -11,14 +11,35 @@ struct SpotDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
-                // Placeholder image
-                Rectangle()
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(height: 200)
-                    .overlay(
-                        Text("画像")
-                            .foregroundColor(.white)
-                    )
+                if spot.images.isEmpty {
+                    placeholderImage
+                } else {
+                    TabView {
+                        ForEach(spot.images, id: \.self) { urlString in
+                            if let url = URL(string: urlString) {
+                                AsyncImage(url: url) { phase in
+                                    switch phase {
+                                    case .empty:
+                                        ProgressView()
+                                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                    case .failure:
+                                        placeholderImage
+                                    @unknown default:
+                                        placeholderImage
+                                    }
+                                }
+                            } else {
+                                placeholderImage
+                            }
+                        }
+                    }
+                    .frame(height: 220)
+                    .tabViewStyle(.page)
+                }
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text(spot.name)
@@ -86,6 +107,16 @@ struct SpotDetailView: View {
         }
         .navigationTitle("スポット詳細")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var placeholderImage: some View {
+        Rectangle()
+            .fill(Color.gray.opacity(0.3))
+            .frame(height: 200)
+            .overlay(
+                Text("画像")
+                    .foregroundColor(.white)
+            )
     }
 }
 

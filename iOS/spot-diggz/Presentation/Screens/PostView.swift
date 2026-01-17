@@ -4,12 +4,15 @@ import UIKit
 
 /// A screen for creating a new skate spot.
 struct PostView: View {
+    @EnvironmentObject var appState: SdzAppState
     @State private var name: String = ""
     @State private var description: String = ""
     @State private var tagsString: String = ""
     @State private var selectedLocation: SdzSpotLocation?
     @State private var images: [UIImage] = []
     @State private var showImagePicker: Bool = false
+    @State private var isSubmitting: Bool = false
+    @State private var submitMessage: String?
 
     var body: some View {
         NavigationView {
@@ -65,9 +68,14 @@ struct PostView: View {
                 }
 
                 Section {
-                    Button("投稿する") {
+                    if let submitMessage = submitMessage {
+                        Text(submitMessage)
+                            .foregroundColor(.secondary)
+                    }
+                    Button(isSubmitting ? "送信中..." : "投稿する") {
                         submit()
                     }
+                    .disabled(isSubmitting)
                 }
             }
             .navigationTitle("新しいスポットを投稿")
@@ -78,7 +86,44 @@ struct PostView: View {
     }
 
     private func submit() {
-        // TODO: Validate input and call API to create a new spot.
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmedName.isEmpty {
+            submitMessage = "スポット名を入力してください。"
+            return
+        }
+
+        let tags = tagsString
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+
+        let input = SdzCreateSpotInput(
+            name: trimmedName,
+            description: description.isEmpty ? nil : description,
+            location: selectedLocation,
+            tags: tags.isEmpty ? nil : tags,
+            images: nil
+        )
+
+        let apiClient = SdzApiClient(environment: appState.environment, idToken: appState.idToken)
+        isSubmitting = true
+        submitMessage = nil
+
+        Task {
+            do {
+                _ = try await apiClient.createSpot(input)
+                await MainActor.run {
+                    self.isSubmitting = false
+                    self.submitMessage = "投稿が完了しました。"
+                }
+            } catch {
+                let message = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+                await MainActor.run {
+                    self.isSubmitting = false
+                    self.submitMessage = message
+                }
+            }
+        }
     }
 }
 
@@ -125,6 +170,7 @@ struct ImagePicker: UIViewControllerRepresentable {
 struct PostView_Previews: PreviewProvider {
     static var previews: some View {
         PostView()
+            .environmentObject(SdzAppState())
     }
 }
 #endif

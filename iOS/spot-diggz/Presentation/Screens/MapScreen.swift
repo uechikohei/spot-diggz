@@ -3,6 +3,7 @@ import MapKit
 
 /// Displays a map with pins representing nearby skate spots.
 struct MapScreen: View {
+    @EnvironmentObject var appState: SdzAppState
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 35.0, longitude: 135.0),
         span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
@@ -104,11 +105,18 @@ struct MapScreen: View {
     }
 
     private func fetchSpots() {
-        // TODO: Replace with API call to load spots around current location.
-        self.spots = [
-            SdzSpot.sample(id: "1", name: "パークA"),
-            SdzSpot.sample(id: "2", name: "ストリートB")
-        ]
+        let apiClient = SdzApiClient(environment: appState.environment)
+        Task {
+            do {
+                let result = try await apiClient.fetchSpots()
+                await MainActor.run {
+                    self.spots = result
+                }
+            } catch {
+                // Map screen keeps the last successful data; no UI error yet.
+                print("Failed to fetch spots: \(error.localizedDescription)")
+            }
+        }
     }
 }
 
@@ -116,6 +124,7 @@ struct MapScreen: View {
 struct MapScreen_Previews: PreviewProvider {
     static var previews: some View {
         MapScreen()
+            .environmentObject(SdzAppState())
     }
 }
 #endif

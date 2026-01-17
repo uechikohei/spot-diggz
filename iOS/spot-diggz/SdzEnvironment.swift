@@ -13,7 +13,7 @@ enum SdzEnvironment: String {
         case .local:
             return URL(string: "http://localhost:8080")!
         case .dev:
-            return URL(string: "https://sdz-dev-api.run.app")!
+            return URL(string: "https://sdz-dev-api-1053202159855.asia-northeast1.run.app")!
         case .prod:
             return URL(string: "https://sdz-api.example.com")!
         }
