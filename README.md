@@ -177,6 +177,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `git commit -m "MESSAGE"` 変更内容をコミットする
 - `git commit --amend` 直前のコミット内容を修正する
 - `git stash push -m "MESSAGE"` 作業中の変更をスタッシュへ退避する
+- `git stash push -u -m "MESSAGE"` 未追跡ファイルも含めてスタッシュへ退避する
 - `git stash pop` 退避した変更を作業ツリーへ戻す
 - `git branch -m NEW_NAME` 現在のブランチ名を変更する
 - `git push --force-with-lease` リモートの最新を確認した上で履歴を書き換えてpushする
