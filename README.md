@@ -170,6 +170,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `rg -n "PBXFileReference" iOS/spot-diggz.xcodeproj/project.pbxproj | head -n 5` XcodeプロジェクトのFileReferenceセクションの有無を簡易確認する
 - `rg -n "SdzAppState.swift" iOS/spot-diggz.xcodeproj/project.pbxproj` XcodeプロジェクトにSdzAppState.swiftが参照されているか確認する
 - `rg -n "ContentView.swift" iOS/spot-diggz.xcodeproj/project.pbxproj` XcodeプロジェクトにContentView.swiftが参照されているか確認する
+- `rg -n "CFBundleURLTypes|URLTypes|URLSchemes" iOS/spot-diggz.xcodeproj/project.pbxproj` URLスキーム設定があるかを確認する
 - `rg -n "Firebase" iOS/spot-diggz` iOS実装内のFirebase関連箇所を検索する
 - `rg -n "CFBundleURLTypes" ..` リポジトリ配下でURLスキーム設定の痕跡を検索する
 - `rg -n "INFOPLIST_KEY_NSLocationWhenInUseUsageDescription" iOS/spot-diggz.xcodeproj/project.pbxproj` 位置情報の利用許可文言設定を確認する
