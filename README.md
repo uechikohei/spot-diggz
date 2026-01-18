@@ -127,9 +127,12 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 
 - `gh project item-list 2 --owner uechikohei --limit 50 --format json | jq -r '.items[] | \"#\\(.content.number) \\(.content.title) | Priority: \\(.priority)\"'` ProjectのPriority反映状況を一覧で確認する
 - `gh project item-list 2 --owner uechikohei --limit 50 --format json | jq -r '.items[] | \"#\\(.content.number) \\(.content.title) | Priority: \\(.priority) | Status: \\(.status) | URL: \\(.content.url)\"'` Project課題の一覧を表示する
+- `gh issue list -R uechikohei/spot-diggz --search "KEYWORD" --state all --limit 10` Issueの重複確認のため検索する
 - `gh issue view ISSUE_NUMBER -R uechikohei/spot-diggz --json title,body,url` Issue本文を取得する
 - `gh issue create -R uechikohei/spot-diggz -t \"TITLE\" -b \"BODY\"` Issueを作成する
 - `gh issue edit ISSUE_NUMBER -R uechikohei/spot-diggz --title \"TITLE\" --body-file PATH` Issueのタイトル/本文を更新する
+- `gh issue edit ISSUE_NUMBER -R uechikohei/spot-diggz --add-label LABEL` Issueにラベルを追加する
+- `gh issue reopen ISSUE_NUMBER -R uechikohei/spot-diggz` Close済みのIssueを再オープンする
 - `gh pr create -R uechikohei/spot-diggz -t \"TITLE\" -b \"BODY\"` Pull Requestを作成する
 - `gh pr create -R uechikohei/spot-diggz --base develop --head feature/tiddy-repo -t \"TITLE\" -F /tmp/pr-body.md` ベース/ヘッドを指定し、本文をファイルで指定してPull Requestを作成する
 - `gh pr create -R uechikohei/spot-diggz --base develop --head hotfix/NAME -t \"TITLE\" -b \"BODY\"` hotfixブランチからdevelop向けのPull Requestを作成する
@@ -140,6 +143,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `gh project field-list 2 --owner uechikohei --format json` Projectのフィールドと選択肢IDを確認する
 - `gh project item-add 2 --owner uechikohei --url \"ISSUE_URL\"` IssueをProjectに追加する
 - `gh project item-add 2 --owner uechikohei --url \"ISSUE_URL\" --format json` IssueをProjectに追加し、項目IDを取得する
+- `gh project item-list 2 --owner uechikohei --format json | jq -r '.items[] | select(.content.number==ISSUE_NUMBER) | .id'` Project内のIssue番号から項目IDを取得する
 - `gh project item-edit --project-id PVT_kwHOAx5dHc4BLgT- --id ITEM_ID --field-id PVTSSF_lAHOAx5dHc4BLgT-zg7DwBA --single-select-option-id OPTION_ID` ProjectのPriorityを更新する
 - `SDZ_ID_TOKEN=... SDZ_API_URL=... ./web/scripts/firestore_crud_smoke.sh` Firestore実運用のCRUDをAPI経由でスモークテストする（`X-SDZ-Client: ios`付き）
 - `payload=$(jq -n --arg email "${SDZ_TEST_USER_EMAIL}" --arg password "${SDZ_TEST_USER_PASSWORD}" '{email:$email,password:$password,returnSecureToken:true}'); SDZ_ID_TOKEN=$(curl -sS "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${SDZ_FIREBASE_WEB_API_KEY}" -H "Content-Type: application/json" -d "${payload}" | jq -r '.idToken')` Firebase Auth REST APIでIDトークンを取得する
@@ -157,11 +161,25 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `rg -n "Authorization|Bearer" web/ui/src` UI側の認証ヘッダー利用有無を確認する
 - `rg -n "User" web/ui/src/types` UIの型定義でUser関連があるか確認する
 - `rg -n "sdz" web/api/src` API側のsdz関連実装を横断検索する
+- `rg -n "user" web/api/src` API側のユーザー関連実装を横断検索する
+- `rg -n "UploadUrl" iOS/spot-diggz` iOSのアップロードURL関連実装を検索する
+- `rg -n "XCRemoteSwiftPackageReference" iOS/spot-diggz.xcodeproj/project.pbxproj` iOSプロジェクトのSwift Package参照有無を確認する
+- `rg --files -g "GoogleService-Info.plist" iOS` iOS配下にFirebase設定ファイルがあるか確認する
+- `rg --files -g "Info.plist" iOS` iOS配下のInfo.plist有無を確認する
+- `rg -n "INFOPLIST_FILE" iOS/spot-diggz.xcodeproj/project.pbxproj` iOSプロジェクトのInfo.plist設定有無を確認する
+- `rg -n "PBXFileReference" iOS/spot-diggz.xcodeproj/project.pbxproj | head -n 5` XcodeプロジェクトのFileReferenceセクションの有無を簡易確認する
+- `rg -n "SdzAppState.swift" iOS/spot-diggz.xcodeproj/project.pbxproj` XcodeプロジェクトにSdzAppState.swiftが参照されているか確認する
+- `rg -n "ContentView.swift" iOS/spot-diggz.xcodeproj/project.pbxproj` XcodeプロジェクトにContentView.swiftが参照されているか確認する
+- `rg -n "Firebase" iOS/spot-diggz` iOS実装内のFirebase関連箇所を検索する
+- `rg -n "CFBundleURLTypes" ..` リポジトリ配下でURLスキーム設定の痕跡を検索する
+- `rg -n "INFOPLIST_KEY_NSLocationWhenInUseUsageDescription" iOS/spot-diggz.xcodeproj/project.pbxproj` 位置情報の利用許可文言設定を確認する
 - `rg -n "Cloud Run|cloud run|run.app|ingress|allUsers|iam|invoker" -S web docs .github` Cloud Run公開設定の痕跡をドキュメントと設定で確認する
 - `rg -n "cloud_run|run.invoker|allUsers|invoker|ingress" -S web/resources` TerraformのCloud Run公開/IAM設定を確認する
 - `rg -n "SdzApiClient|SdzEnvironment|SdzAppState|fetchSpots|fetchSpot" iOS/spot-diggz` iOSのAPI連携関連コードをまとめて検索する
 - `rg -n "xcodeproj|xcworkspace|xcuserdata" .gitignore` .gitignoreのXcode関連除外設定を確認する
 - `rg --files iOS/Data iOS/Domain iOS/Presentation` iOS配下の実装ファイル一覧を確認する
+- `rg -n "spots" web/api/src/presentation/router.rs` APIルーティングのspots関連エンドポイントを確認する
+- `rg -n "CreateSpot" web/api/src` CreateSpot入力/UseCaseの実装箇所を検索する
 - `cat README.md` README全体の記載内容を確認する
 - `cat -n FILE` 行番号付きでファイル内容を確認する
 - `sed -n '1,200p' FILE` ファイルの先頭200行を確認する
@@ -206,6 +224,10 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `curl -sS "URL" | head -c 200` APIレスポンスの先頭を確認する
 - `gcloud run services describe sdz-dev-api --region asia-northeast1 --project sdz-dev --format "yaml(spec.template.spec.containers[0].env)"` Cloud Runの環境変数を確認する
 - `gcloud logging read 'resource.type="cloud_run_revision" AND resource.labels.service_name="sdz-dev-api" AND (textPayload:"SDZ_USE_FIRESTORE" OR textPayload:"Firestore")' --project sdz-dev --limit 50 --format "value(textPayload)"` Cloud RunのFirestore関連ログを確認する
+- `gcloud logging read 'resource.type="firestore_database" AND protoPayload.serviceName="firestore.googleapis.com" AND (protoPayload.methodName="google.firestore.v1.Firestore.DeleteDocument" OR protoPayload.methodName="google.firestore.v1.Firestore.BatchWrite")' --project sdz-dev --limit 50 --format "table(timestamp, protoPayload.authenticationInfo.principalEmail, protoPayload.methodName, protoPayload.resourceName)"` Firestoreの削除操作ログ（Data Access）を確認する
+- `gcloud builds triggers list --project sdz-dev --format "table(id,name,github.owner,github.name,github.push.branch,status)"` Cloud Buildのトリガー一覧を確認する
+- `gcloud builds list --project sdz-dev --limit 10 --format "table(id,createTime,status,source.repoSource.repoName,source.repoSource.branchName)"` Cloud Buildの直近ビルド履歴を確認する
+- `gcloud builds describe BUILD_ID --project sdz-dev --format "yaml(steps,substitutions)"` Cloud Buildの実行ステップと置換変数を確認する
 - `rg --files .github/workflows` GitHub Actionsのワークフローファイルを列挙する
 - `cat .github/workflows/ci.yml` CI設定の詳細を確認する
 - `cargo fmt` Rustのフォーマットを整形する

@@ -94,6 +94,9 @@
 			);
 			mainGroup = 558C4B8A2F154F730055F1E1;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				5513BE6F2F1CB06C001CFFDB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 558C4B942F154F730055F1E1 /* Products */;
 			projectDirPath = "";
@@ -254,6 +257,16 @@
 				DEVELOPMENT_TEAM = SW4S6FR5L9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleURLTypes = (
+					{
+						CFBundleTypeRole = Editor;
+						CFBundleURLSchemes = (
+							"com.googleusercontent.apps.1053202159855-e5iargrqi6i5nks03bkc27c6uebu1v70",
+						);
+					},
+				);
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Allow access to your location to tag skate spots.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow access to your photo library to upload spot images.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -264,7 +277,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "-21dev.org.spot-diggz";
+				PRODUCT_BUNDLE_IDENTIFIER = "ios-sdz-fb-dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -286,6 +299,16 @@
 				DEVELOPMENT_TEAM = SW4S6FR5L9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleURLTypes = (
+					{
+						CFBundleTypeRole = Editor;
+						CFBundleURLSchemes = (
+							"com.googleusercontent.apps.1053202159855-e5iargrqi6i5nks03bkc27c6uebu1v70",
+						);
+					},
+				);
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Allow access to your location to tag skate spots.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow access to your photo library to upload spot images.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -296,7 +319,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "-21dev.org.spot-diggz";
+				PRODUCT_BUNDLE_IDENTIFIER = "ios-sdz-fb-dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -330,6 +353,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5513BE6F2F1CB06C001CFFDB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.8.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 558C4B8B2F154F730055F1E1 /* Project object */;
 }
