@@ -12,6 +12,10 @@ struct RootTabView: View {
                 .tabItem {
                     Label("マップ", systemImage: "map")
                 }
+            MyListView()
+                .tabItem {
+                    Label("マイリスト", systemImage: "heart")
+                }
             PostView()
                 .tabItem {
                     Label("投稿", systemImage: "plus.rectangle.on.rectangle")

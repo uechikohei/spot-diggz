@@ -3,6 +3,7 @@ import MapKit
 
 /// A screen displaying detailed information about a specific spot.
 struct SpotDetailView: View {
+    @EnvironmentObject var appState: SdzAppState
     let spot: SdzSpot
 
     @State private var region: MKCoordinateRegion = MKCoordinateRegion()
@@ -87,10 +88,13 @@ struct SpotDetailView: View {
                     // Actions
                     HStack {
                         Button(action: {
-                            // TODO: Add to favorites
+                            appState.toggleFavorite(spot)
                         }) {
-                            Label("お気に入りに追加", systemImage: "heart")
-                                .frame(maxWidth: .infinity)
+                            Label(
+                                isFavorite ? "お気に入り解除" : "お気に入りに追加",
+                                systemImage: isFavorite ? "heart.fill" : "heart"
+                            )
+                            .frame(maxWidth: .infinity)
                         }
                         Button(action: {
                             // TODO: Open external map
@@ -101,6 +105,13 @@ struct SpotDetailView: View {
                     }
                     .buttonStyle(.bordered)
                     .padding(.top, 8)
+
+                    if isOwnedByCurrentUser {
+                        NavigationLink("投稿を編集") {
+                            EditSpotView(spot: spot)
+                        }
+                        .padding(.top, 4)
+                    }
                 }
                 .padding()
             }
@@ -118,6 +129,17 @@ struct SpotDetailView: View {
                     .foregroundColor(.white)
             )
     }
+
+    private var isFavorite: Bool {
+        appState.isFavorite(spot)
+    }
+
+    private var isOwnedByCurrentUser: Bool {
+        guard let currentUserId = appState.authUserId else {
+            return false
+        }
+        return spot.userId == currentUserId
+    }
 }
 
 #if DEBUG
@@ -125,6 +147,7 @@ struct SpotDetailView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             SpotDetailView(spot: SdzSpot.sample(id: "preview", name: "プレビュー"))
+                .environmentObject(SdzAppState())
         }
     }
 }

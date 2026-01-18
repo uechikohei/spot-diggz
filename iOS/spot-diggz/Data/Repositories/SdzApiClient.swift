@@ -96,6 +96,30 @@ final class SdzApiClient {
         )
     }
 
+    /// Uploads binary image data to the signed URL.
+    func uploadImage(data: Data, contentType: String, uploadUrl: String) async throws {
+        guard let url = URL(string: uploadUrl) else {
+            throw SdzApiError.invalidUrl
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+
+        do {
+            let (_, response) = try await urlSession.upload(for: request, from: data)
+            guard let http = response as? HTTPURLResponse else {
+                throw SdzApiError.invalidResponse
+            }
+            guard (200...299).contains(http.statusCode) else {
+                throw SdzApiError.statusCode(http.statusCode)
+            }
+        } catch let error as SdzApiError {
+            throw error
+        } catch {
+            throw SdzApiError.network(error)
+        }
+    }
+
     private func request<T: Decodable>(
         path: String,
         method: String = "GET",

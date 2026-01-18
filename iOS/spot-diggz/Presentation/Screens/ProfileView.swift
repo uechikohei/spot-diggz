@@ -1,13 +1,15 @@
 import SwiftUI
+import UIKit
 
 /// Displays the current user's profile, their posts, and favorites.
 struct ProfileView: View {
     @EnvironmentObject var appState: SdzAppState
 
-    @State private var user: SdzUser = SdzUser(userId: "u1", displayName: "Sample User", email: "sample@example.com")
+    @State private var user: SdzUser?
     @State private var mySpots: [SdzSpot] = []
-    @State private var favorites: [SdzSpot] = []
     @State private var errorMessage: String?
+    @State private var showAvatarPicker: Bool = false
+    @State private var avatarImages: [UIImage] = []
 
     var body: some View {
         NavigationView {
@@ -21,14 +23,11 @@ struct ProfileView: View {
                 Section {
                     VStack(alignment: .leading, spacing: 4) {
                         HStack {
-                            // Placeholder avatar
-                            Circle()
-                                .fill(Color.gray.opacity(0.3))
-                                .frame(width: 64, height: 64)
+                            avatarView
                             VStack(alignment: .leading) {
-                                Text(user.displayName)
+                                Text(resolvedDisplayName)
                                     .font(.headline)
-                                if let email = user.email {
+                                if let email = resolvedEmail {
                                     Text(email)
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
@@ -36,8 +35,13 @@ struct ProfileView: View {
                             }
                         }
                         Button("ログアウト") {
-                            // TODO: Implement sign out.
-                            appState.isAuthenticated = false
+                            appState.signOut()
+                        }
+                        .foregroundColor(.accentColor)
+                        .padding(.top, 4)
+
+                        Button("アイコンを変更") {
+                            showAvatarPicker = true
                         }
                         .foregroundColor(.accentColor)
                         .padding(.top, 4)
@@ -59,11 +63,11 @@ struct ProfileView: View {
                 }
 
                 Section(header: Text("お気に入り")) {
-                    if favorites.isEmpty {
+                    if appState.favoriteSpots.isEmpty {
                         Text("お気に入りはありません")
                             .foregroundColor(.secondary)
                     } else {
-                        ForEach(favorites) { spot in
+                        ForEach(appState.favoriteSpots) { spot in
                             NavigationLink(destination: SpotDetailView(spot: spot)) {
                                 Text(spot.name)
                             }
@@ -75,11 +79,68 @@ struct ProfileView: View {
             .onAppear {
                 loadData()
             }
+            .sheet(isPresented: $showAvatarPicker) {
+                ImagePicker(images: $avatarImages)
+            }
+            .onChange(of: avatarImages) { _, newValue in
+                guard let image = newValue.last else {
+                    return
+                }
+                if let data = image.jpegData(compressionQuality: 0.85) {
+                    appState.setProfileImageData(data)
+                } else if let data = image.pngData() {
+                    appState.setProfileImageData(data)
+                }
+            }
         }
+    }
+
+    private var avatarView: some View {
+        Group {
+            if let data = appState.profileImageData,
+               let image = UIImage(data: data) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                Circle()
+                    .fill(Color.gray.opacity(0.3))
+                    .overlay(
+                        Image(systemName: "person.fill")
+                            .foregroundColor(.white)
+                    )
+            }
+        }
+        .frame(width: 64, height: 64)
+        .clipShape(Circle())
+    }
+
+    private var resolvedDisplayName: String {
+        if let user = user {
+            return user.displayName
+        }
+        if let displayName = appState.authDisplayName, !displayName.isEmpty {
+            return displayName
+        }
+        if let email = appState.authEmail, !email.isEmpty {
+            return email
+        }
+        return "ユーザー"
+    }
+
+    private var resolvedEmail: String? {
+        if let user = user {
+            return user.email
+        }
+        return appState.authEmail
     }
 
     private func loadData() {
         errorMessage = nil
+        guard appState.idToken != nil else {
+            errorMessage = "ログインが必要です。"
+            return
+        }
         let apiClient = SdzApiClient(environment: appState.environment, idToken: appState.idToken)
 
         Task {

@@ -5,6 +5,7 @@ import UIKit
 /// A screen for creating a new skate spot.
 struct PostView: View {
     @EnvironmentObject var appState: SdzAppState
+    @StateObject private var locationManager = SdzLocationManager()
     @State private var name: String = ""
     @State private var description: String = ""
     @State private var tagsString: String = ""
@@ -34,7 +35,18 @@ struct PostView: View {
                             .foregroundColor(.secondary)
                     }
                     Button("現在地を設定") {
-                        // TODO: Use CoreLocation to set current location.
+                        locationManager.requestCurrentLocation()
+                    }
+                    NavigationLink("地図で選択") {
+                        SdzLocationPickerView(selectedLocation: $selectedLocation)
+                    }
+                    if locationManager.authorizationStatus == .denied {
+                        Text("位置情報の許可が必要です。")
+                            .foregroundColor(.red)
+                    }
+                    if let errorMessage = locationManager.lastErrorMessage {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
                     }
                 }
 
@@ -82,6 +94,15 @@ struct PostView: View {
             .sheet(isPresented: $showImagePicker) {
                 ImagePicker(images: $images)
             }
+            .onReceive(locationManager.$currentCoordinate) { coordinate in
+                guard let coordinate = coordinate else {
+                    return
+                }
+                selectedLocation = SdzSpotLocation(
+                    lat: coordinate.latitude,
+                    lng: coordinate.longitude
+                )
+            }
         }
     }
 
@@ -91,19 +112,15 @@ struct PostView: View {
             submitMessage = "スポット名を入力してください。"
             return
         }
+        guard appState.idToken != nil else {
+            submitMessage = "ログインが必要です。"
+            return
+        }
 
         let tags = tagsString
             .split(separator: ",")
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
-
-        let input = SdzCreateSpotInput(
-            name: trimmedName,
-            description: description.isEmpty ? nil : description,
-            location: selectedLocation,
-            tags: tags.isEmpty ? nil : tags,
-            images: nil
-        )
 
         let apiClient = SdzApiClient(environment: appState.environment, idToken: appState.idToken)
         isSubmitting = true
@@ -111,6 +128,14 @@ struct PostView: View {
 
         Task {
             do {
+                let uploadedUrls = try await uploadImagesIfNeeded(apiClient: apiClient)
+                let input = SdzCreateSpotInput(
+                    name: trimmedName,
+                    description: description.isEmpty ? nil : description,
+                    location: selectedLocation,
+                    tags: tags.isEmpty ? nil : tags,
+                    images: uploadedUrls.isEmpty ? nil : uploadedUrls
+                )
                 _ = try await apiClient.createSpot(input)
                 await MainActor.run {
                     self.isSubmitting = false
@@ -123,6 +148,47 @@ struct PostView: View {
                     self.submitMessage = message
                 }
             }
+        }
+    }
+
+    private func uploadImagesIfNeeded(apiClient: SdzApiClient) async throws -> [String] {
+        guard !images.isEmpty else {
+            return []
+        }
+
+        var uploadedUrls: [String] = []
+        for image in images {
+            if let jpegData = image.jpegData(compressionQuality: 0.85) {
+                let upload = try await apiClient.requestUploadUrl(contentType: "image/jpeg")
+                try await apiClient.uploadImage(
+                    data: jpegData,
+                    contentType: "image/jpeg",
+                    uploadUrl: upload.uploadUrl
+                )
+                uploadedUrls.append(upload.objectUrl)
+            } else if let pngData = image.pngData() {
+                let upload = try await apiClient.requestUploadUrl(contentType: "image/png")
+                try await apiClient.uploadImage(
+                    data: pngData,
+                    contentType: "image/png",
+                    uploadUrl: upload.uploadUrl
+                )
+                uploadedUrls.append(upload.objectUrl)
+            } else {
+                throw SdzPostError.imageEncodingFailed
+            }
+        }
+        return uploadedUrls
+    }
+}
+
+private enum SdzPostError: LocalizedError {
+    case imageEncodingFailed
+
+    var errorDescription: String? {
+        switch self {
+        case .imageEncodingFailed:
+            return "画像の変換に失敗しました。"
         }
     }
 }
