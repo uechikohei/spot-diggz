@@ -9,6 +9,15 @@ struct PostView: View {
     @State private var name: String = ""
     @State private var description: String = ""
     @State private var tagsString: String = ""
+    @State private var spotCategory: SdzSpotCategory = .street
+    @State private var parkOfficialUrl: String = ""
+    @State private var parkBusinessHours: String = ""
+    @State private var parkBusinessDays: String = ""
+    @State private var parkAccessInfo: String = ""
+    @State private var parkPhoneNumber: String = ""
+    @State private var streetSurface: String = ""
+    @State private var streetObstacles: String = ""
+    @State private var streetDifficulty: String = ""
     @State private var selectedLocation: SdzSpotLocation?
     @State private var images: [UIImage] = []
     @State private var showImagePicker: Bool = false
@@ -19,6 +28,15 @@ struct PostView: View {
     var body: some View {
         NavigationView {
             Form {
+                Section(header: Text("スポット種別")) {
+                    Picker("種類", selection: $spotCategory) {
+                        ForEach(SdzSpotCategory.allCases) { category in
+                            Text(category.label).tag(category)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+
                 Section(header: Text("基本情報")) {
                     TextField("スポット名", text: $name)
                     TextField("説明", text: $description, axis: .vertical)
@@ -32,6 +50,13 @@ struct PostView: View {
                     SdzLocationPickerView(selectedLocation: $selectedLocation, height: 360)
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Label("地図をタップしてピンを置く", systemImage: "hand.tap")
+                        Label("現在地ボタンで自動入力", systemImage: "location.fill")
+                        Label("細かく選ぶ場合は拡大を使う", systemImage: "plus.magnifyingglass")
+                    }
+                    .font(.caption)
+                    .foregroundColor(.secondary)
                     if selectedLocation == nil {
                         Text("地図をタップして位置を選択")
                             .font(.caption)
@@ -85,6 +110,22 @@ struct PostView: View {
                     }
                 }
 
+                if spotCategory == .park {
+                    Section(header: Text("スケートパーク情報")) {
+                        TextField("公式サイトURL", text: $parkOfficialUrl)
+                        TextField("営業時間", text: $parkBusinessHours)
+                        TextField("営業日", text: $parkBusinessDays)
+                        TextField("アクセス情報", text: $parkAccessInfo)
+                        TextField("電話番号", text: $parkPhoneNumber)
+                    }
+                } else {
+                    Section(header: Text("ストリート情報")) {
+                        TextField("路面・素材", text: $streetSurface)
+                        TextField("障害物・セクション", text: $streetObstacles)
+                        TextField("難易度", text: $streetDifficulty)
+                    }
+                }
+
                 Section {
                     if let submitMessage = submitMessage {
                         Text(submitMessage)
@@ -97,6 +138,9 @@ struct PostView: View {
                 }
             }
             .navigationTitle("新しいスポットを投稿")
+            .onAppear {
+                applyDraftLocationIfNeeded()
+            }
             .sheet(isPresented: $showImagePicker) {
                 ImagePicker(images: $images)
             }
@@ -126,10 +170,8 @@ struct PostView: View {
             return
         }
 
-        let tags = tagsString
-            .split(separator: ",")
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
+        let tags = buildTags()
+        let combinedDescription = buildDescription()
 
         let apiClient = SdzApiClient(environment: appState.environment, idToken: appState.idToken)
         isSubmitting = true
@@ -140,9 +182,9 @@ struct PostView: View {
                 let uploadedUrls = try await uploadImagesIfNeeded(apiClient: apiClient)
                 let input = SdzCreateSpotInput(
                     name: trimmedName,
-                    description: description.isEmpty ? nil : description,
+                    description: combinedDescription,
                     location: selectedLocation,
-                    tags: tags.isEmpty ? nil : tags,
+                    tags: tags?.isEmpty == true ? nil : tags,
                     images: uploadedUrls.isEmpty ? nil : uploadedUrls
                 )
                 _ = try await apiClient.createSpot(input)
@@ -158,6 +200,59 @@ struct PostView: View {
                 }
             }
         }
+    }
+
+    private func buildTags() -> [String]? {
+        var tags = tagsString
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+
+        let categoryTag = spotCategory.defaultTag
+        if !tags.contains(categoryTag) {
+            tags.append(categoryTag)
+        }
+
+        return tags.isEmpty ? nil : tags
+    }
+
+    private func buildDescription() -> String? {
+        var lines: [String] = []
+        let base = description.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !base.isEmpty {
+            lines.append(base)
+        }
+
+        switch spotCategory {
+        case .park:
+            appendDetail("公式サイト", parkOfficialUrl, to: &lines)
+            appendDetail("営業時間", parkBusinessHours, to: &lines)
+            appendDetail("営業日", parkBusinessDays, to: &lines)
+            appendDetail("アクセス", parkAccessInfo, to: &lines)
+            appendDetail("電話番号", parkPhoneNumber, to: &lines)
+        case .street:
+            appendDetail("路面", streetSurface, to: &lines)
+            appendDetail("障害物", streetObstacles, to: &lines)
+            appendDetail("難易度", streetDifficulty, to: &lines)
+        }
+
+        return lines.isEmpty ? nil : lines.joined(separator: "\n")
+    }
+
+    private func appendDetail(_ label: String, _ value: String, to lines: inout [String]) {
+        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            return
+        }
+        lines.append("\(label): \(trimmed)")
+    }
+
+    private func applyDraftLocationIfNeeded() {
+        guard let draft = appState.draftPostLocation else {
+            return
+        }
+        selectedLocation = draft
+        appState.draftPostLocation = nil
     }
 
     private func uploadImagesIfNeeded(apiClient: SdzApiClient) async throws -> [String] {
@@ -198,6 +293,31 @@ private enum SdzPostError: LocalizedError {
         switch self {
         case .imageEncodingFailed:
             return "画像の変換に失敗しました。"
+        }
+    }
+}
+
+private enum SdzSpotCategory: String, CaseIterable, Identifiable {
+    case street
+    case park
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .street:
+            return "ストリート"
+        case .park:
+            return "スケートパーク"
+        }
+    }
+
+    var defaultTag: String {
+        switch self {
+        case .street:
+            return "ストリート"
+        case .park:
+            return "パーク"
         }
     }
 }

@@ -1,6 +1,14 @@
 import Foundation
 import Combine
 
+enum SdzTab: Hashable {
+    case spots
+    case favorites
+    case routes
+    case post
+    case settings
+}
+
 /// Shared application state used across the entire app.
 @MainActor
 final class SdzAppState: ObservableObject {
@@ -32,6 +40,12 @@ final class SdzAppState: ObservableObject {
 
     /// Profile image data stored locally.
     @Published var profileImageData: Data?
+
+    /// Currently selected tab.
+    @Published var selectedTab: SdzTab = .spots
+
+    /// Draft location passed from map to the post flow.
+    @Published var draftPostLocation: SdzSpotLocation?
 
     init() {
         loadFavorites()

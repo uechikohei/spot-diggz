@@ -144,26 +144,65 @@ struct ProfileView: View {
         let apiClient = SdzApiClient(environment: appState.environment, idToken: appState.idToken)
 
         Task {
+            async let spots = apiClient.fetchSpots(includeAuth: true)
+            async let currentUser = apiClient.fetchCurrentUser()
+
+            let spotsResponse: Result<[SdzSpot], Error>
             do {
-                async let spotsTask = apiClient.fetchSpots(includeAuth: true)
-                let currentUser = try? await apiClient.fetchCurrentUser()
-                let spots = try await spotsTask
-                let currentUserId = currentUser?.userId ?? appState.authUserId
-                await MainActor.run {
+                spotsResponse = .success(try await spots)
+            } catch {
+                spotsResponse = .failure(error)
+            }
+
+            let userResponse: Result<SdzUser, Error>
+            do {
+                userResponse = .success(try await currentUser)
+            } catch {
+                userResponse = .failure(error)
+            }
+
+            await MainActor.run {
+                switch userResponse {
+                case .success(let currentUser):
                     self.user = currentUser
+                case .failure(let error):
+                    if let message = resolveErrorMessage(error) {
+                        self.errorMessage = message
+                    }
+                }
+
+                switch spotsResponse {
+                case .success(let spots):
+                    let currentUserId = self.user?.userId ?? appState.authUserId
                     if let currentUserId = currentUserId {
                         self.mySpots = spots.filter { $0.userId == currentUserId }
                     } else {
                         self.mySpots = []
                     }
-                }
-            } catch {
-                let message = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
-                await MainActor.run {
-                    self.errorMessage = message
+                case .failure(let error):
+                    if let message = resolveErrorMessage(error) {
+                        self.errorMessage = message
+                    }
+                    self.mySpots = []
                 }
             }
         }
+    }
+
+    private func resolveErrorMessage(_ error: Error) -> String? {
+        if let apiError = error as? SdzApiError {
+            switch apiError {
+            case let .api(statusCode, _) where statusCode == 401:
+                return nil
+            case let .statusCode(statusCode) where statusCode == 401:
+                return nil
+            case .authRequired:
+                return "ログインが必要です。"
+            default:
+                return apiError.errorDescription ?? "読み込みに失敗しました。"
+            }
+        }
+        return (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
     }
 }
 

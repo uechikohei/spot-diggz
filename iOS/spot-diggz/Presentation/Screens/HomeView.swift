@@ -1,5 +1,6 @@
 import SwiftUI
 import MapKit
+import CoreLocation
 
 /// Home screen showing a map with spot cards and lightweight filtering.
 struct HomeView: View {
@@ -9,6 +10,7 @@ struct HomeView: View {
     @State private var spots: [SdzSpot] = []
     @State private var selectedSpot: SdzSpot?
     @State private var focusedSpotId: String?
+    @State private var draftPinLocation: SdzSpotLocation?
     @State private var isLoading: Bool = false
     @State private var errorMessage: String?
 
@@ -44,13 +46,15 @@ struct HomeView: View {
     }
 
     private var homeContent: some View {
-        ZStack(alignment: .top) {
-            mapContent
-                .ignoresSafeArea()
-            topOverlay
-        }
-        .safeAreaInset(edge: .bottom) {
-            bottomOverlay
+        GeometryReader { proxy in
+            ZStack(alignment: .top) {
+                mapContent
+                    .ignoresSafeArea()
+                topOverlay
+            }
+            .safeAreaInset(edge: .bottom) {
+                bottomOverlay(height: proxy.size.height * 0.33)
+            }
         }
         .onAppear {
             setInitialCameraPositionIfNeeded()
@@ -64,13 +68,48 @@ struct HomeView: View {
     @ViewBuilder
     private var mapContent: some View {
         if #available(iOS 17.0, *) {
-            Map(position: $cameraPosition) {
-                ForEach(annotationItems) { annotation in
-                    Annotation("", coordinate: annotation.coordinate) {
+            MapReader { proxy in
+                Map(position: $cameraPosition) {
+                    ForEach(annotationItems) { annotation in
+                        Annotation("", coordinate: annotation.coordinate) {
+                            if annotation.isDraft {
+                                Image(systemName: "plus.circle.fill")
+                                    .font(.title2)
+                                    .foregroundColor(.blue)
+                            } else if let spot = annotation.spot {
+                                Button(action: {
+                                    selectSpot(spot)
+                                }) {
+                                    Image(systemName: focusedSpotId == spot.spotId
+                                          ? "mappin.circle.fill" : "mappin.circle")
+                                        .font(.title2)
+                                        .foregroundColor(.accentColor)
+                                }
+                            }
+                        }
+                    }
+                }
+                .simultaneousGesture(
+                    SpatialTapGesture()
+                        .onEnded { value in
+                            if let coordinate = proxy.convert(value.location, from: .local) {
+                                handleMapTap(coordinate)
+                            }
+                        }
+                )
+            }
+        } else {
+            Map(coordinateRegion: $region, annotationItems: annotationItems) { annotation in
+                MapAnnotation(coordinate: annotation.coordinate) {
+                    if annotation.isDraft {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.blue)
+                    } else if let spot = annotation.spot {
                         Button(action: {
-                            selectSpot(annotation.spot)
+                            selectSpot(spot)
                         }) {
-                            Image(systemName: focusedSpotId == annotation.spot.spotId
+                            Image(systemName: focusedSpotId == spot.spotId
                                   ? "mappin.circle.fill" : "mappin.circle")
                                 .font(.title2)
                                 .foregroundColor(.accentColor)
@@ -78,18 +117,8 @@ struct HomeView: View {
                     }
                 }
             }
-        } else {
-            Map(coordinateRegion: $region, annotationItems: annotationItems) { annotation in
-                MapAnnotation(coordinate: annotation.coordinate) {
-                    Button(action: {
-                        selectSpot(annotation.spot)
-                    }) {
-                        Image(systemName: focusedSpotId == annotation.spot.spotId
-                              ? "mappin.circle.fill" : "mappin.circle")
-                            .font(.title2)
-                            .foregroundColor(.accentColor)
-                    }
-                }
+            .onTapGesture {
+                handleMapTap(region.center)
             }
         }
     }
@@ -105,8 +134,25 @@ struct HomeView: View {
         .padding(.top, 12)
     }
 
-    private var bottomOverlay: some View {
+    private func bottomOverlay(height: CGFloat) -> some View {
         VStack(spacing: 12) {
+            if let draftPinLocation = draftPinLocation {
+                HStack(spacing: 12) {
+                    Image(systemName: "mappin.and.ellipse")
+                        .foregroundColor(.blue)
+                    Text("選択した位置から投稿できます")
+                        .font(.caption)
+                    Spacer()
+                    Button("投稿へ") {
+                        openPostForDraftPin(draftPinLocation)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    Button("クリア") {
+                        clearDraftPin()
+                    }
+                    .buttonStyle(.bordered)
+                }
+            }
             if isLoading {
                 ProgressView("読み込み中...")
                     .padding(.vertical, 12)
@@ -151,6 +197,7 @@ struct HomeView: View {
             }
         }
         .frame(maxWidth: .infinity)
+        .frame(height: height)
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .padding(.horizontal, 12)
@@ -213,20 +260,33 @@ struct HomeView: View {
     private struct AnnotationItem: Identifiable {
         let id: String
         let coordinate: CLLocationCoordinate2D
-        let spot: SdzSpot
+        let spot: SdzSpot?
+        let isDraft: Bool
     }
 
     private var annotationItems: [AnnotationItem] {
-        filteredSpots.compactMap { spot in
+        var items: [AnnotationItem] = filteredSpots.compactMap { spot in
             if let location = spot.location {
                 return AnnotationItem(
                     id: spot.spotId,
                     coordinate: CLLocationCoordinate2D(latitude: location.lat, longitude: location.lng),
-                    spot: spot
+                    spot: spot,
+                    isDraft: false
                 )
             }
             return nil
         }
+        if let draftPinLocation = draftPinLocation {
+            items.append(
+                AnnotationItem(
+                    id: "draft-pin",
+                    coordinate: CLLocationCoordinate2D(latitude: draftPinLocation.lat, longitude: draftPinLocation.lng),
+                    spot: nil,
+                    isDraft: true
+                )
+            )
+        }
+        return items
     }
 
     private var tagOptions: [String] {
@@ -261,6 +321,7 @@ struct HomeView: View {
 
     private func selectSpot(_ spot: SdzSpot) {
         focusedSpotId = spot.spotId
+        draftPinLocation = nil
         focusOnSpot(spot)
         selectedSpot = spot
     }
@@ -286,6 +347,35 @@ struct HomeView: View {
                 cameraPosition = .region(region)
             }
         }
+    }
+
+    private func handleMapTap(_ coordinate: CLLocationCoordinate2D) {
+        if let spot = nearestSpot(to: coordinate, within: 60) {
+            selectSpot(spot)
+            return
+        }
+        draftPinLocation = SdzSpotLocation(lat: coordinate.latitude, lng: coordinate.longitude)
+    }
+
+    private func nearestSpot(to coordinate: CLLocationCoordinate2D, within meters: CLLocationDistance) -> SdzSpot? {
+        let tapLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        return filteredSpots.first { spot in
+            guard let location = spot.location else {
+                return false
+            }
+            let spotLocation = CLLocation(latitude: location.lat, longitude: location.lng)
+            return tapLocation.distance(from: spotLocation) <= meters
+        }
+    }
+
+    private func openPostForDraftPin(_ location: SdzSpotLocation) {
+        appState.draftPostLocation = location
+        appState.selectedTab = .post
+        draftPinLocation = nil
+    }
+
+    private func clearDraftPin() {
+        draftPinLocation = nil
     }
 
     /// Loads the list of spots from the API.
