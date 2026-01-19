@@ -11,10 +11,14 @@ use crate::{
         generate_upload_url_use_case::{SdzGenerateUploadUrlInput, SdzGenerateUploadUrlUseCase},
         get_spot_use_case::SdzGetSpotUseCase,
         list_spots_use_case::SdzListSpotsUseCase,
+        update_spot_use_case::{SdzUpdateSpotUseCase, UpdateSpotInput},
     },
     presentation::{
         error::SdzApiError,
-        middleware::{auth::SdzAuthUser, client::SdzClientApp},
+        middleware::{
+            auth::{SdzAuthUser, SdzOptionalAuthUser},
+            client::SdzClientApp,
+        },
         router::SdzAppState,
     },
 };
@@ -85,14 +89,52 @@ pub async fn handle_create_upload_url(
 pub async fn handle_get_spot(
     State(state): State<SdzAppState>,
     Path(spot_id): Path<String>,
+    auth_user: SdzOptionalAuthUser,
 ) -> impl IntoResponse {
     let use_case = SdzGetSpotUseCase::new();
-    let spot = use_case.execute(state.spot_repo.clone(), spot_id).await?;
+    let spot = use_case
+        .execute(state.spot_repo.clone(), spot_id, auth_user.sdz_user_id)
+        .await?;
     Ok::<_, SdzApiError>((StatusCode::OK, Json(spot)))
 }
 
-pub async fn handle_list_spots(State(state): State<SdzAppState>) -> impl IntoResponse {
+pub async fn handle_list_spots(
+    State(state): State<SdzAppState>,
+    auth_user: SdzOptionalAuthUser,
+) -> impl IntoResponse {
     let use_case = SdzListSpotsUseCase::new();
-    let spots = use_case.execute(state.spot_repo.clone(), 50).await?;
+    let spots = use_case
+        .execute(state.spot_repo.clone(), 50, auth_user.sdz_user_id)
+        .await?;
     Ok::<_, SdzApiError>((StatusCode::OK, Json(spots)))
+}
+
+pub async fn handle_update_spot(
+    State(state): State<SdzAppState>,
+    Path(spot_id): Path<String>,
+    auth_user: SdzAuthUser,
+    client_app: SdzClientApp,
+    Json(payload): Json<UpdateSpotInput>,
+) -> impl IntoResponse {
+    if !client_app.is_mobile() {
+        return Err(SdzApiError::Forbidden("mobile client required".to_string()));
+    }
+    tracing::info!(
+        event_code = "SDZ-API-2003",
+        component = "presentation",
+        user_id = %auth_user.sdz_user_id,
+        spot_id = %spot_id,
+        "update spot requested"
+    );
+    let use_case = SdzUpdateSpotUseCase::new();
+    let spot = use_case
+        .execute(state.spot_repo.clone(), auth_user, spot_id, payload)
+        .await?;
+    tracing::info!(
+        event_code = "SDZ-API-2004",
+        component = "presentation",
+        spot_id = %spot.sdz_spot_id,
+        "spot updated"
+    );
+    Ok::<_, SdzApiError>((StatusCode::OK, Json(spot)))
 }

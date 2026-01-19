@@ -42,7 +42,10 @@ pub fn sdz_build_router() -> Router {
             axum::routing::post(spot_handler::handle_create_upload_url),
         )
         .route("/sdz/spots", get(spot_handler::handle_list_spots))
-        .route("/sdz/spots/{spot_id}", get(spot_handler::handle_get_spot))
+        .route(
+            "/sdz/spots/{spot_id}",
+            get(spot_handler::handle_get_spot).patch(spot_handler::handle_update_spot),
+        )
         .with_state(state)
         .layer(PropagateRequestIdLayer::x_request_id())
         .layer(SetRequestIdLayer::x_request_id(MakeRequestUuid))
