@@ -6,4 +6,5 @@ pub mod health_check_use_case;
 pub mod list_spots_use_case;
 pub mod spot_repository;
 pub mod storage_repository;
+pub mod update_spot_use_case;
 pub mod user_repository;
