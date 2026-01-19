@@ -23,12 +23,12 @@ struct SdzApp: App {
                 }
             }
             .environmentObject(appState)
-        }
-        .task {
-            await appState.restoreSession()
-        }
-        .onOpenURL { url in
-            _ = SdzAuthService.shared.handleOpenUrl(url)
+            .task {
+                await appState.restoreSession()
+            }
+            .onOpenURL { url in
+                _ = SdzAuthService.shared.handleOpenUrl(url)
+            }
         }
     }
 }

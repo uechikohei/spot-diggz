@@ -108,7 +108,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				5513BE6F2F1CB06C001CFFDB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				55A1F2022F2000010055F1E1 /* GoogleSignIn-iOS */,
+				55A1F2022F2000010055F1E1 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 558C4B942F154F730055F1E1 /* Products */;
@@ -270,14 +270,7 @@
 				DEVELOPMENT_TEAM = SW4S6FR5L9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleURLTypes = (
-					{
-						CFBundleTypeRole = Editor;
-						CFBundleURLSchemes = (
-							"com.googleusercontent.apps.1053202159855-e5iargrqi6i5nks03bkc27c6uebu1v70",
-						);
-					},
-				);
+				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleTypeRole = Editor;\n    CFBundleURLSchemes =     (\n        \"com.googleusercontent.apps.1053202159855-e5iargrqi6i5nks03bkc27c6uebu1v70\"\n    );\n}";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Allow access to your location to tag skate spots.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow access to your photo library to upload spot images.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -312,14 +305,7 @@
 				DEVELOPMENT_TEAM = SW4S6FR5L9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleURLTypes = (
-					{
-						CFBundleTypeRole = Editor;
-						CFBundleURLSchemes = (
-							"com.googleusercontent.apps.1053202159855-e5iargrqi6i5nks03bkc27c6uebu1v70",
-						);
-					},
-				);
+				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleTypeRole = Editor;\n    CFBundleURLSchemes =     (\n        \"com.googleusercontent.apps.1053202159855-e5iargrqi6i5nks03bkc27c6uebu1v70\"\n    );\n}";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Allow access to your location to tag skate spots.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow access to your photo library to upload spot images.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -367,6 +353,25 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		5513BE6F2F1CB06C001CFFDB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.8.0;
+			};
+		};
+		55A1F2022F2000010055F1E1 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		55A1F1012F2000010055F1E1 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -380,29 +385,10 @@
 		};
 		55A1F1032F2000010055F1E1 /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 55A1F2022F2000010055F1E1 /* GoogleSignIn-iOS */;
+			package = 55A1F2022F2000010055F1E1 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignIn;
 		};
 /* End XCSwiftPackageProductDependency section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		5513BE6F2F1CB06C001CFFDB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 12.8.0;
-			};
-		};
-		55A1F2022F2000010055F1E1 /* GoogleSignIn-iOS */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 7.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 558C4B8B2F154F730055F1E1 /* Project object */;
 }

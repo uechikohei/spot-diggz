@@ -44,9 +44,7 @@ struct SpotCardView: View {
                 }
             }
             Spacer()
-            Text(spot.trustLevel == .verified ? "✓" : "？")
-                .font(.headline)
-                .foregroundColor(spot.trustLevel == .verified ? .green : .orange)
+            approvalStatusView
         }
         .padding(.vertical, 8)
     }
@@ -56,6 +54,28 @@ struct SpotCardView: View {
             .fill(Color.gray.opacity(0.3))
             .frame(width: 80, height: 80)
             .cornerRadius(8)
+    }
+
+    @ViewBuilder
+    private var approvalStatusView: some View {
+        switch spot.approvalStatus {
+        case .approved:
+            Text("✓")
+                .font(.headline)
+                .foregroundColor(.green)
+        case .pending:
+            Text("審査中")
+                .font(.caption)
+                .foregroundColor(.orange)
+        case .rejected:
+            Text("差戻し")
+                .font(.caption)
+                .foregroundColor(.red)
+        case .none:
+            Text("未申請")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
     }
 }
 

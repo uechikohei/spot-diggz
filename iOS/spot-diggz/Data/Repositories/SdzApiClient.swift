@@ -48,13 +48,13 @@ final class SdzApiClient {
     }
 
     /// Fetches all spots.
-    func fetchSpots() async throws -> [SdzSpot] {
-        try await request(path: "/sdz/spots")
+    func fetchSpots(includeAuth: Bool = false) async throws -> [SdzSpot] {
+        try await request(path: "/sdz/spots", includeAuthIfAvailable: includeAuth)
     }
 
     /// Fetches a specific spot by ID.
-    func fetchSpotDetail(id: String) async throws -> SdzSpot {
-        try await request(path: "/sdz/spots/\(id)")
+    func fetchSpotDetail(id: String, includeAuth: Bool = false) async throws -> SdzSpot {
+        try await request(path: "/sdz/spots/\(id)", includeAuthIfAvailable: includeAuth)
     }
 
     /// Creates a new spot.
@@ -66,6 +66,21 @@ final class SdzApiClient {
         return try await request(
             path: "/sdz/spots",
             method: "POST",
+            body: body,
+            requiresAuth: true,
+            requiresMobileClient: true
+        )
+    }
+
+    /// Updates an existing spot.
+    func updateSpot(id: String, input: SdzUpdateSpotInput) async throws -> SdzSpot {
+        guard idToken != nil else {
+            throw SdzApiError.authRequired
+        }
+        let body = try JSONEncoder().encode(input)
+        return try await request(
+            path: "/sdz/spots/\(id)",
+            method: "PATCH",
             body: body,
             requiresAuth: true,
             requiresMobileClient: true
@@ -125,6 +140,7 @@ final class SdzApiClient {
         method: String = "GET",
         body: Data? = nil,
         requiresAuth: Bool = false,
+        includeAuthIfAvailable: Bool = false,
         requiresMobileClient: Bool = false
     ) async throws -> T {
         let request = try buildRequest(
@@ -132,6 +148,7 @@ final class SdzApiClient {
             method: method,
             body: body,
             requiresAuth: requiresAuth,
+            includeAuthIfAvailable: includeAuthIfAvailable,
             requiresMobileClient: requiresMobileClient
         )
 
@@ -166,6 +183,7 @@ final class SdzApiClient {
         method: String,
         body: Data?,
         requiresAuth: Bool,
+        includeAuthIfAvailable: Bool,
         requiresMobileClient: Bool
     ) throws -> URLRequest {
         let url = buildUrl(path: path)
@@ -182,6 +200,8 @@ final class SdzApiClient {
             guard let token = idToken else {
                 throw SdzApiError.authRequired
             }
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else if includeAuthIfAvailable, let token = idToken {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 

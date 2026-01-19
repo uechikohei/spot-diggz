@@ -12,6 +12,7 @@ struct PostView: View {
     @State private var selectedLocation: SdzSpotLocation?
     @State private var images: [UIImage] = []
     @State private var showImagePicker: Bool = false
+    @State private var showLocationPickerSheet: Bool = false
     @State private var isSubmitting: Bool = false
     @State private var submitMessage: String?
 
@@ -28,17 +29,22 @@ struct PostView: View {
                 }
 
                 Section(header: Text("位置情報")) {
-                    if let location = selectedLocation {
-                        Text("選択された位置: \(location.lat), \(location.lng)")
-                    } else {
-                        Text("まだ位置が選択されていません")
+                    SdzLocationPickerView(selectedLocation: $selectedLocation, height: 360)
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
+                    if selectedLocation == nil {
+                        Text("地図をタップして位置を選択")
+                            .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    Button("現在地を設定") {
-                        locationManager.requestCurrentLocation()
-                    }
-                    NavigationLink("地図で選択") {
-                        SdzLocationPickerView(selectedLocation: $selectedLocation)
+                    HStack {
+                        Button("現在地を設定") {
+                            locationManager.requestCurrentLocation()
+                        }
+                        Spacer()
+                        Button("地図を拡大して選択") {
+                            showLocationPickerSheet = true
+                        }
                     }
                     if locationManager.authorizationStatus == .denied {
                         Text("位置情報の許可が必要です。")
@@ -93,6 +99,9 @@ struct PostView: View {
             .navigationTitle("新しいスポットを投稿")
             .sheet(isPresented: $showImagePicker) {
                 ImagePicker(images: $images)
+            }
+            .sheet(isPresented: $showLocationPickerSheet) {
+                SdzLocationPickerSheetView(selectedLocation: $selectedLocation)
             }
             .onReceive(locationManager.$currentCoordinate) { coordinate in
                 guard let coordinate = coordinate else {
