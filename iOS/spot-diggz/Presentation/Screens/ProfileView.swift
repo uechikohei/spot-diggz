@@ -56,7 +56,7 @@ struct ProfileView: View {
                     } else {
                         ForEach(mySpots) { spot in
                             NavigationLink(destination: SpotDetailView(spot: spot)) {
-                                Text(spot.name)
+                                SpotCardView(spot: spot)
                             }
                         }
                     }
@@ -69,13 +69,13 @@ struct ProfileView: View {
                     } else {
                         ForEach(appState.favoriteSpots) { spot in
                             NavigationLink(destination: SpotDetailView(spot: spot)) {
-                                Text(spot.name)
+                                SpotCardView(spot: spot)
                             }
                         }
                     }
                 }
             }
-            .navigationTitle("プロフィール")
+            .navigationTitle("設定")
             .onAppear {
                 loadData()
             }
@@ -116,7 +116,7 @@ struct ProfileView: View {
     }
 
     private var resolvedDisplayName: String {
-        if let user = user {
+        if let user = user, !user.displayName.isEmpty, user.displayName != "unknown" {
             return user.displayName
         }
         if let displayName = appState.authDisplayName, !displayName.isEmpty {
@@ -129,8 +129,8 @@ struct ProfileView: View {
     }
 
     private var resolvedEmail: String? {
-        if let user = user {
-            return user.email
+        if let user = user, let email = user.email, !email.isEmpty {
+            return email
         }
         return appState.authEmail
     }
@@ -145,9 +145,17 @@ struct ProfileView: View {
 
         Task {
             do {
-                let currentUser = try await apiClient.fetchCurrentUser()
+                async let spotsTask = apiClient.fetchSpots(includeAuth: true)
+                let currentUser = try? await apiClient.fetchCurrentUser()
+                let spots = try await spotsTask
+                let currentUserId = currentUser?.userId ?? appState.authUserId
                 await MainActor.run {
                     self.user = currentUser
+                    if let currentUserId = currentUserId {
+                        self.mySpots = spots.filter { $0.userId == currentUserId }
+                    } else {
+                        self.mySpots = []
+                    }
                 }
             } catch {
                 let message = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
@@ -156,8 +164,6 @@ struct ProfileView: View {
                 }
             }
         }
-
-        // TODO: Fetch my spots and favorites from API once endpoints are available.
     }
 }
 

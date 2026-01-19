@@ -146,6 +146,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `gh project item-list 2 --owner uechikohei --format json | jq -r '.items[] | select(.content.number==ISSUE_NUMBER) | .id'` Project内のIssue番号から項目IDを取得する
 - `gh project item-edit --project-id PVT_kwHOAx5dHc4BLgT- --id ITEM_ID --field-id PVTSSF_lAHOAx5dHc4BLgT-zg7DwBA --single-select-option-id OPTION_ID` ProjectのPriorityを更新する
 - `SDZ_ID_TOKEN=... SDZ_API_URL=... ./web/scripts/firestore_crud_smoke.sh` Firestore実運用のCRUDをAPI経由でスモークテストする（`X-SDZ-Client: ios`付き）
+- `SDZ_ID_TOKEN=... SDZ_API_URL=... curl -i -X PATCH "${SDZ_API_URL}/sdz/spots/SPOT_ID" -H "Authorization: Bearer ${SDZ_ID_TOKEN}" -H "Content-Type: application/json" -H "X-SDZ-Client: ios" -d '{"name":"probe"}' | head -n 5` spot更新APIがPATCHを受け付けるか確認する
 - `payload=$(jq -n --arg email "${SDZ_TEST_USER_EMAIL}" --arg password "${SDZ_TEST_USER_PASSWORD}" '{email:$email,password:$password,returnSecureToken:true}'); SDZ_ID_TOKEN=$(curl -sS "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${SDZ_FIREBASE_WEB_API_KEY}" -H "Content-Type: application/json" -d "${payload}" | jq -r '.idToken')` Firebase Auth REST APIでIDトークンを取得する
 - `date +%Y-%m-%d` 起票日のYYYY-MM-DDを取得する
 - `ls` リポジトリ直下のファイル一覧を確認する
@@ -172,19 +173,59 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `rg -n "ContentView.swift" iOS/spot-diggz.xcodeproj/project.pbxproj` XcodeプロジェクトにContentView.swiftが参照されているか確認する
 - `rg -n "CFBundleURLTypes|URLTypes|URLSchemes" iOS/spot-diggz.xcodeproj/project.pbxproj` URLスキーム設定があるかを確認する
 - `rg -n "Firebase" iOS/spot-diggz` iOS実装内のFirebase関連箇所を検索する
+- `rg -n "@Published" iOS/spot-diggz` iOS実装内のObservableObject/@Published利用箇所を検索する
+- `rg -n "SdzSpotLocation" iOS` iOS内の位置情報モデル参照箇所を検索する
+- `rg -n "未承認|編集|Edit" iOS/spot-diggz` iOSの編集画面/文言の実装箇所を検索する
+- `rg -n "MyList|マイリスト" iOS/spot-diggz` iOSのマイリスト関連実装を検索する
+- `rg -n "trustLevel|trustSources|approvalStatus" iOS web/api docs` 承認ステータス関連のフィールド参照箇所を横断検索する
 - `rg -n "CFBundleURLTypes" ..` リポジトリ配下でURLスキーム設定の痕跡を検索する
 - `rg -n "INFOPLIST_KEY_NSLocationWhenInUseUsageDescription" iOS/spot-diggz.xcodeproj/project.pbxproj` 位置情報の利用許可文言設定を確認する
 - `rg -n "Cloud Run|cloud run|run.app|ingress|allUsers|iam|invoker" -S web docs .github` Cloud Run公開設定の痕跡をドキュメントと設定で確認する
+- `git status -sb` 作業ブランチと差分の概要を確認する
 - `rg -n "cloud_run|run.invoker|allUsers|invoker|ingress" -S web/resources` TerraformのCloud Run公開/IAM設定を確認する
 - `rg -n "SdzApiClient|SdzEnvironment|SdzAppState|fetchSpots|fetchSpot" iOS/spot-diggz` iOSのAPI連携関連コードをまとめて検索する
+- `rg -n "SdzErrorResponse|API設計" iOS/SDZ_IOS_DESIGN.md` iOS設計書内のAPI/エラーモデル記載を確認する
+- `sed -n '30,120p' iOS/SDZ_IOS_DESIGN.md` iOS設計書の画面/ナビゲーション章を確認する
 - `rg -n "xcodeproj|xcworkspace|xcuserdata" .gitignore` .gitignoreのXcode関連除外設定を確認する
 - `rg --files iOS/Data iOS/Domain iOS/Presentation` iOS配下の実装ファイル一覧を確認する
 - `rg -n "spots" web/api/src/presentation/router.rs` APIルーティングのspots関連エンドポイントを確認する
 - `rg -n "CreateSpot" web/api/src` CreateSpot入力/UseCaseの実装箇所を検索する
+- `rg -n "users/me|current user|fetch_current" web/api/src` APIのユーザー取得処理を検索する
+- `rg -n "SpotRepository|spot_repo" web/api/src/application` SpotRepositoryの利用箇所を検索する
+- `rg -n "struct SdzSpot|impl SdzSpot" web/api/src/domain` SdzSpotの定義/実装箇所を検索する
+- `rg -n "Route" iOS/spot-diggz` Route関連実装を検索する
+- `rg -n "ルート" iOS/spot-diggz` ルート文言の実装箇所を検索する
+- `rg -n "SdzLocationPickerView" iOS/spot-diggz` 位置選択コンポーネントの参照箇所を検索する
+- `rg -n "SpotCardView.swift" iOS/spot-diggz.xcodeproj/project.pbxproj` XcodeプロジェクトでSpotCardView参照があるか確認する
+- `rg -n "HomeView.swift" iOS/spot-diggz.xcodeproj/project.pbxproj` XcodeプロジェクトでHomeView参照があるか確認する
+- `rg -n "使うコマンド一覧" README.md` README内のコマンド一覧の位置を確認する
 - `cat README.md` README全体の記載内容を確認する
 - `cat -n FILE` 行番号付きでファイル内容を確認する
 - `sed -n '1,200p' FILE` ファイルの先頭200行を確認する
+- `sed -n '1,220p' FILE` ファイルの先頭220行を確認する
+- `sed -n '1,240p' FILE` ファイルの先頭240行を確認する
+- `sed -n '1,260p' FILE` ファイルの先頭260行を確認する
+- `ls iOS` iOSディレクトリ直下の内容を確認する
+- `ls iOS/spot-diggz` iOSアプリ直下のファイル一覧を確認する
+- `ls iOS/spot-diggz/spot-diggz` 二重のspot-diggzディレクトリがあるか確認する
+- `git add PATH...` コミット対象のファイルをステージする
+- `git commit -m "MESSAGE"` ステージ済みの変更をメッセージ付きでコミットする
 - `git status -sb` 変更状況と現在ブランチを短く確認する
+- `cargo fmt` Rust APIのフォーマットを自動整形する
+- `cargo fmt -- --check` Rust APIのフォーマットチェックを行う
+- `cargo clippy -- -D warnings` Rust APIのLintを警告で失敗させて実行する
+- `cargo test --verbose` Rust APIのユニットテストを詳細ログで実行する
+- `cargo build --release --verbose` Rust APIのリリースビルドを詳細ログで実行する
+- `npm ci` React UIの依存関係をクリーンインストールする
+- `npm run lint` React UIのLintを実行する
+- `npm run type-check` React UIの型チェックを実行する
+- `npm test -- --coverage --watch=false` React UIのユニットテストをカバレッジ付きで実行する
+- `npm run build` React UIの本番ビルドを実行する
+- `terraform fmt -check -recursive` Terraformのフォーマットチェックを再帰的に実行する
+- `terraform init -backend=false` Terraformの初期化をローカル向けに実行する
+- `terraform validate` Terraformの構成バリデーションを実行する
+- `trivy fs . --format sarif --output trivy-results.sarif` Trivyでリポジトリ全体の脆弱性/シークレットスキャンを行いSARIF出力する
+- `docker build -f .devcontainer/Dockerfile .` CIのDockerビルド相当をローカルで実行する
 - `git fetch origin` リモートの最新情報を取得する
 - `git merge origin/develop` developの変更を取り込み、競合を解消する
 - `git switch develop` developブランチへ切り替える
@@ -200,11 +241,15 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `git add -A` 変更の追加・削除をまとめてステージする
 - `git rm -r PATH` 指定ディレクトリ配下のファイルを削除してステージする
 - `git diff FILE` 指定ファイルの差分を確認する
+- `git diff --name-only origin/develop -- PATH` developとの差分ファイル一覧をパス指定で確認する
+- `git show origin/develop:PATH` origin/develop上の特定ファイル内容を確認する
 - `git commit -m "MESSAGE"` 変更内容をコミットする
 - `git commit --amend` 直前のコミット内容を修正する
 - `git stash push -m "MESSAGE"` 作業中の変更をスタッシュへ退避する
 - `git stash push -u -m "MESSAGE"` 未追跡ファイルも含めてスタッシュへ退避する
+- `git stash list` 退避済みのスタッシュ一覧を確認する
 - `git stash pop` 退避した変更を作業ツリーへ戻す
+- `git stash apply STASH_REF` 指定したスタッシュを作業ツリーへ適用する
 - `git branch -m NEW_NAME` 現在のブランチ名を変更する
 - `git push --force-with-lease` リモートの最新を確認した上で履歴を書き換えてpushする
 - `git push` 現在のブランチを追跡先へpushする
@@ -230,6 +275,8 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `gcloud builds list --project sdz-dev --limit 10 --format "table(id,createTime,status,source.repoSource.repoName,source.repoSource.branchName)"` Cloud Buildの直近ビルド履歴を確認する
 - `gcloud builds describe BUILD_ID --project sdz-dev --format "yaml(steps,substitutions)"` Cloud Buildの実行ステップと置換変数を確認する
 - `rg --files .github/workflows` GitHub Actionsのワークフローファイルを列挙する
+- `gh run list --workflow ci.yml --branch develop --limit 1` developブランチの最新CI実行を確認する
+- `gh run watch RUN_ID` 指定したActions実行をウォッチする
 - `cat .github/workflows/ci.yml` CI設定の詳細を確認する
 - `cargo fmt` Rustのフォーマットを整形する
 - `cargo fmt -- --check` Rustのフォーマットをチェックする

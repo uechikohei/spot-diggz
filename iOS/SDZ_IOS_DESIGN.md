@@ -3,7 +3,7 @@
 ## 0. 概要
 - 目的: 既存Rust APIに接続するiOSアプリの設計を確定し、Xcode実装を継続可能にする。
 - 対象: iOSネイティブアプリ（Swift/SwiftUI + Firebase Auth + MapKit）。
-- スコープ: スポット一覧/詳細/投稿（画像アップロード含む）/認証/プロフィール/お気に入り。
+- スコープ: スポット一覧/詳細/投稿（画像アップロード含む）/編集/認証/プロフィール/お気に入り/おすすめ診断/ルート計画。
 
 ## 1. 参照
 - `docs/spot_diggz_overview.md` (iOS想定/マルチチャネル方針)
@@ -43,15 +43,33 @@
 ### 3.1 コア機能
 - スポット一覧（GET /sdz/spots）
 - スポット詳細（GET /sdz/spots/{spot_id}）
+- スポット詳細拡張（営業時間/営業日/公式サイト/アクセス）※parkのみ表示
 - スポット投稿（POST /sdz/spots）※認証必須 + `X-SDZ-Client: ios`
+- スポット編集（PATCH /sdz/spots/{spot_id}）※認証必須 + `X-SDZ-Client: ios`
 - 画像アップロード（POST /sdz/spots/upload-url → PUT Signed URL）
 - プロフィール表示（GET /sdz/users/me）
 - お気に入り管理（端末ローカル保持）
+- マイリスト詳細（お気に入りの一覧）
+- 承認リクエスト（スポットの公開申請）
 
 ### 3.2 追加価値（iOS特化）
 - MapKit表示、現在地連動、スポットピン表示
 - 位置検索/逆ジオコーディングで投稿支援
 - Apple Maps/Google Mapsへの外部ナビ連携
+- ルート計画（詳細から追加/ルートタブで作成/移動手段の選択）
+
+### 3.3 公開/承認フロー
+- `approvalStatus=approved` は承認済みスポットとして公開対象。
+- `approvalStatus=pending` は申請中（投稿者のみ自分の投稿に表示）。
+- `approvalStatus=rejected` と `approvalStatus=null` は未承認（再申請可）。
+- 投稿詳細から承認リクエストを送信し、承認後に公開へ切り替える。
+- Firestoreは `approvalStatus` を文字列で保持し、未申請は `null`。旧`trustLevel`は読み取り互換で`approved`にマップする。
+
+### 3.4 スポット種別と表示
+- `spotType=park` は施設詳細（営業時間/営業日/公式サイト/アクセス）を表示。
+- `spotType=street` はストリート向け詳細（路面/障害物/難易度など）を任意入力で表示。
+- 共通情報（名称/説明/位置/タグ/写真）は全種別で必須。
+- 施設詳細/ストリート詳細は未入力なら非表示にする。
 
 ## 4. 画面設計とナビゲーション
 ### 4.1 画面一覧
@@ -61,20 +79,46 @@
 - スポット詳細
 - マップ
 - 投稿（フォーム + 画像 + 位置）
+- 投稿編集（フォーム + 位置）
 - プロフィール（自分の投稿/お気に入り）
+- マイリスト詳細
+- ルート作成（スポット選択/移動手段選択）
+- ルート詳細（タイムライン/経路）
+- 設定（アプリ情報/問い合わせ）
 
 ### 4.2 ナビゲーション構成（案）
-- Tab Bar
+- Tiqets寄せ（優先）
+  - Spot: マップ中心の探索（検索バー/フィルタ/カード）
+  - Favorite: お気に入り
+  - Route: ルート一覧/作成/詳細
+  - Setting: プロフィール/設定
+  - 投稿はMap上のフローティングボタンから起動
+- 現行Tab Bar（移行前の互換）
   - Home: 一覧/検索
   - Map: 地図とピン
+  - MyList: お気に入り
   - Post: 投稿フロー
-  - Profile: ユーザー/お気に入り
+  - Profile: ユーザー/設定
 
 ### 4.3 主要画面の状態
 - 一覧: loading / empty / error / results
 - 詳細: loading / not found / error / results
 - 投稿: draft / uploading / submitted / error
 - 認証: unauthenticated / authenticated / error
+
+### 4.4 Tiqets参考のUIパターン（方針）
+- マップ上に検索バー＋フィルタチップをオーバーレイ。
+- 画面下部はカードカルーセル（スポットカード/ルートカード）。
+- カードには「ルートに追加」「お気に入り」など即時アクション。
+- 設定/プロフィールはリスト形式（セクション分割）で整理。
+- 空状態は主CTAボタン（例: 「ルートを検索」）を中央配置。
+
+### 4.5 ルート計画フロー（MVP）
+- 追加導線: スポット詳細/カードから「ルートに追加」。
+- ルート作成: ルートタブで登録済みスポットを選択。
+- 移動手段: 徒歩/電車/車の切替（`MKDirectionsTransportType`）。
+- 順序調整: ドラッグで並び替え、所要時間は概算表示。
+- 出発/到着: 現在地 or 任意地点を指定。
 
 ## 5. アプリケーションアーキテクチャ
 ### 5.1 レイヤ構成
@@ -122,9 +166,15 @@ struct SdzSpotLocation: Codable {
     let lng: Double
 }
 
-enum SdzSpotTrustLevel: String, Codable {
-    case verified
-    case unverified
+enum SdzSpotApprovalStatus: String, Codable {
+    case pending
+    case approved
+    case rejected
+}
+
+enum SdzSpotType: String, Codable {
+    case park
+    case street
 }
 
 struct SdzSpot: Codable, Identifiable {
@@ -132,10 +182,19 @@ struct SdzSpot: Codable, Identifiable {
     let name: String
     let description: String?
     let location: SdzSpotLocation?
+    let spotType: SdzSpotType
     let tags: [String]
     let images: [String]
-    let trustLevel: SdzSpotTrustLevel
-    let trustSources: [String]?
+    let address: String?
+    let accessInfo: String?
+    let phoneNumber: String?
+    let businessHours: String?
+    let businessDays: [String]?
+    let officialSiteUrl: String?
+    let surface: String?
+    let obstacles: [String]?
+    let difficulty: String?
+    let approvalStatus: SdzSpotApprovalStatus?
     let userId: String
     let createdAt: Date
     let updatedAt: Date
@@ -153,8 +212,37 @@ struct SdzCreateSpotInput: Codable {
     let name: String
     let description: String?
     let location: SdzSpotLocation?
+    let spotType: SdzSpotType
     let tags: [String]?
     let images: [String]?
+    let address: String?
+    let accessInfo: String?
+    let phoneNumber: String?
+    let businessHours: String?
+    let businessDays: [String]?
+    let officialSiteUrl: String?
+    let surface: String?
+    let obstacles: [String]?
+    let difficulty: String?
+}
+
+struct SdzUpdateSpotInput: Codable {
+    let name: String
+    let description: String?
+    let location: SdzSpotLocation?
+    let spotType: SdzSpotType?
+    let tags: [String]?
+    let images: [String]?
+    let approvalStatus: SdzSpotApprovalStatus?
+    let address: String?
+    let accessInfo: String?
+    let phoneNumber: String?
+    let businessHours: String?
+    let businessDays: [String]?
+    let officialSiteUrl: String?
+    let surface: String?
+    let obstacles: [String]?
+    let difficulty: String?
 }
 
 struct SdzUploadUrlRequest: Codable {
@@ -179,6 +267,17 @@ struct SdzErrorResponse: Codable, Error {
 - APIの日時はRFC3339（JST +09:00）で返るため、`ISO8601DateFormatter` を使用。
 - 例: `JSONDecoder.dateDecodingStrategy = .iso8601`。
 
+### 6.3 ルート計画のローカル状態（案）
+```swift
+struct SdzRoutePlan: Codable, Identifiable {
+    let id: String
+    let spotIds: [String]
+    let start: SdzSpotLocation?
+    let goal: SdzSpotLocation?
+    let transportType: String
+}
+```
+
 ## 7. API設計（iOS向け）
 ### 7.1 共通ヘッダ
 - `Authorization: Bearer <Firebase ID Token>`（認証必須エンドポイントのみ）
@@ -191,6 +290,7 @@ struct SdzErrorResponse: Codable, Error {
 | GET | `/sdz/spots` | No | No | 一覧取得 |
 | GET | `/sdz/spots/{spot_id}` | No | No | 詳細取得 |
 | POST | `/sdz/spots` | Yes | Yes | スポット投稿 |
+| PATCH | `/sdz/spots/{spot_id}` | Yes | Yes | スポット編集 |
 | POST | `/sdz/spots/upload-url` | Yes | Yes | 画像アップロードURL取得 |
 | GET | `/sdz/users/me` | Yes | No | プロフィール取得 |
 
@@ -239,11 +339,18 @@ struct SdzErrorResponse: Codable, Error {
 - スポットはピン表示、タップで詳細へ遷移。
 
 ### 10.3 投稿時の位置入力
-- 現在地 or 検索による位置指定。
+- 現在地 or 地図タップ/検索による位置指定。
 - `CLGeocoder` で住所取得し、UIに補助表示。
+
+### 10.4 ルート計画（MapKit）
+- `MKDirections` で経路を取得し、`Map`にポリライン表示。
+- 徒歩/電車/車の移動手段を切り替える。
+- MVPは「現在地→スポット→ゴール」の単純経路。
+- 将来的に最適化（所要時間最短/人気順）を検討。
 
 ## 11. ローカル保持/キャッシュ
 - お気に入り: `UserDefaults` にspotId配列を保存。
+- ルート計画: `UserDefaults` にスポットID配列を保存。
 - 一覧キャッシュ: メモリキャッシュ（初期は不要なら未実装）。
 - 画像キャッシュ: `URLCache` / `AsyncImage` を利用。
 
@@ -278,4 +385,4 @@ struct SdzErrorResponse: Codable, Error {
 - お気に入りのサーバー同期有無
 - 投稿時のオフラインキュー
 - 画像の圧縮/リサイズ方針
-- Verifiedスポット昇格フロー（trustLevel/ trustSourcesのUI）
+- 承認申請フロー（approvalStatusのUI）

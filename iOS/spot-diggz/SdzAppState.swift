@@ -24,11 +24,18 @@ final class SdzAppState: ObservableObject {
     /// Favorites stored locally (no backend yet).
     @Published private(set) var favoriteSpots: [SdzSpot] = []
 
+    /// Draft route stops for quick planning.
+    @Published private(set) var routeDraftSpots: [SdzSpot] = []
+
+    /// Saved routes stored locally.
+    @Published private(set) var savedRoutes: [SdzRoute] = []
+
     /// Profile image data stored locally.
     @Published var profileImageData: Data?
 
     init() {
         loadFavorites()
+        loadRoutes()
         loadProfileImage()
     }
 
@@ -76,6 +83,38 @@ final class SdzAppState: ObservableObject {
         favoriteSpots.contains(where: { $0.spotId == spot.spotId })
     }
 
+    func addSpotToRouteDraft(_ spot: SdzSpot) {
+        guard !routeDraftSpots.contains(where: { $0.spotId == spot.spotId }) else {
+            return
+        }
+        routeDraftSpots.append(spot)
+    }
+
+    func removeSpotFromRouteDraft(_ spot: SdzSpot) {
+        routeDraftSpots.removeAll { $0.spotId == spot.spotId }
+    }
+
+    func clearRouteDraft() {
+        routeDraftSpots.removeAll()
+    }
+
+    func saveRoute(name: String, mode: SdzRouteMode, spots: [SdzSpot]) {
+        let route = SdzRoute(
+            routeId: UUID().uuidString,
+            name: name,
+            mode: mode,
+            spots: spots,
+            createdAt: Date()
+        )
+        savedRoutes.insert(route, at: 0)
+        saveRoutes()
+    }
+
+    func deleteRoute(_ route: SdzRoute) {
+        savedRoutes.removeAll { $0.routeId == route.routeId }
+        saveRoutes()
+    }
+
     private func applySession(_ session: SdzAuthSession?) {
         if let session = session {
             idToken = session.idToken
@@ -109,6 +148,24 @@ final class SdzAppState: ObservableObject {
     }
 
     private static let favoritesKey = "sdz.favoriteSpots"
+
+    private func loadRoutes() {
+        guard let data = UserDefaults.standard.data(forKey: Self.routesKey) else {
+            return
+        }
+        if let decoded = try? JSONDecoder().decode([SdzRoute].self, from: data) {
+            savedRoutes = decoded
+        }
+    }
+
+    private func saveRoutes() {
+        guard let data = try? JSONEncoder().encode(savedRoutes) else {
+            return
+        }
+        UserDefaults.standard.set(data, forKey: Self.routesKey)
+    }
+
+    private static let routesKey = "sdz.savedRoutes"
 
     func setProfileImageData(_ data: Data?) {
         profileImageData = data

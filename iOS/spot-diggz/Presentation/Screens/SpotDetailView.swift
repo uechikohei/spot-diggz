@@ -4,10 +4,18 @@ import MapKit
 /// A screen displaying detailed information about a specific spot.
 struct SpotDetailView: View {
     @EnvironmentObject var appState: SdzAppState
-    let spot: SdzSpot
+    @State private var spot: SdzSpot
 
     @State private var region: MKCoordinateRegion = MKCoordinateRegion()
     @State private var cameraPosition: MapCameraPosition = .automatic
+    @State private var approvalMessage: String?
+    @State private var routeMessage: String?
+    @State private var isRequestingApproval: Bool = false
+    @State private var showRouteBuilder: Bool = false
+
+    init(spot: SdzSpot) {
+        _spot = State(initialValue: spot)
+    }
 
     var body: some View {
         ScrollView {
@@ -47,9 +55,9 @@ struct SpotDetailView: View {
                         .font(.title)
                         .bold()
                     HStack {
-                        Text("信頼度: \(spot.trustLevel == .verified ? "verified" : "unverified")")
+                        Text("公開ステータス: \(approvalStatusText)")
                             .font(.subheadline)
-                            .foregroundColor(spot.trustLevel == .verified ? .green : .orange)
+                            .foregroundColor(approvalStatusColor)
                         Spacer()
                     }
                     if !spot.tags.isEmpty {
@@ -86,27 +94,63 @@ struct SpotDetailView: View {
                         }
                     }
                     // Actions
-                    HStack {
-                        Button(action: {
-                            appState.toggleFavorite(spot)
-                        }) {
-                            Label(
-                                isFavorite ? "お気に入り解除" : "お気に入りに追加",
-                                systemImage: isFavorite ? "heart.fill" : "heart"
-                            )
-                            .frame(maxWidth: .infinity)
-                        }
-                        Button(action: {
-                            // TODO: Open external map
-                        }) {
-                            Label("ナビ", systemImage: "car")
+                    VStack(spacing: 8) {
+                        HStack {
+                            Button(action: {
+                                appState.toggleFavorite(spot)
+                            }) {
+                                Label(
+                                    isFavorite ? "お気に入り解除" : "お気に入りに追加",
+                                    systemImage: isFavorite ? "heart.fill" : "heart"
+                                )
                                 .frame(maxWidth: .infinity)
+                            }
+                            Button(action: {
+                                toggleRouteDraft()
+                            }) {
+                                Label(
+                                    isInRouteDraft ? "ルートから外す" : "ルートに追加",
+                                    systemImage: isInRouteDraft ? "bookmark.fill" : "bookmark"
+                                )
+                                .frame(maxWidth: .infinity)
+                            }
+                        }
+                        HStack {
+                            Button(action: {
+                                // TODO: Open external map
+                            }) {
+                                Label("ナビ", systemImage: "car")
+                                    .frame(maxWidth: .infinity)
+                            }
+                        }
+                        if isInRouteDraft {
+                            Button("ルート作成へ") {
+                                showRouteBuilder = true
+                            }
+                            .buttonStyle(.borderedProminent)
                         }
                     }
                     .buttonStyle(.bordered)
                     .padding(.top, 8)
+                    if let routeMessage = routeMessage {
+                        Text(routeMessage)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
 
                     if isOwnedByCurrentUser {
+                        if let approvalMessage = approvalMessage {
+                            Text(approvalMessage)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        if canRequestApproval {
+                            Button(isRequestingApproval ? "申請中..." : "承認を申請") {
+                                requestApproval()
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .disabled(isRequestingApproval)
+                        }
                         NavigationLink("投稿を編集") {
                             EditSpotView(spot: spot)
                         }
@@ -118,6 +162,9 @@ struct SpotDetailView: View {
         }
         .navigationTitle("スポット詳細")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showRouteBuilder) {
+            RouteBuilderView()
+        }
     }
 
     private var placeholderImage: some View {
@@ -134,11 +181,97 @@ struct SpotDetailView: View {
         appState.isFavorite(spot)
     }
 
+    private var isInRouteDraft: Bool {
+        appState.routeDraftSpots.contains(where: { $0.spotId == spot.spotId })
+    }
+
     private var isOwnedByCurrentUser: Bool {
         guard let currentUserId = appState.authUserId else {
             return false
         }
         return spot.userId == currentUserId
+    }
+
+    private var approvalStatusText: String {
+        switch spot.approvalStatus {
+        case .approved:
+            return "承認済"
+        case .pending:
+            return "審査中"
+        case .rejected:
+            return "差戻し"
+        case .none:
+            return "未申請"
+        }
+    }
+
+    private var approvalStatusColor: Color {
+        switch spot.approvalStatus {
+        case .approved:
+            return .green
+        case .pending:
+            return .orange
+        case .rejected:
+            return .red
+        case .none:
+            return .secondary
+        }
+    }
+
+    private var canRequestApproval: Bool {
+        guard isOwnedByCurrentUser else {
+            return false
+        }
+        switch spot.approvalStatus {
+        case .none, .rejected:
+            return true
+        default:
+            return false
+        }
+    }
+
+    private func requestApproval() {
+        guard appState.idToken != nil else {
+            approvalMessage = "ログインが必要です。"
+            return
+        }
+        let apiClient = SdzApiClient(environment: appState.environment, idToken: appState.idToken)
+        isRequestingApproval = true
+        approvalMessage = nil
+        Task {
+            do {
+                let input = SdzUpdateSpotInput(
+                    name: spot.name,
+                    description: nil,
+                    location: nil,
+                    tags: nil,
+                    images: nil,
+                    approvalStatus: .pending
+                )
+                let updated = try await apiClient.updateSpot(id: spot.spotId, input: input)
+                await MainActor.run {
+                    self.spot = updated
+                    self.isRequestingApproval = false
+                    self.approvalMessage = "承認申請を送信しました。"
+                }
+            } catch {
+                let message = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+                await MainActor.run {
+                    self.isRequestingApproval = false
+                    self.approvalMessage = message
+                }
+            }
+        }
+    }
+
+    private func toggleRouteDraft() {
+        if isInRouteDraft {
+            appState.removeSpotFromRouteDraft(spot)
+            routeMessage = "ルート下書きから外しました。"
+        } else {
+            appState.addSpotToRouteDraft(spot)
+            routeMessage = "ルート下書きに追加しました。"
+        }
     }
 }
 

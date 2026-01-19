@@ -1,7 +1,7 @@
 import Foundation
 
 /// Location information for a spot.
-struct SdzSpotLocation: Codable, Identifiable {
+struct SdzSpotLocation: Codable, Identifiable, Equatable {
     let lat: Double
     let lng: Double
 
@@ -9,10 +9,11 @@ struct SdzSpotLocation: Codable, Identifiable {
     var id: String { "\(lat),\(lng)" }
 }
 
-/// Trust level indicator for a spot.
-enum SdzSpotTrustLevel: String, Codable {
-    case verified
-    case unverified
+/// Approval status for a spot.
+enum SdzSpotApprovalStatus: String, Codable {
+    case pending
+    case approved
+    case rejected
 }
 
 /// Represents a skate spot posted by a user.
@@ -23,8 +24,7 @@ struct SdzSpot: Codable, Identifiable {
     let location: SdzSpotLocation?
     let tags: [String]
     let images: [String]
-    let trustLevel: SdzSpotTrustLevel
-    let trustSources: [String]?
+    let approvalStatus: SdzSpotApprovalStatus?
     let userId: String
     let createdAt: Date
     let updatedAt: Date
@@ -42,8 +42,7 @@ extension SdzSpot {
             location: SdzSpotLocation(lat: 34.67, lng: 135.5),
             tags: ["パーク", "ストリート"],
             images: [],
-            trustLevel: .unverified,
-            trustSources: nil,
+            approvalStatus: nil,
             userId: "user",
             createdAt: Date(),
             updatedAt: Date()

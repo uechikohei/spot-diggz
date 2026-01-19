@@ -6,23 +6,23 @@ struct RootTabView: View {
         TabView {
             HomeView()
                 .tabItem {
-                    Label("ホーム", systemImage: "list.bullet")
-                }
-            MapScreen()
-                .tabItem {
-                    Label("マップ", systemImage: "map")
+                    Label("スポット", systemImage: "map")
                 }
             MyListView()
                 .tabItem {
-                    Label("マイリスト", systemImage: "heart")
+                    Label("お気に入り", systemImage: "heart")
+                }
+            RouteListView()
+                .tabItem {
+                    Label("ルート", systemImage: "point.topleft.down.curvedto.point.bottomright.up")
                 }
             PostView()
                 .tabItem {
-                    Label("投稿", systemImage: "plus.rectangle.on.rectangle")
+                    Label("投稿", systemImage: "plus.circle")
                 }
             ProfileView()
                 .tabItem {
-                    Label("プロフィール", systemImage: "person.crop.circle")
+                    Label("設定", systemImage: "gearshape")
                 }
         }
     }

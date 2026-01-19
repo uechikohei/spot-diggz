@@ -105,10 +105,10 @@ struct MapScreen: View {
     }
 
     private func fetchSpots() {
-        let apiClient = SdzApiClient(environment: appState.environment)
+        let apiClient = SdzApiClient(environment: appState.environment, idToken: appState.idToken)
         Task {
             do {
-                let result = try await apiClient.fetchSpots()
+                let result = try await apiClient.fetchSpots(includeAuth: true)
                 await MainActor.run {
                     self.spots = result
                 }
