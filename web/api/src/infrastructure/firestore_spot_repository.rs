@@ -5,7 +5,7 @@ use serde_json::{json, Map};
 
 use crate::{
     application::use_cases::spot_repository::SdzSpotRepository,
-    domain::models::{SdzSpot, SdzSpotLocation, SdzSpotTrustLevel},
+    domain::models::{SdzSpot, SdzSpotApprovalStatus, SdzSpotLocation},
     presentation::error::SdzApiError,
 };
 
@@ -220,10 +220,10 @@ struct FirestoreSpotFields {
     user_id: Option<StringField>,
     tags: Option<ArrayField>,
     images: Option<ArrayField>,
+    #[serde(rename = "approvalStatus")]
+    approval_status: Option<StringField>,
     #[serde(rename = "trustLevel")]
-    trust_level: Option<StringField>,
-    #[serde(rename = "trustSources")]
-    trust_sources: Option<ArrayField>,
+    legacy_trust_level: Option<StringField>,
     location: Option<MapField>,
     #[serde(rename = "createdAt")]
     created_at: Option<TimestampField>,
@@ -300,13 +300,6 @@ impl FirestoreSpotDoc {
             .into_iter()
             .map(|v| v.string_value)
             .collect();
-        let trust_sources = fields
-            .trust_sources
-            .and_then(|f| f.array_value.values)
-            .unwrap_or_default()
-            .into_iter()
-            .map(|v| v.string_value)
-            .collect();
         let location = fields.location.and_then(|loc| {
             let mv = loc.map_value.fields?;
             let lat = mv.lat?.double_value;
@@ -328,8 +321,10 @@ impl FirestoreSpotDoc {
             location,
             tags,
             images,
-            sdz_trust_level: parse_trust_level(fields.trust_level.map(|s| s.string_value)),
-            sdz_trust_sources: trust_sources,
+            sdz_approval_status: parse_approval_status(
+                fields.approval_status.map(|s| s.string_value),
+                fields.legacy_trust_level.map(|s| s.string_value),
+            ),
             sdz_user_id: fields.user_id.map(|s| s.string_value).unwrap_or_default(),
             created_at,
             updated_at,
@@ -370,19 +365,10 @@ fn build_firestore_doc(spot: &SdzSpot) -> Result<serde_json::Value, SdzApiError>
             json!({ "arrayValue": { "values": images_values } }),
         );
     }
-    fields.insert(
-        "trustLevel".into(),
-        json!({ "stringValue": trust_level_as_str(&spot.sdz_trust_level) }),
-    );
-    if !spot.sdz_trust_sources.is_empty() {
-        let trust_values: Vec<serde_json::Value> = spot
-            .sdz_trust_sources
-            .iter()
-            .map(|s| json!({ "stringValue": s }))
-            .collect();
+    if let Some(status) = &spot.sdz_approval_status {
         fields.insert(
-            "trustSources".into(),
-            json!({ "arrayValue": { "values": trust_values } }),
+            "approvalStatus".into(),
+            json!({ "stringValue": approval_status_as_str(status) }),
         );
     }
     if let Some(loc) = &spot.location {
@@ -414,17 +400,29 @@ fn parse_timestamp(ts: Option<String>) -> Option<chrono::DateTime<chrono::FixedO
     ts.and_then(|s| chrono::DateTime::parse_from_rfc3339(&s).ok())
 }
 
-fn parse_trust_level(value: Option<String>) -> SdzSpotTrustLevel {
-    match value.as_deref() {
-        Some("verified") => SdzSpotTrustLevel::Verified,
-        _ => SdzSpotTrustLevel::Unverified,
+fn parse_approval_status(
+    approval_status: Option<String>,
+    legacy_trust_level: Option<String>,
+) -> Option<SdzSpotApprovalStatus> {
+    if let Some(value) = approval_status {
+        return match value.as_str() {
+            "pending" => Some(SdzSpotApprovalStatus::Pending),
+            "approved" => Some(SdzSpotApprovalStatus::Approved),
+            "rejected" => Some(SdzSpotApprovalStatus::Rejected),
+            _ => None,
+        };
+    }
+    match legacy_trust_level.as_deref() {
+        Some("verified") => Some(SdzSpotApprovalStatus::Approved),
+        _ => None,
     }
 }
 
-fn trust_level_as_str(level: &SdzSpotTrustLevel) -> &'static str {
-    match level {
-        SdzSpotTrustLevel::Verified => "verified",
-        SdzSpotTrustLevel::Unverified => "unverified",
+fn approval_status_as_str(status: &SdzSpotApprovalStatus) -> &'static str {
+    match status {
+        SdzSpotApprovalStatus::Pending => "pending",
+        SdzSpotApprovalStatus::Approved => "approved",
+        SdzSpotApprovalStatus::Rejected => "rejected",
     }
 }
 

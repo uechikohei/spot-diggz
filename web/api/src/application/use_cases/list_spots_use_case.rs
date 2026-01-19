@@ -16,9 +16,16 @@ impl SdzListSpotsUseCase {
         &self,
         repo: Arc<dyn SdzSpotRepository>,
         limit: usize,
+        viewer_user_id: Option<String>,
     ) -> Result<Vec<SdzSpot>, SdzApiError> {
         let capped = limit.min(100); // 念のため上限
-        repo.list_recent(capped).await
+        let mut spots = repo.list_recent(capped).await?;
+        if let Some(user_id) = viewer_user_id {
+            spots.retain(|spot| spot.is_approved() || spot.sdz_user_id == user_id);
+        } else {
+            spots.retain(|spot| spot.is_approved());
+        }
+        Ok(spots)
     }
 }
 
@@ -26,7 +33,7 @@ impl SdzListSpotsUseCase {
 mod tests {
     use super::*;
     use crate::{
-        domain::models::SdzSpotTrustLevel,
+        domain::models::SdzSpotApprovalStatus,
         infrastructure::in_memory_spot_repository::SdzInMemorySpotRepository,
     };
     use chrono::{FixedOffset, TimeZone};
@@ -35,7 +42,7 @@ mod tests {
     async fn list_spots_returns_empty() {
         let repo = Arc::new(SdzInMemorySpotRepository::default());
         let use_case = SdzListSpotsUseCase::new();
-        let list = use_case.execute(repo, 10).await.unwrap();
+        let list = use_case.execute(repo, 10, None).await.unwrap();
         assert!(list.is_empty());
     }
 
@@ -51,8 +58,7 @@ mod tests {
             location: None,
             tags: vec![],
             images: vec![],
-            sdz_trust_level: SdzSpotTrustLevel::Unverified,
-            sdz_trust_sources: vec![],
+            sdz_approval_status: Some(SdzSpotApprovalStatus::Approved),
             sdz_user_id: "user".into(),
             created_at: tz.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap(),
             updated_at: tz.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap(),
@@ -61,8 +67,50 @@ mod tests {
         .unwrap();
 
         let use_case = SdzListSpotsUseCase::new();
-        let list = use_case.execute(repo, 10).await.unwrap();
+        let list = use_case.execute(repo, 10, None).await.unwrap();
         assert_eq!(list.len(), 1);
         assert_eq!(list[0].sdz_spot_id, "spot-1");
+    }
+
+    #[tokio::test]
+    async fn list_spots_includes_owner_unapproved() {
+        let repo = Arc::new(SdzInMemorySpotRepository::default());
+        let tz = FixedOffset::east_opt(9 * 3600).unwrap();
+        repo.create(crate::domain::models::SdzSpot {
+            sdz_spot_id: "spot-owner".into(),
+            name: "Owner".into(),
+            description: None,
+            location: None,
+            tags: vec![],
+            images: vec![],
+            sdz_approval_status: None,
+            sdz_user_id: "user-1".into(),
+            created_at: tz.with_ymd_and_hms(2024, 1, 2, 0, 0, 0).unwrap(),
+            updated_at: tz.with_ymd_and_hms(2024, 1, 2, 0, 0, 0).unwrap(),
+        })
+        .await
+        .unwrap();
+        repo.create(crate::domain::models::SdzSpot {
+            sdz_spot_id: "spot-other".into(),
+            name: "Other".into(),
+            description: None,
+            location: None,
+            tags: vec![],
+            images: vec![],
+            sdz_approval_status: None,
+            sdz_user_id: "user-2".into(),
+            created_at: tz.with_ymd_and_hms(2024, 1, 3, 0, 0, 0).unwrap(),
+            updated_at: tz.with_ymd_and_hms(2024, 1, 3, 0, 0, 0).unwrap(),
+        })
+        .await
+        .unwrap();
+
+        let use_case = SdzListSpotsUseCase::new();
+        let list = use_case
+            .execute(repo, 10, Some("user-1".into()))
+            .await
+            .unwrap();
+        assert_eq!(list.len(), 1);
+        assert_eq!(list[0].sdz_spot_id, "spot-owner");
     }
 }
