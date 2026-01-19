@@ -131,6 +131,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `gh issue view ISSUE_NUMBER -R uechikohei/spot-diggz --json title,body,url` Issue本文を取得する
 - `gh issue create -R uechikohei/spot-diggz -t \"TITLE\" -b \"BODY\"` Issueを作成する
 - `gh issue edit ISSUE_NUMBER -R uechikohei/spot-diggz --title \"TITLE\" --body-file PATH` Issueのタイトル/本文を更新する
+- `gh issue edit ISSUE_NUMBER -R uechikohei/spot-diggz --body \"BODY\"` Issue本文を直接更新する
 - `gh issue edit ISSUE_NUMBER -R uechikohei/spot-diggz --add-label LABEL` Issueにラベルを追加する
 - `gh issue reopen ISSUE_NUMBER -R uechikohei/spot-diggz` Close済みのIssueを再オープンする
 - `gh pr create -R uechikohei/spot-diggz -t \"TITLE\" -b \"BODY\"` Pull Requestを作成する
@@ -202,6 +203,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `cat README.md` README全体の記載内容を確認する
 - `cat -n FILE` 行番号付きでファイル内容を確認する
 - `sed -n '1,200p' FILE` ファイルの先頭200行を確認する
+- `sed -n '40,120p' FILE` ファイルの40-120行を確認する
 - `sed -n '1,220p' FILE` ファイルの先頭220行を確認する
 - `sed -n '1,240p' FILE` ファイルの先頭240行を確認する
 - `sed -n '1,260p' FILE` ファイルの先頭260行を確認する
