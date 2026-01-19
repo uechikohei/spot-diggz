@@ -43,10 +43,8 @@ pub struct SdzSpot {
     pub location: Option<SdzSpotLocation>,
     pub tags: Vec<String>,
     pub images: Vec<String>,
-    #[serde(rename = "trustLevel")]
-    pub sdz_trust_level: SdzSpotTrustLevel,
-    #[serde(rename = "trustSources")]
-    pub sdz_trust_sources: Vec<String>,
+    #[serde(rename = "approvalStatus", skip_serializing_if = "Option::is_none")]
+    pub sdz_approval_status: Option<SdzSpotApprovalStatus>,
     #[serde(rename = "userId")]
     pub sdz_user_id: String,
     #[serde(rename = "createdAt")]
@@ -55,11 +53,12 @@ pub struct SdzSpot {
     pub updated_at: DateTime<FixedOffset>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
-pub enum SdzSpotTrustLevel {
-    Verified,
-    Unverified,
+pub enum SdzSpotApprovalStatus {
+    Pending,
+    Approved,
+    Rejected,
 }
 
 impl SdzSpot {
@@ -80,10 +79,40 @@ impl SdzSpot {
             location,
             tags,
             images,
-            sdz_trust_level: SdzSpotTrustLevel::Unverified,
-            sdz_trust_sources: Vec::new(),
+            sdz_approval_status: None,
             sdz_user_id,
             created_at: now_jst(),
+            updated_at: now_jst(),
+        })
+    }
+
+    pub fn is_approved(&self) -> bool {
+        matches!(
+            self.sdz_approval_status,
+            Some(SdzSpotApprovalStatus::Approved)
+        )
+    }
+
+    pub fn update(
+        &self,
+        name: String,
+        description: Option<String>,
+        location: Option<SdzSpotLocation>,
+        tags: Vec<String>,
+        images: Vec<String>,
+        approval_status: Option<SdzSpotApprovalStatus>,
+    ) -> Result<Self, SdzSpotValidationError> {
+        validate_spot(&name, location.as_ref(), &tags, &images)?;
+        Ok(Self {
+            sdz_spot_id: self.sdz_spot_id.clone(),
+            name,
+            description,
+            location,
+            tags,
+            images,
+            sdz_approval_status: approval_status,
+            sdz_user_id: self.sdz_user_id.clone(),
+            created_at: self.created_at,
             updated_at: now_jst(),
         })
     }
