@@ -133,6 +133,8 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `gh issue edit ISSUE_NUMBER -R uechikohei/spot-diggz --title \"TITLE\" --body-file PATH` Issueのタイトル/本文を更新する
 - `gh issue edit ISSUE_NUMBER -R uechikohei/spot-diggz --body \"BODY\"` Issue本文を直接更新する
 - `gh issue edit ISSUE_NUMBER -R uechikohei/spot-diggz --add-label LABEL` Issueにラベルを追加する
+- `gh label list -R uechikohei/spot-diggz --search planning` planningラベルの有無を検索する
+- `gh label create planning -R uechikohei/spot-diggz --color C5DEF5 --description "Planning/設計検討"` planningラベルを作成する
 - `gh issue reopen ISSUE_NUMBER -R uechikohei/spot-diggz` Close済みのIssueを再オープンする
 - `gh pr create -R uechikohei/spot-diggz -t \"TITLE\" -b \"BODY\"` Pull Requestを作成する
 - `gh pr create -R uechikohei/spot-diggz --base develop --head feature/tiddy-repo -t \"TITLE\" -F /tmp/pr-body.md` ベース/ヘッドを指定し、本文をファイルで指定してPull Requestを作成する
@@ -146,6 +148,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `gh project item-add 2 --owner uechikohei --url \"ISSUE_URL\" --format json` IssueをProjectに追加し、項目IDを取得する
 - `gh project item-list 2 --owner uechikohei --format json | jq -r '.items[] | select(.content.number==ISSUE_NUMBER) | .id'` Project内のIssue番号から項目IDを取得する
 - `gh project item-edit --project-id PVT_kwHOAx5dHc4BLgT- --id ITEM_ID --field-id PVTSSF_lAHOAx5dHc4BLgT-zg7DwBA --single-select-option-id OPTION_ID` ProjectのPriorityを更新する
+- `gh project item-edit --project-id PVT_kwHOAx5dHc4BLgT- --id ITEM_ID --field-id PVTF_lAHOAx5dHc4BLgT-zg7DwBQ --date YYYY-MM-DD` ProjectのStart dateを更新する
 - `SDZ_ID_TOKEN=... SDZ_API_URL=... ./web/scripts/firestore_crud_smoke.sh` Firestore実運用のCRUDをAPI経由でスモークテストする（`X-SDZ-Client: ios`付き）
 - `SDZ_ID_TOKEN=... SDZ_API_URL=... curl -i -X PATCH "${SDZ_API_URL}/sdz/spots/SPOT_ID" -H "Authorization: Bearer ${SDZ_ID_TOKEN}" -H "Content-Type: application/json" -H "X-SDZ-Client: ios" -d '{"name":"probe"}' | head -n 5` spot更新APIがPATCHを受け付けるか確認する
 - `payload=$(jq -n --arg email "${SDZ_TEST_USER_EMAIL}" --arg password "${SDZ_TEST_USER_PASSWORD}" '{email:$email,password:$password,returnSecureToken:true}'); SDZ_ID_TOKEN=$(curl -sS "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${SDZ_FIREBASE_WEB_API_KEY}" -H "Content-Type: application/json" -d "${payload}" | jq -r '.idToken')` Firebase Auth REST APIでIDトークンを取得する
@@ -176,6 +179,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `rg -n "Firebase" iOS/spot-diggz` iOS実装内のFirebase関連箇所を検索する
 - `rg -n "@Published" iOS/spot-diggz` iOS実装内のObservableObject/@Published利用箇所を検索する
 - `rg -n "SdzSpotLocation" iOS` iOS内の位置情報モデル参照箇所を検索する
+- `rg -n "xcshareddata|Package\\.resolved|xcworkspace" .gitignore` .gitignore内にXcode/SwiftPM関連の除外があるか確認する
 - `rg -n "未承認|編集|Edit" iOS/spot-diggz` iOSの編集画面/文言の実装箇所を検索する
 - `rg -n "MyList|マイリスト" iOS/spot-diggz` iOSのマイリスト関連実装を検索する
 - `rg -n "trustLevel|trustSources|approvalStatus" iOS web/api docs` 承認ステータス関連のフィールド参照箇所を横断検索する

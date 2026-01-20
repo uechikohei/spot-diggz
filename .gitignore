@@ -12,3 +12,5 @@
 /web/resources/.terraform/
 /web/resources/environments/**/terraform.tfvars
 /web/resources/terraform.tfstate*
+/trivy-results.sarif
+/iOS/spot-diggz.xcodeproj/project.xcworkspace/xcuserdata/
