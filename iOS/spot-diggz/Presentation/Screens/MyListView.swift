@@ -7,6 +7,12 @@ struct MyListView: View {
     var body: some View {
         NavigationView {
             List {
+                if let errorMessage = appState.favoritesErrorMessage {
+                    Section {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                    }
+                }
                 Section {
                     HStack {
                         Text("お気に入り数")
@@ -20,7 +26,9 @@ struct MyListView: View {
                 }
 
                 Section(header: Text("最近のお気に入り")) {
-                    if recentFavorites.isEmpty {
+                    if appState.isFavoritesLoading {
+                        ProgressView("読み込み中...")
+                    } else if recentFavorites.isEmpty {
                         Text("お気に入りはありません")
                             .foregroundColor(.secondary)
                     } else {
@@ -33,6 +41,9 @@ struct MyListView: View {
                 }
             }
             .navigationTitle("マイリスト")
+            .task {
+                await appState.refreshFavorites()
+            }
         }
     }
 

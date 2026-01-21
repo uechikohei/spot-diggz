@@ -111,6 +111,50 @@ final class SdzApiClient {
         )
     }
 
+    /// Fetches the current user's mylist spots.
+    func fetchMyList() async throws -> [SdzSpot] {
+        guard idToken != nil else {
+            throw SdzApiError.authRequired
+        }
+        do {
+            return try await request(path: "/sdz/mylist", requiresAuth: true)
+        } catch let error as SdzApiError {
+            switch error {
+            case .statusCode(404), .api(statusCode: 404, error: _):
+                return []
+            default:
+                throw error
+            }
+        }
+    }
+
+    /// Adds a spot to the current user's mylist.
+    func addToMyList(spotId: String) async throws -> SdzMyListActionResponse {
+        guard idToken != nil else {
+            throw SdzApiError.authRequired
+        }
+        let payload = SdzMyListActionRequest(spotId: spotId)
+        let body = try JSONEncoder().encode(payload)
+        return try await request(
+            path: "/sdz/mylist",
+            method: "POST",
+            body: body,
+            requiresAuth: true
+        )
+    }
+
+    /// Removes a spot from the current user's mylist.
+    func removeFromMyList(spotId: String) async throws -> SdzMyListActionResponse {
+        guard idToken != nil else {
+            throw SdzApiError.authRequired
+        }
+        return try await request(
+            path: "/sdz/mylist/\(spotId)",
+            method: "DELETE",
+            requiresAuth: true
+        )
+    }
+
     /// Uploads binary image data to the signed URL.
     func uploadImage(data: Data, contentType: String, uploadUrl: String) async throws {
         guard let url = URL(string: uploadUrl) else {
@@ -259,4 +303,13 @@ struct SdzUploadUrlResponse: Codable {
     let objectUrl: String
     let objectName: String
     let expiresAt: Date
+}
+
+struct SdzMyListActionRequest: Codable {
+    let spotId: String
+}
+
+struct SdzMyListActionResponse: Codable {
+    let spotId: String
+    let status: String
 }
