@@ -25,12 +25,15 @@ final class SdzAppState: ObservableObject {
     @Published var authUserId: String?
     @Published var authEmail: String?
     @Published var authDisplayName: String?
+    @Published var authProviderIds: [String] = []
 
     /// Indicates whether the auth session is loading.
     @Published var isAuthLoading: Bool = false
 
-    /// Favorites stored locally (no backend yet).
+    /// Favorites synced with backend (cached locally).
     @Published private(set) var favoriteSpots: [SdzSpot] = []
+    @Published var isFavoritesLoading: Bool = false
+    @Published var favoritesErrorMessage: String?
 
     /// Draft route stops for quick planning.
     @Published private(set) var routeDraftSpots: [SdzSpot] = []
@@ -84,13 +87,37 @@ final class SdzAppState: ObservableObject {
         applySession(nil)
     }
 
-    func toggleFavorite(_ spot: SdzSpot) {
-        if let index = favoriteSpots.firstIndex(where: { $0.spotId == spot.spotId }) {
-            favoriteSpots.remove(at: index)
+    func toggleFavorite(_ spot: SdzSpot) async {
+        guard let idToken = idToken else {
+            favoritesErrorMessage = "ログインが必要です。"
+            return
+        }
+        favoritesErrorMessage = nil
+        let isAdding = !isFavorite(spot)
+        if isAdding {
+            favoriteSpots.insert(spot, at: 0)
         } else {
-            favoriteSpots.append(spot)
+            favoriteSpots.removeAll { $0.spotId == spot.spotId }
         }
         saveFavorites()
+
+        let apiClient = SdzApiClient(environment: environment, idToken: idToken)
+        do {
+            if isAdding {
+                _ = try await apiClient.addToMyList(spotId: spot.spotId)
+            } else {
+                _ = try await apiClient.removeFromMyList(spotId: spot.spotId)
+            }
+        } catch {
+            // Revert on failure to keep state consistent.
+            if isAdding {
+                favoriteSpots.removeAll { $0.spotId == spot.spotId }
+            } else {
+                favoriteSpots.insert(spot, at: 0)
+            }
+            favoritesErrorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+            saveFavorites()
+        }
     }
 
     func isFavorite(_ spot: SdzSpot) -> Bool {
@@ -135,13 +162,21 @@ final class SdzAppState: ObservableObject {
             authUserId = session.userId
             authEmail = session.email
             authDisplayName = session.displayName
+            authProviderIds = session.providerIds
             isAuthenticated = true
+            Task {
+                await refreshFavorites()
+            }
         } else {
             idToken = nil
             authUserId = nil
             authEmail = nil
             authDisplayName = nil
+            authProviderIds = []
             isAuthenticated = false
+            favoriteSpots = []
+            favoritesErrorMessage = nil
+            saveFavorites()
         }
     }
 
@@ -162,6 +197,26 @@ final class SdzAppState: ObservableObject {
     }
 
     private static let favoritesKey = "sdz.favoriteSpots"
+
+    func refreshFavorites() async {
+        guard let idToken = idToken else {
+            favoriteSpots = []
+            favoritesErrorMessage = "ログインが必要です。"
+            saveFavorites()
+            return
+        }
+        isFavoritesLoading = true
+        favoritesErrorMessage = nil
+        let apiClient = SdzApiClient(environment: environment, idToken: idToken)
+        do {
+            let spots = try await apiClient.fetchMyList()
+            favoriteSpots = spots
+            saveFavorites()
+        } catch {
+            favoritesErrorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+        isFavoritesLoading = false
+    }
 
     private func loadRoutes() {
         guard let data = UserDefaults.standard.data(forKey: Self.routesKey) else {

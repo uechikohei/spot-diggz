@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { SdzSpot } from './types/spot';
 import { useAuth } from './contexts/useAuth';
 import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
@@ -52,6 +52,7 @@ type SdzSpotDetailProps = {
   apiUrl: string;
   favorites: string[];
   onToggleFavorite: (spotId: string) => void;
+  idToken: string | null;
 };
 
 function SdzSpotDetailPage({
@@ -59,6 +60,7 @@ function SdzSpotDetailPage({
   apiUrl,
   favorites,
   onToggleFavorite,
+  idToken,
 }: SdzSpotDetailProps) {
   const { spotId } = useParams();
   const navigate = useNavigate();
@@ -77,7 +79,8 @@ function SdzSpotDetailPage({
     let isActive = true;
     setSdzDetailLoading(true);
     setSdzDetailError(null);
-    fetch(`${apiUrl}/sdz/spots/${spotId}`)
+    const headers = idToken ? { Authorization: `Bearer ${idToken}` } : undefined;
+    fetch(`${apiUrl}/sdz/spots/${spotId}`, { headers })
       .then((res) => {
         if (res.status === 404) {
           return null;
@@ -106,7 +109,7 @@ function SdzSpotDetailPage({
     return () => {
       isActive = false;
     };
-  }, [apiUrl, spotId, spots]);
+  }, [apiUrl, idToken, spotId, spots]);
 
   const sdzRelatedSpots = useMemo(() => {
     if (!sdzDetail) return [];
@@ -240,6 +243,7 @@ function SdzSpotDetailPage({
 
 function App() {
   const {
+    idToken,
     user,
     loginWithGoogle,
     loginWithEmail,
@@ -289,10 +293,12 @@ function App() {
     });
   }, [spots, sdzSearchText, sdzSelectedTag]);
 
-  const fetchSpots = async (signal?: AbortSignal) => {
-    try {
-      const res = await fetch(`${apiUrl}/sdz/spots`, { signal });
-      if (!res.ok) {
+  const fetchSpots = useCallback(
+    async (signal?: AbortSignal) => {
+      try {
+        const headers = idToken ? { Authorization: `Bearer ${idToken}` } : undefined;
+        const res = await fetch(`${apiUrl}/sdz/spots`, { signal, headers });
+        if (!res.ok) {
         throw new Error(`Failed to fetch spots: ${res.status}`);
       }
       const data: SdzSpot[] = await res.json();
@@ -300,16 +306,18 @@ function App() {
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') return;
       setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  };
+      } finally {
+        setLoading(false);
+      }
+    },
+    [idToken],
+  );
 
   useEffect(() => {
     const controller = new AbortController();
     fetchSpots(controller.signal);
     return () => controller.abort();
-  }, []);
+  }, [fetchSpots]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -712,6 +720,7 @@ function App() {
               apiUrl={apiUrl}
               favorites={sdzFavorites}
               onToggleFavorite={handleToggleFavorite}
+              idToken={idToken}
             />
           }
         />

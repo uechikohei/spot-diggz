@@ -8,6 +8,7 @@ struct RouteDetailView: View {
         center: CLLocationCoordinate2D(latitude: 35.6812, longitude: 139.7671),
         span: MKCoordinateSpan(latitudeDelta: 0.08, longitudeDelta: 0.08)
     )
+    @State private var showNavigationDialog: Bool = false
 
     var body: some View {
         List {
@@ -25,6 +26,18 @@ struct RouteDetailView: View {
                 LabeledContent("スポット数", value: "\(route.spots.count)")
             }
 
+            Section(header: Text("ナビ")) {
+                Button {
+                    showNavigationDialog = true
+                } label: {
+                    Label("ナビを開く", systemImage: "arrow.triangle.turn.up.right.circle")
+                }
+                .disabled(routeCoordinates.isEmpty)
+                Text("Google Maps/Apple Mapsでルートを開始できます")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
             Section(header: Text("スポット一覧")) {
                 ForEach(route.spots) { spot in
                     NavigationLink(destination: SpotDetailView(spot: spot)) {
@@ -39,6 +52,14 @@ struct RouteDetailView: View {
                 region = mapRegion
             }
         }
+        .confirmationDialog("ナビを開く", isPresented: $showNavigationDialog, titleVisibility: .visible) {
+            Button("Google Mapsで開く") {
+                openGoogleMaps()
+            }
+            Button("Apple Mapsで開く") {
+                openAppleMaps()
+            }
+        }
     }
 
     private var mapRegion: MKCoordinateRegion? {
@@ -48,6 +69,37 @@ struct RouteDetailView: View {
         return MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: firstLocation.lat, longitude: firstLocation.lng),
             span: MKCoordinateSpan(latitudeDelta: 0.08, longitudeDelta: 0.08)
+        )
+    }
+
+    private var routeCoordinates: [CLLocationCoordinate2D] {
+        route.spots.compactMap { spot in
+            guard let location = spot.location else {
+                return nil
+            }
+            return CLLocationCoordinate2D(latitude: location.lat, longitude: location.lng)
+        }
+    }
+
+    private func openGoogleMaps() {
+        guard let destination = routeCoordinates.last else {
+            return
+        }
+        let waypoints = Array(routeCoordinates.dropLast())
+        SdzMapNavigator.openGoogleMaps(
+            destination: destination,
+            waypoints: waypoints,
+            mode: route.mode.navigationMode
+        )
+    }
+
+    private func openAppleMaps() {
+        guard let destination = routeCoordinates.last else {
+            return
+        }
+        SdzMapNavigator.openAppleMaps(
+            destination: destination,
+            mode: route.mode.navigationMode
         )
     }
 

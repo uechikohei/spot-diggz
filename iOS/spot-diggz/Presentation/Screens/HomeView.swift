@@ -6,7 +6,8 @@ import CoreLocation
 struct HomeView: View {
     @EnvironmentObject var appState: SdzAppState
     @State private var searchText: String = ""
-    @State private var selectedTag: String?
+    @State private var selectedSpotType: SdzSpotType?
+    @State private var selectedTags: Set<String> = []
     @State private var spots: [SdzSpot] = []
     @State private var selectedSpot: SdzSpot?
     @State private var focusedSpotId: String?
@@ -49,7 +50,7 @@ struct HomeView: View {
         GeometryReader { proxy in
             ZStack(alignment: .top) {
                 mapContent
-                    .ignoresSafeArea()
+                    .ignoresSafeArea(edges: [.bottom, .horizontal])
                 topOverlay
             }
             .safeAreaInset(edge: .bottom) {
@@ -126,9 +127,8 @@ struct HomeView: View {
     private var topOverlay: some View {
         VStack(spacing: 10) {
             searchField
-            if !tagOptions.isEmpty {
-                tagChips
-            }
+            spotTypeChips
+            tagFilterChips
         }
         .padding(.horizontal, 16)
         .padding(.top, 12)
@@ -216,21 +216,21 @@ struct HomeView: View {
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
-    private var tagChips: some View {
+    private var spotTypeChips: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
                 FilterChip(
                     title: "すべて",
-                    isSelected: selectedTag == nil
+                    isSelected: selectedSpotType == nil
                 ) {
-                    selectedTag = nil
+                    selectedSpotType = nil
                 }
-                ForEach(tagOptions, id: \.self) { tag in
+                ForEach(SdzSpotType.allCases) { spotType in
                     FilterChip(
-                        title: tag,
-                        isSelected: selectedTag == tag
+                        title: spotType.label,
+                        isSelected: selectedSpotType == spotType
                     ) {
-                        selectedTag = tag
+                        selectedSpotType = spotType
                     }
                 }
             }
@@ -238,22 +238,102 @@ struct HomeView: View {
         }
     }
 
+    private var tagFilterChips: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                Menu {
+                    ForEach(tagOptions, id: \.self) { tag in
+                        Button {
+                            toggleTag(tag)
+                        } label: {
+                            Label(tag, systemImage: selectedTags.contains(tag) ? "checkmark" : "plus")
+                        }
+                    }
+                } label: {
+                    ChipLabel(title: "タグを追加", isSelected: false, systemImage: "plus")
+                }
+                .buttonStyle(.plain)
+                .disabled(tagOptions.isEmpty)
+
+                ForEach(selectedTags.sorted(), id: \.self) { tag in
+                    FilterChip(
+                        title: tag,
+                        isSelected: true,
+                        systemImage: "xmark.circle.fill"
+                    ) {
+                        toggleTag(tag)
+                    }
+                }
+            }
+            .padding(.vertical, 4)
+        }
+    }
+
+    private struct ChipLabel: View {
+        let title: String
+        let isSelected: Bool
+        let systemImage: String?
+
+        var body: some View {
+            HStack(spacing: 6) {
+                if let systemImage = systemImage {
+                    Image(systemName: systemImage)
+                        .font(.caption)
+                }
+                Text(title)
+                    .font(.caption)
+            }
+            .foregroundColor(isSelected ? .white : .primary)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(isSelected ? Color.accentColor : Color(.systemBackground).opacity(0.85))
+            .clipShape(Capsule())
+        }
+    }
+
     private struct FilterChip: View {
         let title: String
         let isSelected: Bool
+        let systemImage: String?
         let action: () -> Void
+
+        init(title: String, isSelected: Bool, systemImage: String? = nil, action: @escaping () -> Void) {
+            self.title = title
+            self.isSelected = isSelected
+            self.systemImage = systemImage
+            self.action = action
+        }
 
         var body: some View {
             Button(action: action) {
-                Text(title)
-                    .font(.caption)
-                    .foregroundColor(isSelected ? .white : .primary)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(isSelected ? Color.accentColor : Color(.systemBackground).opacity(0.85))
-                    .clipShape(Capsule())
+                ChipLabel(title: title, isSelected: isSelected, systemImage: systemImage)
             }
             .buttonStyle(.plain)
+        }
+    }
+
+    private enum SdzSpotType: String, CaseIterable, Identifiable {
+        case park
+        case street
+
+        var id: String { tagValue }
+
+        var tagValue: String {
+            switch self {
+            case .park:
+                return "パーク"
+            case .street:
+                return "ストリート"
+            }
+        }
+
+        var label: String {
+            switch self {
+            case .park:
+                return "スケートパーク"
+            case .street:
+                return "ストリート"
+            }
         }
     }
 
@@ -290,7 +370,10 @@ struct HomeView: View {
     }
 
     private var tagOptions: [String] {
-        let tags = spots.flatMap(\.tags).filter { !$0.isEmpty }
+        let typeTags = Set(SdzSpotType.allCases.map(\.tagValue))
+        let tags = spots
+            .flatMap(\.tags)
+            .filter { !$0.isEmpty && !typeTags.contains($0) }
         return Array(Set(tags)).sorted()
     }
 
@@ -308,14 +391,24 @@ struct HomeView: View {
                     || spot.tags.contains(where: { $0.lowercased().contains(target) })
             }
 
-            let matchesTag: Bool
-            if let selectedTag = selectedTag {
-                matchesTag = spot.tags.contains(selectedTag)
+            let matchesType: Bool
+            if let selectedSpotType = selectedSpotType {
+                matchesType = spot.tags.contains(selectedSpotType.tagValue)
             } else {
-                matchesTag = true
+                matchesType = true
             }
 
-            return matchesSearch && matchesTag
+            let matchesTags = selectedTags.allSatisfy { spot.tags.contains($0) }
+
+            return matchesSearch && matchesType && matchesTags
+        }
+    }
+
+    private func toggleTag(_ tag: String) {
+        if selectedTags.contains(tag) {
+            selectedTags.remove(tag)
+        } else {
+            selectedTags.insert(tag)
         }
     }
 

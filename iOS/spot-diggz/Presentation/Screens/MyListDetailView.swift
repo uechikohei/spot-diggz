@@ -6,7 +6,12 @@ struct MyListDetailView: View {
 
     var body: some View {
         List {
-            if appState.favoriteSpots.isEmpty {
+            if appState.isFavoritesLoading {
+                ProgressView("読み込み中...")
+            } else if let errorMessage = appState.favoritesErrorMessage {
+                Text(errorMessage)
+                    .foregroundColor(.red)
+            } else if appState.favoriteSpots.isEmpty {
                 Text("お気に入りはありません")
                     .foregroundColor(.secondary)
             } else {
@@ -18,6 +23,9 @@ struct MyListDetailView: View {
             }
         }
         .navigationTitle("お気に入り一覧")
+        .task {
+            await appState.refreshFavorites()
+        }
     }
 }
 

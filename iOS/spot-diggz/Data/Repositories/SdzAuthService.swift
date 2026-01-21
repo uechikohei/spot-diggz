@@ -18,6 +18,7 @@ struct SdzAuthSession {
     let userId: String
     let displayName: String?
     let email: String?
+    let providerIds: [String]
 }
 
 enum SdzAuthServiceError: LocalizedError {
@@ -172,11 +173,13 @@ final class SdzAuthService {
 
     #if canImport(FirebaseAuth)
     private func buildSession(user: User, token: String) -> SdzAuthSession {
-        SdzAuthSession(
+        let providers = user.providerData.map(\.providerID)
+        return SdzAuthSession(
             idToken: token,
             userId: user.uid,
             displayName: user.displayName,
-            email: user.email
+            email: user.email,
+            providerIds: providers
         )
     }
 

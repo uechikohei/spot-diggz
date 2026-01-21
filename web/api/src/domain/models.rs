@@ -53,6 +53,12 @@ pub struct SdzSpot {
     pub updated_at: DateTime<FixedOffset>,
 }
 
+#[derive(Debug, Clone)]
+pub struct SdzMyListEntry {
+    pub sdz_spot_id: String,
+    pub created_at: DateTime<FixedOffset>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum SdzSpotApprovalStatus {

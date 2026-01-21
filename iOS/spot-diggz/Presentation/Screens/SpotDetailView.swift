@@ -12,6 +12,7 @@ struct SpotDetailView: View {
     @State private var routeMessage: String?
     @State private var isRequestingApproval: Bool = false
     @State private var showRouteBuilder: Bool = false
+    @State private var showNavigationDialog: Bool = false
 
     init(spot: SdzSpot) {
         _spot = State(initialValue: spot)
@@ -97,7 +98,9 @@ struct SpotDetailView: View {
                     VStack(spacing: 8) {
                         HStack {
                             Button(action: {
-                                appState.toggleFavorite(spot)
+                                Task {
+                                    await appState.toggleFavorite(spot)
+                                }
                             }) {
                                 Label(
                                     isFavorite ? "お気に入り解除" : "お気に入りに追加",
@@ -117,11 +120,12 @@ struct SpotDetailView: View {
                         }
                         HStack {
                             Button(action: {
-                                // TODO: Open external map
+                                showNavigationDialog = true
                             }) {
                                 Label("ナビ", systemImage: "car")
                                     .frame(maxWidth: .infinity)
                             }
+                            .disabled(spot.location == nil)
                         }
                         if isInRouteDraft {
                             Button("ルート作成へ") {
@@ -164,6 +168,14 @@ struct SpotDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showRouteBuilder) {
             RouteBuilderView()
+        }
+        .confirmationDialog("ナビを開く", isPresented: $showNavigationDialog, titleVisibility: .visible) {
+            Button("Google Mapsで開く") {
+                openGoogleMaps()
+            }
+            Button("Apple Mapsで開く") {
+                openAppleMaps()
+            }
         }
     }
 
@@ -272,6 +284,27 @@ struct SpotDetailView: View {
             appState.addSpotToRouteDraft(spot)
             routeMessage = "ルート下書きに追加しました。"
         }
+    }
+
+    private var spotCoordinate: CLLocationCoordinate2D? {
+        guard let location = spot.location else {
+            return nil
+        }
+        return CLLocationCoordinate2D(latitude: location.lat, longitude: location.lng)
+    }
+
+    private func openGoogleMaps() {
+        guard let coordinate = spotCoordinate else {
+            return
+        }
+        SdzMapNavigator.openGoogleMaps(destination: coordinate, mode: .drive)
+    }
+
+    private func openAppleMaps() {
+        guard let coordinate = spotCoordinate else {
+            return
+        }
+        SdzMapNavigator.openAppleMaps(destination: coordinate, mode: .drive)
     }
 }
 

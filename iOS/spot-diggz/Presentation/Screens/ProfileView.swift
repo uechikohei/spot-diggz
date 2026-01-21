@@ -49,6 +49,15 @@ struct ProfileView: View {
                     .padding(.vertical, 8)
                 }
 
+                Section(header: Text("アカウント情報"), footer: Text(emailChangeNote)) {
+                    LabeledContent("ユーザーID", value: resolvedUserId)
+                    LabeledContent("ログイン方法", value: providerLabel)
+                    LabeledContent("表示名", value: resolvedDisplayName)
+                    if let email = resolvedEmail {
+                        LabeledContent("メール", value: email)
+                    }
+                }
+
                 Section(header: Text("自分の投稿")) {
                     if mySpots.isEmpty {
                         Text("投稿がありません")
@@ -115,6 +124,10 @@ struct ProfileView: View {
         .clipShape(Circle())
     }
 
+    private var resolvedUserId: String {
+        user?.userId ?? appState.authUserId ?? "-"
+    }
+
     private var resolvedDisplayName: String {
         if let user = user, !user.displayName.isEmpty, user.displayName != "unknown" {
             return user.displayName
@@ -133,6 +146,28 @@ struct ProfileView: View {
             return email
         }
         return appState.authEmail
+    }
+
+    private var providerLabel: String {
+        let providers = Set(appState.authProviderIds)
+        var labels: [String] = []
+        if providers.contains("google.com") {
+            labels.append("Google")
+        }
+        if providers.contains("apple.com") {
+            labels.append("Apple")
+        }
+        if providers.contains("password") {
+            labels.append("メール/パスワード")
+        }
+        return labels.isEmpty ? "不明" : labels.joined(separator: " / ")
+    }
+
+    private var emailChangeNote: String {
+        if appState.authProviderIds.contains("google.com") || appState.authProviderIds.contains("apple.com") {
+            return "Google/Appleログインのメール変更は各アカウント側で行います。アプリ内での変更には未対応です。"
+        }
+        return "メール変更は今後対応予定です。"
     }
 
     private func loadData() {

@@ -187,6 +187,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `rg -n "INFOPLIST_KEY_NSLocationWhenInUseUsageDescription" iOS/spot-diggz.xcodeproj/project.pbxproj` 位置情報の利用許可文言設定を確認する
 - `rg -n "Cloud Run|cloud run|run.app|ingress|allUsers|iam|invoker" -S web docs .github` Cloud Run公開設定の痕跡をドキュメントと設定で確認する
 - `git status -sb` 作業ブランチと差分の概要を確認する
+- `git status --short` 変更ファイルを短い形式で確認する
 - `rg -n "cloud_run|run.invoker|allUsers|invoker|ingress" -S web/resources` TerraformのCloud Run公開/IAM設定を確認する
 - `rg -n "SdzApiClient|SdzEnvironment|SdzAppState|fetchSpots|fetchSpot" iOS/spot-diggz` iOSのAPI連携関連コードをまとめて検索する
 - `rg -n "SdzErrorResponse|API設計" iOS/SDZ_IOS_DESIGN.md` iOS設計書内のAPI/エラーモデル記載を確認する
@@ -198,12 +199,17 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `rg -n "users/me|current user|fetch_current" web/api/src` APIのユーザー取得処理を検索する
 - `rg -n "SpotRepository|spot_repo" web/api/src/application` SpotRepositoryの利用箇所を検索する
 - `rg -n "struct SdzSpot|impl SdzSpot" web/api/src/domain` SdzSpotの定義/実装箇所を検索する
+- `rg -n "favorite|mylist|list" web/api/src` API側のマイリスト/お気に入り関連の実装を検索する
 - `rg -n "Route" iOS/spot-diggz` Route関連実装を検索する
 - `rg -n "ルート" iOS/spot-diggz` ルート文言の実装箇所を検索する
 - `rg -n "SdzLocationPickerView" iOS/spot-diggz` 位置選択コンポーネントの参照箇所を検索する
+- `rg -n "deploy-dev" .github/workflows/ci.yml` CIの開発環境デプロイジョブの定義位置を確認する
+- `SDK_PATH=$(xcrun --sdk iphonesimulator --show-sdk-path) && sed -n '1,120p' "$SDK_PATH/System/Library/Frameworks/MapKit.framework/Headers/MKMapItem.h"` MapKitのMKMapItemヘッダを確認する
+- `rg -n "toggleFavorite" iOS/spot-diggz` iOSのお気に入り操作の実装箇所を検索する
 - `rg -n "SpotCardView.swift" iOS/spot-diggz.xcodeproj/project.pbxproj` XcodeプロジェクトでSpotCardView参照があるか確認する
 - `rg -n "HomeView.swift" iOS/spot-diggz.xcodeproj/project.pbxproj` XcodeプロジェクトでHomeView参照があるか確認する
 - `rg -n "使うコマンド一覧" README.md` README内のコマンド一覧の位置を確認する
+- `rg -n "PBXFileSystemSynchronizedRootGroup" iOS/spot-diggz.xcodeproj/project.pbxproj` Xcodeのファイル同期グループ設定有無を確認する
 - `cat README.md` README全体の記載内容を確認する
 - `cat -n FILE` 行番号付きでファイル内容を確認する
 - `sed -n '1,200p' FILE` ファイルの先頭200行を確認する
@@ -232,6 +238,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `terraform validate` Terraformの構成バリデーションを実行する
 - `trivy fs . --format sarif --output trivy-results.sarif` Trivyでリポジトリ全体の脆弱性/シークレットスキャンを行いSARIF出力する
 - `docker build -f .devcontainer/Dockerfile .` CIのDockerビルド相当をローカルで実行する
+- `set -a; source web/ui/.env.local; set +a; gcloud builds submit --project "sdz-dev" --config web/resources/cloudbuild/cloudbuild_ui.yaml --gcs-source-staging-dir=gs://sdz-dev_cloudbuild/source --substitutions _UI_BUCKET="sdz-dev-ui-bucket",_DEPLOY_SA_RESOURCE="projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com",_VITE_SDZ_API_URL="${VITE_SDZ_API_URL}",_VITE_FIREBASE_API_KEY="${VITE_FIREBASE_API_KEY}",_VITE_FIREBASE_AUTH_DOMAIN="${VITE_FIREBASE_AUTH_DOMAIN}",_VITE_FIREBASE_PROJECT_ID="${VITE_FIREBASE_PROJECT_ID}"` 開発環境のWeb UIをCloud Buildで再デプロイする
 - `git fetch origin` リモートの最新情報を取得する
 - `git merge origin/develop` developの変更を取り込み、競合を解消する
 - `git switch develop` developブランチへ切り替える
