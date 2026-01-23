@@ -211,6 +211,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `rg -n "toggleFavorite" iOS/spot-diggz` iOSのお気に入り操作の実装箇所を検索する
 - `rg -n "SpotCardView.swift" iOS/spot-diggz.xcodeproj/project.pbxproj` XcodeプロジェクトでSpotCardView参照があるか確認する
 - `rg -n "HomeView.swift" iOS/spot-diggz.xcodeproj/project.pbxproj` XcodeプロジェクトでHomeView参照があるか確認する
+- `rg -n "Agent運用ルール|開発" AGENTS.md` AGENTS.md内の運用ルール位置を確認する
 - `rg -n "使うコマンド一覧" README.md` README内のコマンド一覧の位置を確認する
 - `rg -n "PBXFileSystemSynchronizedRootGroup" iOS/spot-diggz.xcodeproj/project.pbxproj` Xcodeのファイル同期グループ設定有無を確認する
 - `cat README.md` README全体の記載内容を確認する
