@@ -222,6 +222,9 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `ls iOS/spot-diggz/spot-diggz` 二重のspot-diggzディレクトリがあるか確認する
 - `git add PATH...` コミット対象のファイルをステージする
 - `git commit -m "MESSAGE"` ステージ済みの変更をメッセージ付きでコミットする
+- `git stash push -m "MESSAGE" -- PATH` 変更ファイルを一時退避して作業ツリーを整理する
+- `git switch BRANCH` ブランチを切り替える
+- `git merge --no-ff BRANCH` ブランチをマージしてマージコミットを作成する
 - `git status -sb` 変更状況と現在ブランチを短く確認する
 - `cargo fmt` Rust APIのフォーマットを自動整形する
 - `cargo fmt -- --check` Rust APIのフォーマットチェックを行う
