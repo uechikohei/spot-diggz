@@ -133,6 +133,8 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `gh issue edit ISSUE_NUMBER -R uechikohei/spot-diggz --title \"TITLE\" --body-file PATH` Issueのタイトル/本文を更新する
 - `gh issue edit ISSUE_NUMBER -R uechikohei/spot-diggz --body \"BODY\"` Issue本文を直接更新する
 - `gh issue edit ISSUE_NUMBER -R uechikohei/spot-diggz --add-label LABEL` Issueにラベルを追加する
+- `gh run view RUN_ID -R uechikohei/spot-diggz` GitHub Actionsの実行詳細を確認する
+- `gh run view RUN_ID -R uechikohei/spot-diggz --log-failed` 失敗したGitHub Actionsジョブのログを確認する
 - `gh label list -R uechikohei/spot-diggz --search planning` planningラベルの有無を検索する
 - `gh label create planning -R uechikohei/spot-diggz --color C5DEF5 --description "Planning/設計検討"` planningラベルを作成する
 - `gh issue reopen ISSUE_NUMBER -R uechikohei/spot-diggz` Close済みのIssueを再オープンする
@@ -186,6 +188,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `rg -n "CFBundleURLTypes" ..` リポジトリ配下でURLスキーム設定の痕跡を検索する
 - `rg -n "INFOPLIST_KEY_NSLocationWhenInUseUsageDescription" iOS/spot-diggz.xcodeproj/project.pbxproj` 位置情報の利用許可文言設定を確認する
 - `rg -n "Cloud Run|cloud run|run.app|ingress|allUsers|iam|invoker" -S web docs .github` Cloud Run公開設定の痕跡をドキュメントと設定で確認する
+- `rg -n "^  notify:" .github/workflows/ci.yml` ci.yml内のnotifyジョブ重複を確認する
 - `git status -sb` 作業ブランチと差分の概要を確認する
 - `git status --short` 変更ファイルを短い形式で確認する
 - `rg -n "cloud_run|run.invoker|allUsers|invoker|ingress" -S web/resources` TerraformのCloud Run公開/IAM設定を確認する
@@ -217,6 +220,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `sed -n '1,220p' FILE` ファイルの先頭220行を確認する
 - `sed -n '1,240p' FILE` ファイルの先頭240行を確認する
 - `sed -n '1,260p' FILE` ファイルの先頭260行を確認する
+- `tail -n 40 FILE` ファイル末尾を確認する
 - `ls iOS` iOSディレクトリ直下の内容を確認する
 - `ls iOS/spot-diggz` iOSアプリ直下のファイル一覧を確認する
 - `ls iOS/spot-diggz/spot-diggz` 二重のspot-diggzディレクトリがあるか確認する
@@ -243,6 +247,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `trivy fs . --format sarif --output trivy-results.sarif` Trivyでリポジトリ全体の脆弱性/シークレットスキャンを行いSARIF出力する
 - `docker build -f .devcontainer/Dockerfile .` CIのDockerビルド相当をローカルで実行する
 - `set -a; source web/ui/.env.local; set +a; gcloud builds submit --project "sdz-dev" --config web/resources/cloudbuild/cloudbuild_ui.yaml --gcs-source-staging-dir=gs://sdz-dev_cloudbuild/source --substitutions _UI_BUCKET="sdz-dev-ui-bucket",_DEPLOY_SA_RESOURCE="projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com",_VITE_SDZ_API_URL="${VITE_SDZ_API_URL}",_VITE_FIREBASE_API_KEY="${VITE_FIREBASE_API_KEY}",_VITE_FIREBASE_AUTH_DOMAIN="${VITE_FIREBASE_AUTH_DOMAIN}",_VITE_FIREBASE_PROJECT_ID="${VITE_FIREBASE_PROJECT_ID}"` 開発環境のWeb UIをCloud Buildで再デプロイする
+- `python3 -c 'from pathlib import Path; path=Path(".github/workflows/ci.yml"); text=path.read_text(); marker="\\n  # 通知\\n"; head,_=text.split(marker,1); notify_block="\\n  # 通知\\n  notify:\\n    name: \\U0001F4E2 Notify Results\\n    runs-on: ubuntu-latest\\n    needs: [rust-ci, react-ci, terraform-ci]\\n    if: always()\\n\\n    steps:\\n      - name: \\U0001F4E2 Notify status\\n        run: |\\n          if [[ \\"${{ needs.rust-ci.result }}\\" == \\"success\\" && \\"${{ needs.react-ci.result }}\\" == \\"success\\" && \\"${{ needs.terraform-ci.result }}\\" == \\"success\\" ]]; then\\n            echo \\"\\u2705 All CI jobs passed successfully!\\"\\n          else\\n            echo \\"\\u274c Some CI jobs failed. Please check the logs.\\"\\n            exit 1\\n          fi\\n"; path.write_text(head+notify_block)'` ci.ymlの通知ジョブ重複を除去して末尾を整理する
 - `git fetch origin` リモートの最新情報を取得する
 - `git merge origin/develop` developの変更を取り込み、競合を解消する
 - `git switch develop` developブランチへ切り替える
