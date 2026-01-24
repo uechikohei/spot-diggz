@@ -98,6 +98,10 @@ spot-diggz/
 └── spot-diggz.code-workspace  # VS Code ワークスペース設定
 ```
 
+### 開発ルール
+
+- iOSで登録フィールドを追加したら、Create/Update APIの入力/保存/返却にパラメーターが反映されているか必ず確認する（iOSのCreate/Update入力・APIのUseCase・Firestore保存の両方）。
+
 ## 🧰 ローカル環境のTerraform（tfenv）
 
 Codespacesとバージョンを揃えるため、`web/.terraform-version` を参照して固定する。

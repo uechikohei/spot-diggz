@@ -72,7 +72,7 @@ enum SdzMapNavigator {
         )
     }
 
-    private static func formatCoordinate(_ coordinate: CLLocationCoordinate2D) -> String {
+    private nonisolated static func formatCoordinate(_ coordinate: CLLocationCoordinate2D) -> String {
         "\(coordinate.latitude),\(coordinate.longitude)"
     }
 }

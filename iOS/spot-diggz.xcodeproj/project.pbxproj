@@ -270,7 +270,7 @@
 				DEVELOPMENT_TEAM = SW4S6FR5L9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleTypeRole = Editor;\n    CFBundleURLSchemes =     (\n        \"com.googleusercontent.apps.1053202159855-e5iargrqi6i5nks03bkc27c6uebu1v70\"\n    );\n}";
+				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleTypeRole = Editor;\n    CFBundleURLSchemes =     (\n        \"com.googleusercontent.apps.1053202159855-e5iargrqi6i5nks03bkc27c6uebu1v70\",\n        \"sdz\"\n    );\n}";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Allow access to your location to tag skate spots.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow access to your photo library to upload spot images.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -305,7 +305,7 @@
 				DEVELOPMENT_TEAM = SW4S6FR5L9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleTypeRole = Editor;\n    CFBundleURLSchemes =     (\n        \"com.googleusercontent.apps.1053202159855-e5iargrqi6i5nks03bkc27c6uebu1v70\"\n    );\n}";
+				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleTypeRole = Editor;\n    CFBundleURLSchemes =     (\n        \"com.googleusercontent.apps.1053202159855-e5iargrqi6i5nks03bkc27c6uebu1v70\",\n        \"sdz\"\n    );\n}";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Allow access to your location to tag skate spots.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow access to your photo library to upload spot images.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

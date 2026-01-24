@@ -14,3 +14,4 @@
 /web/resources/terraform.tfstate*
 /trivy-results.sarif
 /iOS/spot-diggz.xcodeproj/project.xcworkspace/xcuserdata/
+**/*.xcuserstate

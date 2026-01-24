@@ -27,7 +27,10 @@ struct SdzApp: App {
                 await appState.restoreSession()
             }
             .onOpenURL { url in
-                _ = SdzAuthService.shared.handleOpenUrl(url)
+                if SdzAuthService.shared.handleOpenUrl(url) {
+                    return
+                }
+                _ = appState.handleIncomingUrl(url)
             }
         }
     }

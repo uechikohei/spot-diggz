@@ -8,4 +8,7 @@ struct SdzUpdateSpotInput: Codable {
     let tags: [String]?
     let images: [String]?
     let approvalStatus: SdzSpotApprovalStatus?
+    let parkAttributes: SdzSpotParkAttributes?
+    let streetAttributes: SdzStreetAttributes?
+    let instagramTag: String?
 }

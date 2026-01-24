@@ -60,6 +60,9 @@ mod tests {
             }),
             vec!["park".to_string()],
             vec![],
+            None,
+            None,
+            None,
             user_id.to_string(),
         )
         .expect("valid spot")
