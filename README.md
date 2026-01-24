@@ -242,6 +242,8 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `npm run type-check` React UIの型チェックを実行する
 - `npm test -- --coverage --watch=false` React UIのユニットテストをカバレッジ付きで実行する
 - `npm run build` React UIの本番ビルドを実行する
+- `npm audit` React UIの依存関係の脆弱性を監査する
+- `npm audit fix` React UIの依存関係の脆弱性を自動修正する
 - `terraform fmt -check -recursive` Terraformのフォーマットチェックを再帰的に実行する
 - `terraform init -backend=false` Terraformの初期化をローカル向けに実行する
 - `terraform validate` Terraformの構成バリデーションを実行する
