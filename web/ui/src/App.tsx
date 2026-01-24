@@ -252,6 +252,7 @@ function App() {
     logout,
     loading: authLoading,
     sendPasswordReset,
+    updateDisplayName,
   } = useAuth();
   const [spots, setSpots] = useState<SdzSpot[]>([]);
   const [loading, setLoading] = useState(true);
@@ -265,6 +266,7 @@ function App() {
   const [sdzFavorites, setSdzFavorites] = useState<string[]>(getInitialFavorites);
   const [sdzProfileMessage, setSdzProfileMessage] = useState<string | null>(null);
   const [sdzFavoritesPage, setSdzFavoritesPage] = useState(1);
+  const [sdzDisplayName, setSdzDisplayName] = useState('');
 
   const subtitle = `API base: ${apiUrl}（GET /sdz/spots を表示中）`;
   const isEmailPending = user && !user.emailVerified;
@@ -325,6 +327,10 @@ function App() {
   }, [sdzFavorites]);
 
   useEffect(() => {
+    setSdzDisplayName(user?.displayName ?? '');
+  }, [user]);
+
+  useEffect(() => {
     setSdzFavoritesPage(1);
   }, [sdzFavorites.length]);
 
@@ -368,6 +374,22 @@ function App() {
         return;
       }
       setAuthError((err as Error).message);
+    }
+  };
+
+  const handleDisplayNameUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSdzProfileMessage(null);
+    const trimmed = sdzDisplayName.trim();
+    if (!trimmed) {
+      setSdzProfileMessage('表示名を入力してください。');
+      return;
+    }
+    try {
+      await updateDisplayName(trimmed);
+      setSdzProfileMessage('表示名を更新しました。');
+    } catch (err) {
+      setSdzProfileMessage((err as Error).message);
     }
   };
 
@@ -797,6 +819,19 @@ function App() {
                         投稿 {sdzMySpots.length}件 / お気に入り {sdzFavoriteSpots.length}件
                       </div>
                     </div>
+                    <form className="sdz-profile-form" onSubmit={handleDisplayNameUpdate}>
+                      <label htmlFor="displayName">表示名</label>
+                      <input
+                        id="displayName"
+                        type="text"
+                        value={sdzDisplayName}
+                        onChange={(event) => setSdzDisplayName(event.target.value)}
+                        placeholder="表示名を入力"
+                      />
+                      <button type="submit" className="sdz-ghost">
+                        表示名を更新
+                      </button>
+                    </form>
                     {sdzHasPasswordProvider ? (
                       <button type="button" className="sdz-ghost" onClick={handlePasswordReset}>
                         パスワード再設定メールを送信

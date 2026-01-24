@@ -50,6 +50,9 @@ final class SdzAppState: ObservableObject {
     /// Draft location passed from map to the post flow.
     @Published var draftPostLocation: SdzSpotLocation?
 
+    /// Pending official URL shared from external apps.
+    @Published var pendingOfficialUrl: String?
+
     init() {
         loadFavorites()
         loadRoutes()
@@ -85,6 +88,24 @@ final class SdzAppState: ObservableObject {
             // Keep state consistent even if sign-out fails.
         }
         applySession(nil)
+    }
+
+    func handleIncomingUrl(_ url: URL) -> Bool {
+        guard url.scheme == "sdz" else {
+            return false
+        }
+        guard url.host == "add-url" else {
+            return false
+        }
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              let value = components.queryItems?.first(where: { $0.name == "url" })?.value,
+              !value.isEmpty else {
+            return false
+        }
+
+        pendingOfficialUrl = value
+        selectedTab = .post
+        return true
     }
 
     func toggleFavorite(_ spot: SdzSpot) async {

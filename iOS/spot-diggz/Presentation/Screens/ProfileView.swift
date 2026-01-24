@@ -89,7 +89,9 @@ struct ProfileView: View {
                 loadData()
             }
             .sheet(isPresented: $showAvatarPicker) {
-                ImagePicker(images: $avatarImages)
+                SdzImagePicker(maxSelection: 1) { newImages in
+                    avatarImages = newImages
+                }
             }
             .onChange(of: avatarImages) { _, newValue in
                 guard let image = newValue.last else {

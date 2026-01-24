@@ -44,6 +44,21 @@ impl SdzUpdateSpotUseCase {
         } else {
             existing.description.clone()
         };
+        let park_attributes = if input.park_attributes.is_some() {
+            input.park_attributes
+        } else {
+            existing.sdz_park_attributes.clone()
+        };
+        let street_attributes = if input.street_attributes.is_some() {
+            input.street_attributes
+        } else {
+            existing.sdz_street_attributes.clone()
+        };
+        let instagram_tag = if input.instagram_tag.is_some() {
+            input.instagram_tag
+        } else {
+            existing.sdz_instagram_tag.clone()
+        };
         let approval_status =
             resolve_approval_status(existing.sdz_approval_status.clone(), input.approval_status)?;
 
@@ -55,6 +70,9 @@ impl SdzUpdateSpotUseCase {
                 tags,
                 images,
                 approval_status,
+                park_attributes,
+                street_attributes,
+                instagram_tag,
             )
             .map_err(map_validation_error)?;
 
@@ -73,6 +91,12 @@ pub struct UpdateSpotInput {
     pub images: Option<Vec<String>>,
     #[serde(rename = "approvalStatus")]
     pub approval_status: Option<SdzSpotApprovalStatus>,
+    #[serde(rename = "parkAttributes")]
+    pub park_attributes: Option<crate::domain::models::SdzSpotParkAttributes>,
+    #[serde(rename = "streetAttributes")]
+    pub street_attributes: Option<crate::domain::models::SdzStreetAttributes>,
+    #[serde(rename = "instagramTag")]
+    pub instagram_tag: Option<String>,
 }
 
 #[derive(Debug, Clone, serde::Deserialize)]
@@ -109,7 +133,7 @@ fn resolve_approval_status(
 mod tests {
     use super::*;
     use crate::{
-        domain::models::{SdzSpot, SdzSpotApprovalStatus},
+        domain::models::{SdzSpot, SdzSpotApprovalStatus, SdzStreetAttributes},
         infrastructure::in_memory_spot_repository::SdzInMemorySpotRepository,
     };
 
@@ -124,6 +148,9 @@ mod tests {
             }),
             vec!["park".to_string()],
             vec![],
+            None,
+            None,
+            None,
             user_id.to_string(),
         )
         .expect("valid spot")
@@ -140,6 +167,18 @@ mod tests {
             tags: Some(vec!["street".to_string()]),
             images: Some(vec![]),
             approval_status: None,
+            park_attributes: None,
+            street_attributes: None,
+            instagram_tag: None,
+        }
+    }
+
+    fn build_street_attributes() -> SdzStreetAttributes {
+        SdzStreetAttributes {
+            surface_material: Some("asphalt".to_string()),
+            surface_condition: None,
+            sections: None,
+            difficulty: Some("beginner".to_string()),
         }
     }
 
@@ -186,6 +225,66 @@ mod tests {
             result.sdz_approval_status,
             Some(SdzSpotApprovalStatus::Pending)
         ));
+    }
+
+    #[tokio::test]
+    async fn update_spot_rejects_too_many_images() {
+        let repo = Arc::new(SdzInMemorySpotRepository::default());
+        let spot = build_spot("user-1");
+        repo.create(spot.clone()).await.unwrap();
+        let auth = SdzAuthUser {
+            sdz_user_id: "user-1".into(),
+        };
+
+        let mut input = build_input();
+        input.images = Some(vec!["a".into(), "b".into(), "c".into(), "d".into()]);
+
+        let use_case = SdzUpdateSpotUseCase::new();
+        let err = use_case
+            .execute(repo, auth, spot.sdz_spot_id.clone(), input)
+            .await
+            .unwrap_err();
+
+        match err {
+            SdzApiError::BadRequest(msg) => assert!(msg.contains("images must be <=")),
+            _ => panic!("expected bad request"),
+        }
+    }
+
+    #[tokio::test]
+    async fn update_spot_persists_street_attributes() {
+        let repo = Arc::new(SdzInMemorySpotRepository::default());
+        let spot = build_spot("user-1");
+        repo.create(spot.clone()).await.unwrap();
+        let auth = SdzAuthUser {
+            sdz_user_id: "user-1".into(),
+        };
+
+        let mut input = build_input();
+        input.street_attributes = Some(build_street_attributes());
+
+        let use_case = SdzUpdateSpotUseCase::new();
+        let result = use_case
+            .execute(repo.clone(), auth, spot.sdz_spot_id.clone(), input)
+            .await
+            .unwrap();
+
+        let attrs = result
+            .sdz_street_attributes
+            .expect("street attributes should be set");
+        assert_eq!(attrs.surface_material.as_deref(), Some("asphalt"));
+
+        let persisted = repo
+            .find_by_id(&spot.sdz_spot_id)
+            .await
+            .unwrap()
+            .expect("spot should exist");
+        assert_eq!(
+            persisted
+                .sdz_street_attributes
+                .and_then(|data| data.surface_material),
+            Some("asphalt".to_string())
+        );
     }
 
     #[tokio::test]
