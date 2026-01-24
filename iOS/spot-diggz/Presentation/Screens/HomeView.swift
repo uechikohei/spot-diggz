@@ -5,6 +5,7 @@ import CoreLocation
 /// Home screen showing a map with spot cards and lightweight filtering.
 struct HomeView: View {
     @EnvironmentObject var appState: SdzAppState
+    @StateObject private var locationManager = SdzLocationManager()
     @State private var searchText: String = ""
     @State private var selectedSpotType: SdzSpotType?
     @State private var selectedTags: Set<String> = []
@@ -52,6 +53,24 @@ struct HomeView: View {
                 mapContent
                     .ignoresSafeArea(edges: [.bottom, .horizontal])
                 topOverlay
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            locationManager.requestCurrentLocation()
+                        }) {
+                            Image(systemName: "location.fill")
+                                .font(.title3)
+                                .padding(12)
+                                .background(.ultraThinMaterial)
+                                .clipShape(Circle())
+                        }
+                        .accessibilityLabel("現在地に移動")
+                    }
+                    .padding(.trailing, 16)
+                    .padding(.bottom, proxy.size.height * 0.33 + 24)
+                }
             }
             .safeAreaInset(edge: .bottom) {
                 bottomOverlay(height: proxy.size.height * 0.33)
@@ -60,6 +79,19 @@ struct HomeView: View {
         .onAppear {
             setInitialCameraPositionIfNeeded()
             fetchSpots()
+        }
+        .onReceive(locationManager.$currentCoordinate) { coordinate in
+            guard let coordinate = coordinate else {
+                return
+            }
+            let newRegion = MKCoordinateRegion(
+                center: coordinate,
+                span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+            )
+            region = newRegion
+            if #available(iOS 17.0, *) {
+                cameraPosition = .region(newRegion)
+            }
         }
         .navigationTitle("スポット")
         .navigationBarTitleDisplayMode(.inline)

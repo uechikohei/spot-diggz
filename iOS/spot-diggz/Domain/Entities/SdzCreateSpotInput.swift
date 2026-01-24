@@ -7,4 +7,7 @@ struct SdzCreateSpotInput: Codable {
     let location: SdzSpotLocation?
     let tags: [String]?
     let images: [String]?
+    let parkAttributes: SdzSpotParkAttributes?
+    let streetAttributes: SdzStreetAttributes?
+    let instagramTag: String?
 }

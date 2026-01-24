@@ -9,6 +9,72 @@ struct SdzSpotLocation: Codable, Identifiable, Equatable {
     var id: String { "\(lat),\(lng)" }
 }
 
+struct SdzSpotTimeRange: Codable, Equatable {
+    let startMinutes: Int
+    let endMinutes: Int
+}
+
+enum SdzSpotBusinessScheduleType: String, Codable, CaseIterable, Identifiable {
+    case regular
+    case weekdayOnly
+    case weekendOnly
+    case irregular
+    case schoolOnly
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .regular:
+            return "通常"
+        case .weekdayOnly:
+            return "平日のみ"
+        case .weekendOnly:
+            return "週末のみ"
+        case .irregular:
+            return "不定休"
+        case .schoolOnly:
+            return "スクールのみ"
+        }
+    }
+}
+
+struct SdzSpotBusinessHours: Codable, Equatable {
+    let scheduleType: SdzSpotBusinessScheduleType?
+    let is24Hours: Bool
+    let sameAsWeekday: Bool
+    let weekday: SdzSpotTimeRange?
+    let weekend: SdzSpotTimeRange?
+    let note: String?
+}
+
+struct SdzSpotParkAttributes: Codable, Equatable {
+    let officialUrl: String?
+    let businessHours: SdzSpotBusinessHours?
+    let accessInfo: String?
+    let phoneNumber: String?
+}
+
+struct SdzStreetSurfaceCondition: Codable, Equatable {
+    let roughness: String?
+    let crack: String?
+}
+
+struct SdzStreetSection: Codable, Equatable {
+    let type: String
+    let count: Int?
+    let heightCm: Int?
+    let widthCm: Int?
+    let notes: String?
+}
+
+struct SdzStreetAttributes: Codable, Equatable {
+    let surfaceMaterial: String?
+    let surfaceCondition: SdzStreetSurfaceCondition?
+    let sections: [SdzStreetSection]?
+    let difficulty: String?
+}
+
 /// Approval status for a spot.
 enum SdzSpotApprovalStatus: String, Codable {
     case pending
@@ -25,6 +91,9 @@ struct SdzSpot: Codable, Identifiable {
     let tags: [String]
     let images: [String]
     let approvalStatus: SdzSpotApprovalStatus?
+    let parkAttributes: SdzSpotParkAttributes?
+    let streetAttributes: SdzStreetAttributes?
+    let instagramTag: String?
     let userId: String
     let createdAt: Date
     let updatedAt: Date
@@ -43,6 +112,9 @@ extension SdzSpot {
             tags: ["パーク", "ストリート"],
             images: [],
             approvalStatus: nil,
+            parkAttributes: nil,
+            streetAttributes: nil,
+            instagramTag: nil,
             userId: "user",
             createdAt: Date(),
             updatedAt: Date()
