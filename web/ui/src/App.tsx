@@ -5,6 +5,7 @@ import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
 
 const apiUrl = import.meta.env.VITE_SDZ_API_URL || 'http://localhost:8080';
 const SDZ_FAVORITES_PAGE_SIZE = 8;
+const SDZ_TYPE_TAGS = new Set(['パーク', 'ストリート', 'スケートパーク', 'スケートボードパーク']);
 
 function formatCoords(location?: SdzSpot['location']) {
   if (!location) return 'N/A';
@@ -263,6 +264,7 @@ function App() {
   const [sdzAuthMode, setSdzAuthMode] = useState<'login' | 'signup'>('login');
   const [sdzSearchText, setSdzSearchText] = useState('');
   const [sdzSelectedTag, setSdzSelectedTag] = useState('all');
+  const [sdzSelectedType, setSdzSelectedType] = useState('all');
   const [sdzFavorites, setSdzFavorites] = useState<string[]>(getInitialFavorites);
   const [sdzProfileMessage, setSdzProfileMessage] = useState<string | null>(null);
   const [sdzFavoritesPage, setSdzFavoritesPage] = useState(1);
@@ -273,41 +275,51 @@ function App() {
   const sdzAvailableTags = useMemo(() => {
     const tagSet = new Set<string>();
     spots.forEach((spot) => {
-      spot.tags?.forEach((tag) => tagSet.add(tag));
+      spot.tags?.forEach((tag) => {
+        if (!SDZ_TYPE_TAGS.has(tag)) {
+          tagSet.add(tag);
+        }
+      });
     });
     return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
   }, [spots]);
-  const sdzFilteredSpots = useMemo(() => {
-    const normalizedQuery = sdzSearchText.trim().toLowerCase();
-    return spots.filter((spot) => {
-      if (sdzSelectedTag !== 'all' && !spot.tags?.includes(sdzSelectedTag)) {
-        return false;
-      }
-      if (!normalizedQuery) return true;
-      const nameMatch = spot.name.toLowerCase().includes(normalizedQuery);
-      const descMatch = spot.description
-        ? spot.description.toLowerCase().includes(normalizedQuery)
-        : false;
-      const tagMatch = spot.tags?.some((tag) =>
-        tag.toLowerCase().includes(normalizedQuery),
-      );
-      return nameMatch || descMatch || tagMatch;
-    });
-  }, [spots, sdzSearchText, sdzSelectedTag]);
+  const sdzFilteredSpots = useMemo(() => spots, [spots]);
+  const sdzSearchRequest = useMemo(() => {
+    return {
+      query: sdzSearchText,
+      type: sdzSelectedType,
+      tags: sdzSelectedTag === 'all' ? [] : [sdzSelectedTag],
+    };
+  }, [sdzSearchText, sdzSelectedTag, sdzSelectedType]);
 
   const fetchSpots = useCallback(
-    async (signal?: AbortSignal) => {
+    async (
+      signal?: AbortSignal,
+      options?: { query?: string; type?: string; tags?: string[] },
+    ) => {
       try {
+        setLoading(true);
+        setError(null);
         const headers = idToken ? { Authorization: `Bearer ${idToken}` } : undefined;
-        const res = await fetch(`${apiUrl}/sdz/spots`, { signal, headers });
+        const params = new URLSearchParams();
+        const query = options?.query?.trim();
+        if (query) params.set('q', query);
+        const type = options?.type && options.type !== 'all' ? options.type : '';
+        if (type) params.set('type', type);
+        if (options?.tags && options.tags.length > 0) {
+          params.set('tags', options.tags.join(','));
+        }
+        const queryString = params.toString();
+        const url = queryString ? `${apiUrl}/sdz/spots?${queryString}` : `${apiUrl}/sdz/spots`;
+        const res = await fetch(url, { signal, headers });
         if (!res.ok) {
-        throw new Error(`Failed to fetch spots: ${res.status}`);
-      }
-      const data: SdzSpot[] = await res.json();
-      setSpots(data);
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') return;
-      setError((err as Error).message);
+          throw new Error(`Failed to fetch spots: ${res.status}`);
+        }
+        const data: SdzSpot[] = await res.json();
+        setSpots(data);
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') return;
+        setError((err as Error).message);
       } finally {
         setLoading(false);
       }
@@ -317,9 +329,14 @@ function App() {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetchSpots(controller.signal);
-    return () => controller.abort();
-  }, [fetchSpots]);
+    const timer = window.setTimeout(() => {
+      fetchSpots(controller.signal, sdzSearchRequest);
+    }, 300);
+    return () => {
+      controller.abort();
+      window.clearTimeout(timer);
+    };
+  }, [fetchSpots, sdzSearchRequest]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -434,10 +451,11 @@ function App() {
     }
   };
 
-  const handleRefresh = () => fetchSpots();
+  const handleRefresh = () => fetchSpots(undefined, sdzSearchRequest);
   const handleResetFilters = () => {
     setSdzSearchText('');
     setSdzSelectedTag('all');
+    setSdzSelectedType('all');
   };
   const navigate = useNavigate();
   const sdzMySpots = useMemo(
@@ -608,6 +626,18 @@ function App() {
                         value={sdzSearchText}
                         onChange={(e) => setSdzSearchText(e.target.value)}
                       />
+                    </div>
+                    <div className="sdz-search">
+                      <label htmlFor="sdz-type-hero">種別で絞る</label>
+                      <select
+                        id="sdz-type-hero"
+                        value={sdzSelectedType}
+                        onChange={(e) => setSdzSelectedType(e.target.value)}
+                      >
+                        <option value="all">すべて</option>
+                        <option value="park">スケートパーク</option>
+                        <option value="street">ストリート</option>
+                      </select>
                     </div>
                     <div className="sdz-search">
                       <label htmlFor="sdz-tag-hero">タグで絞る</label>

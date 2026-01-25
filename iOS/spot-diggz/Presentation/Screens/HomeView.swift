@@ -15,6 +15,8 @@ struct HomeView: View {
     @State private var draftPinLocation: SdzSpotLocation?
     @State private var isLoading: Bool = false
     @State private var errorMessage: String?
+    @State private var searchTask: Task<Void, Never>?
+    @State private var fetchTask: Task<Void, Never>?
 
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 35.6812, longitude: 139.7671),
@@ -78,7 +80,7 @@ struct HomeView: View {
         }
         .onAppear {
             setInitialCameraPositionIfNeeded()
-            fetchSpots()
+            fetchSpots(query: currentSearchQuery())
         }
         .onReceive(locationManager.$currentCoordinate) { coordinate in
             guard let coordinate = coordinate else {
@@ -95,6 +97,15 @@ struct HomeView: View {
         }
         .navigationTitle("スポット")
         .navigationBarTitleDisplayMode(.inline)
+        .onChange(of: searchText) { _ in
+            scheduleSearch()
+        }
+        .onChange(of: selectedSpotType) { _ in
+            scheduleSearch()
+        }
+        .onChange(of: selectedTags) { _ in
+            scheduleSearch()
+        }
     }
 
     // MARK: - Map Content
@@ -194,7 +205,7 @@ struct HomeView: View {
                         .font(.caption)
                         .foregroundColor(.red)
                     Button("再読み込み") {
-                        fetchSpots()
+                        fetchSpots(query: currentSearchQuery())
                     }
                     .buttonStyle(.borderedProminent)
                 }
@@ -205,7 +216,7 @@ struct HomeView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Button("更新") {
-                        fetchSpots()
+                        fetchSpots(query: currentSearchQuery())
                     }
                     .buttonStyle(.bordered)
                 }
@@ -411,29 +422,7 @@ struct HomeView: View {
 
     /// Filters spots based on the search text and selected tag.
     private var filteredSpots: [SdzSpot] {
-        spots.filter { spot in
-            let matchesSearch: Bool
-            if searchText.isEmpty {
-                matchesSearch = true
-            } else {
-                let target = searchText.lowercased()
-                matchesSearch =
-                    spot.name.lowercased().contains(target)
-                    || (spot.description?.lowercased().contains(target) ?? false)
-                    || spot.tags.contains(where: { $0.lowercased().contains(target) })
-            }
-
-            let matchesType: Bool
-            if let selectedSpotType = selectedSpotType {
-                matchesType = spot.tags.contains(selectedSpotType.tagValue)
-            } else {
-                matchesType = true
-            }
-
-            let matchesTags = selectedTags.allSatisfy { spot.tags.contains($0) }
-
-            return matchesSearch && matchesType && matchesTags
-        }
+        spots
     }
 
     private func toggleTag(_ tag: String) {
@@ -504,13 +493,14 @@ struct HomeView: View {
     }
 
     /// Loads the list of spots from the API.
-    private func fetchSpots() {
+    private func fetchSpots(query: SdzSpotSearchQuery?) {
+        fetchTask?.cancel()
         isLoading = true
         errorMessage = nil
         let apiClient = SdzApiClient(environment: appState.environment, idToken: appState.idToken)
-        Task {
+        fetchTask = Task {
             do {
-                let result = try await apiClient.fetchSpots(includeAuth: true)
+                let result = try await apiClient.fetchSpots(query: query, includeAuth: true)
                 await MainActor.run {
                     self.spots = result
                     self.isLoading = false
@@ -523,6 +513,26 @@ struct HomeView: View {
                 }
             }
         }
+    }
+
+    private func scheduleSearch() {
+        searchTask?.cancel()
+        let query = currentSearchQuery()
+        searchTask = Task {
+            try? await Task.sleep(nanoseconds: 350_000_000)
+            await MainActor.run {
+                fetchSpots(query: query)
+            }
+        }
+    }
+
+    private func currentSearchQuery() -> SdzSpotSearchQuery? {
+        let query = SdzSpotSearchQuery(
+            text: searchText,
+            spotType: selectedSpotType?.rawValue,
+            tags: Array(selectedTags)
+        )
+        return query.isEmpty ? nil : query
     }
 }
 

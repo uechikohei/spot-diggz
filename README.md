@@ -128,10 +128,12 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `gh project item-list 2 --owner uechikohei --limit 50 --format json | jq -r '.items[] | \"#\\(.content.number) \\(.content.title) | Priority: \\(.priority)\"'` ProjectのPriority反映状況を一覧で確認する
 - `gh project item-list 2 --owner uechikohei --limit 50 --format json | jq -r '.items[] | \"#\\(.content.number) \\(.content.title) | Priority: \\(.priority) | Status: \\(.status) | URL: \\(.content.url)\"'` Project課題の一覧を表示する
 - `gh issue list -R uechikohei/spot-diggz --search "KEYWORD" --state all --limit 10` Issueの重複確認のため検索する
+- `gh issue list -R uechikohei/spot-diggz --search "is:open" --limit 50` 未完了Issueを一覧で確認する
 - `gh issue list -R uechikohei/spot-diggz --search "iOS is:open" --limit 50 --json number,title,labels,url --jq '.[] | {number,title,labels:[.labels[].name],url}'` iOS関連の未完了IssueをJSONで一覧化する
 - `gh issue view ISSUE_NUMBER -R uechikohei/spot-diggz --json title,body,url` Issue本文を取得する
 - `gh issue view ISSUE_NUMBER --json number,title,body,labels,state` Issueの概要（番号/本文/ラベル/状態）を確認する
 - `gh issue create -R uechikohei/spot-diggz -t \"TITLE\" -b \"BODY\"` Issueを作成する
+- `gh issue comment ISSUE_NUMBER -R uechikohei/spot-diggz -b \"BODY\"` Issueに根拠コメントを追加する
 - `gh issue close ISSUE_NUMBER -R uechikohei/spot-diggz` IssueをCloseにする
 - `gh issue edit ISSUE_NUMBER -R uechikohei/spot-diggz --title \"TITLE\" --body-file PATH` Issueのタイトル/本文を更新する
 - `gh issue edit ISSUE_NUMBER -R uechikohei/spot-diggz --body \"BODY\"` Issue本文を直接更新する
@@ -189,21 +191,28 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `rg -n "SdzSpotLocation" iOS` iOS内の位置情報モデル参照箇所を検索する
 - `rg -n "struct SdzSpotLocation|SdzSpotLocation" iOS/spot-diggz -g "*.swift"` iOSの位置情報構造体定義と参照箇所を確認する
 - `rg -n "LocationPicker|Map|Location" iOS/spot-diggz/Presentation iOS/spot-diggz/Data iOS/spot-diggz/Domain` iOSの位置情報/Map関連の利用箇所を横断検索する
+- `rg -n "MKLocalSearchCompleter|MKLocalSearch" iOS/spot-diggz/Presentation/Components/SdzLocationPickerView.swift` 位置検索の実装箇所を確認する
+- `rg -n "Route|route" iOS/spot-diggz/Presentation iOS/spot-diggz/Domain iOS/spot-diggz/Data` iOSのルート/ナビ関連の実装箇所を横断検索する
 - `rg -n "ImagePicker|PhotosPicker|PHPicker" iOS/spot-diggz` iOSの画像選択UI関連の実装箇所を検索する
+- `rg -n "drag|drop|onMove|move\\(" iOS/spot-diggz/Presentation` iOSのドラッグ/並び替え関連の実装箇所を検索する
+- `rg -n "SdzSpotImageItem|imageItems" iOS/spot-diggz/Presentation/Screens` iOSのスポット画像管理ロジックの実装箇所を検索する
 - `rg -n "xcshareddata|Package\\.resolved|xcworkspace" .gitignore` .gitignore内にXcode/SwiftPM関連の除外があるか確認する
 - `rg -n "未承認|編集|Edit" iOS/spot-diggz` iOSの編集画面/文言の実装箇所を検索する
 - `rg -n "MyList|マイリスト" iOS/spot-diggz` iOSのマイリスト関連実装を検索する
 - `rg -n "trustLevel|trustSources|approvalStatus" iOS web/api docs` 承認ステータス関連のフィールド参照箇所を横断検索する
+- `rg -n "canRequestApproval|approvalStatus" iOS/spot-diggz/Presentation/Screens/SpotDetailView.swift` iOSの承認申請条件と表示ロジックを確認する
 - `rg -n "CFBundleURLTypes" ..` リポジトリ配下でURLスキーム設定の痕跡を検索する
 - `rg -n "INFOPLIST_KEY_NSLocationWhenInUseUsageDescription" iOS/spot-diggz.xcodeproj/project.pbxproj` 位置情報の利用許可文言設定を確認する
 - `rg -n "Cloud Run|cloud run|run.app|ingress|allUsers|iam|invoker" -S web docs .github` Cloud Run公開設定の痕跡をドキュメントと設定で確認する
 - `rg -n "^  notify:" .github/workflows/ci.yml` ci.yml内のnotifyジョブ重複を確認する
 - `git status -sb` 作業ブランチと差分の概要を確認する
 - `git status --short` 変更ファイルを短い形式で確認する
+- `git checkout -b BRANCH_NAME` 新しい作業ブランチを作成して切り替える
 - `rg -n "cloud_run|run.invoker|allUsers|invoker|ingress" -S web/resources` TerraformのCloud Run公開/IAM設定を確認する
 - `rg -n "SdzApiClient|SdzEnvironment|SdzAppState|fetchSpots|fetchSpot" iOS/spot-diggz` iOSのAPI連携関連コードをまとめて検索する
 - `rg -n "SdzErrorResponse|API設計" iOS/SDZ_IOS_DESIGN.md` iOS設計書内のAPI/エラーモデル記載を確認する
 - `sed -n '30,120p' iOS/SDZ_IOS_DESIGN.md` iOS設計書の画面/ナビゲーション章を確認する
+- `sed -n '1,200p' iOS/spot-diggz/Presentation/Components/SdzMapNavigator.swift` iOSのナビ起動ロジックを確認する
 - `rg -n "xcodeproj|xcworkspace|xcuserdata" .gitignore` .gitignoreのXcode関連除外設定を確認する
 - `rg -n "xcodeproj|xcworkspace|xcuserdata|xcuserstate" .gitignore` .gitignoreのxcuserstate除外有無を確認する
 - `rg --files iOS/Data iOS/Domain iOS/Presentation` iOS配下の実装ファイル一覧を確認する
@@ -213,6 +222,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `rg -n "new_with_id" web/api/src` SdzSpot生成処理の利用箇所を検索する
 - `rg -n "users/me|current user|fetch_current" web/api/src` APIのユーザー取得処理を検索する
 - `rg -n "SpotRepository|spot_repo" web/api/src/application` SpotRepositoryの利用箇所を検索する
+- `rg -n "mylist" web/api/src` MyList API/リポジトリの実装箇所を検索する
 - `rg -n "struct SdzSpot|impl SdzSpot" web/api/src/domain` SdzSpotの定義/実装箇所を検索する
 - `rg -n "fn update\\(" web/api/src/domain/models.rs` SdzSpotのupdate実装位置を確認する
 - `rg -n "SdzSpotBusinessHours|SpotBusiness" web/api/src/domain/models.rs` 営業時間モデルの定義位置を確認する
@@ -221,6 +231,33 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `rg -n "streetAttributes|street_attributes" web/api iOS` API/iOS両方のストリート属性関連実装を横断検索する
 - `rg -n "update_spot|UpdateSpotInput|/sdz/spots" web/api/src/presentation` spots更新ハンドラ/入力の実装箇所を検索する
 - `rg -n "createSpot" iOS/spot-diggz/Data/Repositories/SdzApiClient.swift` iOSのspot作成API呼び出し箇所を検索する
+- `rg -n "search|filter|タグ|tag" web/ui/src` Web UIの検索/フィルタ実装箇所を検索する
+- `rg -n "search|filter|query" web/api/src` API側の検索/フィルタ関連実装を検索する
+- `ls web/api/src/presentation/handlers` APIハンドラ一覧を確認する
+- `sed -n '1,240p' web/api/src/presentation/router.rs` APIルーティングの詳細を確認する
+- `sed -n '1,260p' web/api/src/presentation/handlers/spot_handler.rs` spot APIの入力/認証条件を確認する
+- `sed -n '1,200p' web/api/src/presentation/handlers/user_handler.rs` users/me APIの処理概要を確認する
+- `sed -n '1,220p' web/api/src/presentation/handlers/mylist_handler.rs` mylist APIの入力/レスポンスを確認する
+- `sed -n '1,260p' web/api/src/application/use_cases/create_spot_use_case.rs` CreateSpot入力/バリデーションを確認する
+- `sed -n '1,260p' web/api/src/application/use_cases/update_spot_use_case.rs` UpdateSpot入力/承認更新条件を確認する
+- `sed -n '1,200p' web/api/src/application/use_cases/list_spots_use_case.rs` 一覧取得の公開/認証条件を確認する
+- `sed -n '1,200p' web/api/src/application/use_cases/get_spot_use_case.rs` 詳細取得の公開/認証条件を確認する
+- `sed -n '1,160p' web/api/src/application/use_cases/add_mylist_use_case.rs` mylist追加の入力形式を確認する
+- `sed -n '1,200p' web/api/src/application/use_cases/generate_upload_url_use_case.rs` upload-urlの入力と拡張子対応を確認する
+- `sed -n '1,200p' web/api/src/application/use_cases/storage_repository.rs` upload-urlのレスポンス形式を確認する
+- `rg -n "struct SdzSpot|enum SdzSpotApprovalStatus|SdzSpotParkAttributes|SdzStreetAttributes|SdzSpotBusinessHours" web/api/src/domain/models.rs` スポット/属性モデル定義位置を確認する
+- `rg -n "validate_spot|images must|MAX_IMAGES" web/api/src/domain/models.rs` スポット入力のバリデーション条件を確認する
+- `sed -n '1,200p' web/api/src/domain/models.rs` APIのモデル定義を確認する
+- `sed -n '220,340p' web/api/src/domain/models.rs` スポットのバリデーション定義を確認する
+- `sed -n '260,520p' web/api/src/infrastructure/firestore_spot_repository.rs` Firestoreのスポット保存マッピングを確認する
+- `sed -n '1,200p' web/api/src/presentation/middleware/auth.rs` Authorizationヘッダー仕様を確認する
+- `sed -n '1,200p' web/api/src/presentation/middleware/client.rs` X-SDZ-Clientヘッダーの仕様を確認する
+- `sed -n '1,200p' web/api/src/presentation/error.rs` APIエラーレスポンスの形式を確認する
+- `sed -n '1,260p' iOS/spot-diggz/Data/Repositories/SdzApiClient.swift` iOS側のAPIリクエスト/ヘッダーを確認する
+- `sed -n '1,200p' iOS/spot-diggz/Domain/Entities/SdzCreateSpotInput.swift` iOSのスポット作成入力を確認する
+- `sed -n '1,220p' iOS/spot-diggz/Domain/Entities/SdzUpdateSpotInput.swift` iOSのスポット更新入力を確認する
+- `sed -n '1,220p' iOS/spot-diggz/Domain/Entities/SdzSpot.swift` iOSのスポットモデル定義を確認する
+- `sed -n '1,200p' iOS/spot-diggz/Domain/Entities/SdzUser.swift` iOSのユーザーモデル定義を確認する
 - `sed -n '1,220p' web/api/src/application/use_cases/update_spot_use_case.rs` spot更新UseCaseの入力/反映ロジックを確認する
 - `sed -n '1,200p' web/api/src/domain/models.rs` spot/属性モデルの定義を確認する
 - `sed -n '1,120p' web/api/src/infrastructure/firestore_spot_repository.rs` Firestoreへのupsert処理を確認する
@@ -292,8 +329,10 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `git update-index --remove -- PATH` 追跡対象ファイルをインデックスから外す
 - `git update-index --force-remove -- PATH` 追跡済みファイルを削除扱いでインデックスから外す
 - `git switch BRANCH` ブランチを切り替える
+- `git branch -d BRANCH` ローカルブランチを削除する（未マージの場合は失敗）
 - `git merge --no-ff BRANCH` ブランチをマージしてマージコミットを作成する
 - `git push origin BRANCH` 指定ブランチをリモートへプッシュする
+- `git push origin --delete BRANCH` リモートブランチを削除する
 - `git status -sb` 変更状況と現在ブランチを短く確認する
 - `cargo fmt` Rust APIのフォーマットを自動整形する
 - `cargo fmt -- --check` Rust APIのフォーマットチェックを行う
@@ -325,15 +364,31 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `rg -n "validate_spot|SdzSpotValidation" web/api/src/domain` スポット検証ロジックの位置を確認する
 - `rg -n "EditSpotView" -S iOS/spot-diggz` iOS編集画面の参照箇所を検索する
 - `rg -n "fetchSpots|spots" iOS/spot-diggz/Presentation/Screens` iOS画面のスポット取得処理を検索する
+- `rg -n "fetchSpots" iOS/spot-diggz` iOS全体でスポット取得処理の参照箇所を検索する
+- `rg -n "search|filter|タグ|tag|type|spotType" iOS/spot-diggz/Presentation` iOSの検索/フィルタ/種別UI実装を検索する
+- `rg -n "SdzSpotCategory|spotType|SpotType" iOS/spot-diggz/Domain iOS/spot-diggz/Presentation` iOSの種別定義と参照箇所を検索する
+- `rg -n "SdzSpotSearchQuery|fetchSpots\\(query|queryItems" iOS/spot-diggz` iOSの検索クエリ生成/利用箇所を検索する
+- `rg -n "search|filter|tag|type" web/ui/src` Web UIの検索/フィルタ実装箇所を検索する
+- `rg -n "q=|type=|tags=|searchParams|URLSearchParams|fetchSpots" web/ui/src/App.tsx` Web UIの検索パラメータ組み立て/取得処理を確認する
+- `rg -n "handleResetFilters" web/ui/src/App.tsx` Web UIのフィルタリセット処理を検索する
+- `rg -n "SdzSpotListQuery|spot_type|q|tags" web/api/src/presentation/handlers/spot_handler.rs` APIのスポット一覧クエリ定義/処理箇所を確認する
+- `rg -n "SpotSearchFilter|spot_type|tags|query" web/api/src/application/use_cases/list_spots_use_case.rs` APIのスポット検索フィルタ実装箇所を確認する
 - `sed -n '1,200p' iOS/spot-diggz/Domain/Entities/SdzSpot.swift` iOSスポットモデル定義を確認する
+- `sed -n '1,120p' iOS/spot-diggz/Domain/Entities/SdzSpotSearchQuery.swift` iOS検索クエリ定義を確認する
 - `sed -n '1,220p' web/api/src/domain/models.rs` APIドメインモデルの定義を確認する
 - `sed -n '220,320p' web/api/src/domain/models.rs` スポット検証ロジックの詳細を確認する
+- `sed -n '110,220p' web/api/src/application/use_cases/list_spots_use_case.rs` APIのスポット一覧フィルタ実装を確認する
+- `sed -n '220,420p' web/api/src/application/use_cases/list_spots_use_case.rs` APIのスポット一覧テストを確認する
+- `sed -n '20,160p' web/api/src/presentation/handlers/spot_handler.rs` APIのスポット一覧ハンドラ/クエリ処理を確認する
+- `sed -n '260,380p' web/ui/src/App.tsx` Web UIの検索/取得処理周辺を確認する
 - `sed -n '1,220p' iOS/spot-diggz/Data/Repositories/SdzApiClient.swift` iOSのAPIクライアント実装を確認する
+- `sed -n '1,120p' iOS/spot-diggz/Data/Repositories/SdzApiClient.swift` iOSのAPIクライアント冒頭実装を確認する
 - `sed -n '220,420p' iOS/spot-diggz/Data/Repositories/SdzApiClient.swift` iOSのAPIクライアント共通処理を確認する
 - `sed -n '1,240p' iOS/spot-diggz/Presentation/Screens/EditSpotView.swift` 編集画面の初期化/フォーム構成を確認する
 - `sed -n '240,420p' iOS/spot-diggz/Presentation/Screens/EditSpotView.swift` 編集画面の入力フォームと保存処理前半を確認する
 - `sed -n '480,620p' iOS/spot-diggz/Presentation/Screens/EditSpotView.swift` 編集画面のストリート属性生成と検証を確認する
 - `sed -n '60,140p' iOS/spot-diggz/Presentation/Screens/SpotDetailView.swift` 詳細画面の概要表示と属性セクションを確認する
+- `sed -n '300,380p' README.md` README内のコマンド一覧周辺を確認する
 - `sed -n '160,220p' iOS/spot-diggz/Presentation/Screens/SpotDetailView.swift` 詳細画面の編集/アクション導線を確認する
 - `sed -n '220,520p' iOS/spot-diggz/Presentation/Screens/SpotDetailView.swift` 詳細画面の属性表示と申請処理を確認する
 - `sed -n '520,760p' iOS/spot-diggz/Presentation/Screens/SpotDetailView.swift` 詳細画面のナビ/Instagram連携処理を確認する

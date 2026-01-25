@@ -47,9 +47,16 @@ final class SdzApiClient {
         self.urlSession = urlSession
     }
 
-    /// Fetches all spots.
-    func fetchSpots(includeAuth: Bool = false) async throws -> [SdzSpot] {
-        try await request(path: "/sdz/spots", includeAuthIfAvailable: includeAuth)
+    /// Fetches spots with optional search query.
+    func fetchSpots(
+        query: SdzSpotSearchQuery? = nil,
+        includeAuth: Bool = false
+    ) async throws -> [SdzSpot] {
+        try await request(
+            path: "/sdz/spots",
+            queryItems: query?.queryItems,
+            includeAuthIfAvailable: includeAuth
+        )
     }
 
     /// Fetches a specific spot by ID.
@@ -181,6 +188,7 @@ final class SdzApiClient {
 
     private func request<T: Decodable>(
         path: String,
+        queryItems: [URLQueryItem]? = nil,
         method: String = "GET",
         body: Data? = nil,
         requiresAuth: Bool = false,
@@ -189,6 +197,7 @@ final class SdzApiClient {
     ) async throws -> T {
         let request = try buildRequest(
             path: path,
+            queryItems: queryItems,
             method: method,
             body: body,
             requiresAuth: requiresAuth,
@@ -224,13 +233,14 @@ final class SdzApiClient {
 
     private func buildRequest(
         path: String,
+        queryItems: [URLQueryItem]?,
         method: String,
         body: Data?,
         requiresAuth: Bool,
         includeAuthIfAvailable: Bool,
         requiresMobileClient: Bool
     ) throws -> URLRequest {
-        let url = buildUrl(path: path)
+        let url = buildUrl(path: path, queryItems: queryItems)
         var request = URLRequest(url: url)
         request.httpMethod = method
         request.setValue("application/json", forHTTPHeaderField: "Accept")
@@ -256,12 +266,19 @@ final class SdzApiClient {
         return request
     }
 
-    private func buildUrl(path: String) -> URL {
+    private func buildUrl(path: String, queryItems: [URLQueryItem]?) -> URL {
         var normalized = path
         if normalized.hasPrefix("/") {
             normalized.removeFirst()
         }
-        return environment.baseURL.appendingPathComponent(normalized)
+        let baseUrl = environment.baseURL.appendingPathComponent(normalized)
+        guard var components = URLComponents(url: baseUrl, resolvingAgainstBaseURL: false) else {
+            return baseUrl
+        }
+        if let queryItems, !queryItems.isEmpty {
+            components.queryItems = queryItems
+        }
+        return components.url ?? baseUrl
     }
 
     private func decoder() -> JSONDecoder {
