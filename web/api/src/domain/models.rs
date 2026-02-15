@@ -50,6 +50,7 @@ pub enum SdzSpotBusinessScheduleType {
     WeekendOnly,
     Irregular,
     SchoolOnly,
+    Manual,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -103,6 +104,7 @@ pub struct SdzStreetAttributes {
     pub surface_condition: Option<SdzStreetSurfaceCondition>,
     pub sections: Option<Vec<SdzStreetSection>>,
     pub difficulty: Option<String>,
+    pub notes: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -122,6 +124,16 @@ pub struct SdzSpot {
     pub sdz_street_attributes: Option<SdzStreetAttributes>,
     #[serde(rename = "instagramTag", skip_serializing_if = "Option::is_none")]
     pub sdz_instagram_tag: Option<String>,
+    #[serde(
+        rename = "instagramLocationUrl",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub sdz_instagram_location_url: Option<String>,
+    #[serde(
+        rename = "instagramProfileUrl",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub sdz_instagram_profile_url: Option<String>,
     #[serde(rename = "userId")]
     pub sdz_user_id: String,
     #[serde(rename = "createdAt")]
@@ -155,6 +167,8 @@ impl SdzSpot {
         park_attributes: Option<SdzSpotParkAttributes>,
         street_attributes: Option<SdzStreetAttributes>,
         instagram_tag: Option<String>,
+        instagram_location_url: Option<String>,
+        instagram_profile_url: Option<String>,
         sdz_user_id: String,
     ) -> Result<Self, SdzSpotValidationError> {
         validate_spot(
@@ -176,6 +190,8 @@ impl SdzSpot {
             sdz_park_attributes: park_attributes,
             sdz_street_attributes: street_attributes,
             sdz_instagram_tag: instagram_tag,
+            sdz_instagram_location_url: instagram_location_url,
+            sdz_instagram_profile_url: instagram_profile_url,
             sdz_user_id,
             created_at: now_jst(),
             updated_at: now_jst(),
@@ -201,6 +217,8 @@ impl SdzSpot {
         park_attributes: Option<SdzSpotParkAttributes>,
         street_attributes: Option<SdzStreetAttributes>,
         instagram_tag: Option<String>,
+        instagram_location_url: Option<String>,
+        instagram_profile_url: Option<String>,
     ) -> Result<Self, SdzSpotValidationError> {
         validate_spot(
             &name,
@@ -221,6 +239,8 @@ impl SdzSpot {
             sdz_park_attributes: park_attributes,
             sdz_street_attributes: street_attributes,
             sdz_instagram_tag: instagram_tag,
+            sdz_instagram_location_url: instagram_location_url,
+            sdz_instagram_profile_url: instagram_profile_url,
             sdz_user_id: self.sdz_user_id.clone(),
             created_at: self.created_at,
             updated_at: now_jst(),
@@ -343,7 +363,9 @@ fn validate_business_hours(hours: &SdzSpotBusinessHours) -> Result<(), SdzSpotVa
                 Err(SdzSpotValidationError::InvalidBusinessHours)
             }
         }
-        SdzSpotBusinessScheduleType::Irregular | SdzSpotBusinessScheduleType::SchoolOnly => {
+        SdzSpotBusinessScheduleType::Irregular
+        | SdzSpotBusinessScheduleType::SchoolOnly
+        | SdzSpotBusinessScheduleType::Manual => {
             if hours
                 .note
                 .as_ref()

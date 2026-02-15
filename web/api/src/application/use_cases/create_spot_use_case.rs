@@ -33,6 +33,8 @@ impl SdzCreateSpotUseCase {
             park_attributes,
             street_attributes,
             instagram_tag,
+            instagram_location_url,
+            instagram_profile_url,
         } = input;
         let images = images.unwrap_or_default();
 
@@ -60,6 +62,8 @@ impl SdzCreateSpotUseCase {
             park_attributes,
             street_attributes,
             instagram_tag,
+            instagram_location_url,
+            instagram_profile_url,
             auth_user.sdz_user_id,
         )
         .map_err(map_validation_error)?;
@@ -83,6 +87,10 @@ pub struct CreateSpotInput {
     pub street_attributes: Option<crate::domain::models::SdzStreetAttributes>,
     #[serde(rename = "instagramTag")]
     pub instagram_tag: Option<String>,
+    #[serde(rename = "instagramLocationUrl")]
+    pub instagram_location_url: Option<String>,
+    #[serde(rename = "instagramProfileUrl")]
+    pub instagram_profile_url: Option<String>,
 }
 
 #[derive(Debug, Clone, serde::Deserialize)]
@@ -113,6 +121,8 @@ mod tests {
             park_attributes: None,
             street_attributes: None,
             instagram_tag: None,
+            instagram_location_url: None,
+            instagram_profile_url: None,
         }
     }
 
@@ -122,7 +132,9 @@ mod tests {
         let auth = SdzAuthUser {
             sdz_user_id: "user-1".into(),
         };
-        let input = build_input();
+        let mut input = build_input();
+        input.instagram_location_url =
+            Some("https://www.instagram.com/explore/locations/271647589/".to_string());
         let use_case = SdzCreateSpotUseCase::new();
 
         let result = use_case.execute(repo.clone(), auth, input).await.unwrap();
@@ -132,6 +144,10 @@ mod tests {
         assert!(!result.sdz_spot_id.is_empty());
         assert_eq!(result.tags.len(), 1);
         assert!(result.sdz_approval_status.is_none());
+        assert_eq!(
+            result.sdz_instagram_location_url.as_deref(),
+            Some("https://www.instagram.com/explore/locations/271647589/")
+        );
         assert!(repo
             .find_by_id(&result.sdz_spot_id)
             .await
@@ -178,6 +194,8 @@ mod tests {
                 None,
                 None,
                 None,
+                None,
+                None,
                 auth.sdz_user_id.clone(),
             )
             .unwrap();
@@ -193,6 +211,8 @@ mod tests {
             park_attributes: None,
             street_attributes: None,
             instagram_tag: None,
+            instagram_location_url: None,
+            instagram_profile_url: None,
         };
         let err = use_case.execute(repo, auth, input).await.unwrap_err();
         match err {
@@ -218,6 +238,8 @@ mod tests {
             park_attributes: None,
             street_attributes: None,
             instagram_tag: None,
+            instagram_location_url: None,
+            instagram_profile_url: None,
         };
 
         let err = use_case.execute(repo, auth, input).await.unwrap_err();

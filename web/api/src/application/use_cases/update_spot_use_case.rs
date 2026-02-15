@@ -59,6 +59,16 @@ impl SdzUpdateSpotUseCase {
         } else {
             existing.sdz_instagram_tag.clone()
         };
+        let instagram_location_url = if input.instagram_location_url.is_some() {
+            input.instagram_location_url
+        } else {
+            existing.sdz_instagram_location_url.clone()
+        };
+        let instagram_profile_url = if input.instagram_profile_url.is_some() {
+            input.instagram_profile_url
+        } else {
+            existing.sdz_instagram_profile_url.clone()
+        };
         let approval_status =
             resolve_approval_status(existing.sdz_approval_status.clone(), input.approval_status)?;
 
@@ -73,6 +83,8 @@ impl SdzUpdateSpotUseCase {
                 park_attributes,
                 street_attributes,
                 instagram_tag,
+                instagram_location_url,
+                instagram_profile_url,
             )
             .map_err(map_validation_error)?;
 
@@ -97,6 +109,10 @@ pub struct UpdateSpotInput {
     pub street_attributes: Option<crate::domain::models::SdzStreetAttributes>,
     #[serde(rename = "instagramTag")]
     pub instagram_tag: Option<String>,
+    #[serde(rename = "instagramLocationUrl")]
+    pub instagram_location_url: Option<String>,
+    #[serde(rename = "instagramProfileUrl")]
+    pub instagram_profile_url: Option<String>,
 }
 
 #[derive(Debug, Clone, serde::Deserialize)]
@@ -151,6 +167,8 @@ mod tests {
             None,
             None,
             None,
+            None,
+            None,
             user_id.to_string(),
         )
         .expect("valid spot")
@@ -170,6 +188,8 @@ mod tests {
             park_attributes: None,
             street_attributes: None,
             instagram_tag: None,
+            instagram_location_url: None,
+            instagram_profile_url: None,
         }
     }
 
@@ -179,6 +199,7 @@ mod tests {
             surface_condition: None,
             sections: None,
             difficulty: Some("beginner".to_string()),
+            notes: None,
         }
     }
 
@@ -190,10 +211,13 @@ mod tests {
         let auth = SdzAuthUser {
             sdz_user_id: "user-1".into(),
         };
+        let mut input = build_input();
+        input.instagram_location_url =
+            Some("https://www.instagram.com/explore/locations/271647589/".to_string());
 
         let use_case = SdzUpdateSpotUseCase::new();
         let result = use_case
-            .execute(repo.clone(), auth, spot.sdz_spot_id.clone(), build_input())
+            .execute(repo.clone(), auth, spot.sdz_spot_id.clone(), input)
             .await
             .unwrap();
 
@@ -201,6 +225,10 @@ mod tests {
         assert_eq!(result.name, "updated");
         assert_eq!(result.sdz_user_id, "user-1");
         assert!(result.sdz_approval_status.is_none());
+        assert_eq!(
+            result.sdz_instagram_location_url.as_deref(),
+            Some("https://www.instagram.com/explore/locations/271647589/")
+        );
     }
 
     #[tokio::test]
