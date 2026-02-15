@@ -1,4 +1,6 @@
 /.DS_Store
+.iterm-color
+/node_modules/
 /web/api/target/
 /web/api/.env
 /web/ui/.env
@@ -14,4 +16,7 @@
 /web/resources/terraform.tfstate*
 /trivy-results.sarif
 /iOS/spot-diggz.xcodeproj/project.xcworkspace/xcuserdata/
+/iOS/spot-diggz.xcodeproj/xcuserdata/
+**/xcschememanagement.plist
 **/*.xcuserstate
+**/GoogleService-Info.plist

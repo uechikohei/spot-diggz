@@ -29,18 +29,20 @@ spot-diggzのCD（継続的デプロイ）の確定仕様を記載する。
 
 ## フロー概要
 
-1) GitHub Actions が `develop` / `release/*` / `master` の push を検知している  
-2) WIF で GCP に認証している  
-3) Cloud Build で API をビルドし、Artifact Registry に push している  
-4) Cloud Run を更新している  
-5) UI をビルドし、GCS に配信している  
+1. GitHub Actions が `develop` / `release/*` / `master` の push を検知している
+2. WIF で GCP に認証している
+3. Cloud Build で API をビルドし、Artifact Registry に push している
+4. Cloud Run を更新している
+5. UI をビルドし、GCS に配信している
 
 ## 命名規則（CDで使う名称）
 
+CLAUDE.md「命名規約（4層ティア）> Tier 3」に準拠する。
+
 - Cloud Run サービス名: `sdz-{stage}-api`
 - Cloud Run イメージ: `{region}-docker.pkg.dev/sdz-{stage}/sdz-{stage}-api/sdz-api:latest`
-- UI バケット名: `sdz-{stage}-ui-bucket`
-- 画像バケット名: `sdz-{stage}-img-bucket`
+- UI バケット名: `sdz-{stage}-ui-hosts`
+- 画像バケット名: `sdz-{stage}-img-spots`
 
 ## 公開ポリシー
 
