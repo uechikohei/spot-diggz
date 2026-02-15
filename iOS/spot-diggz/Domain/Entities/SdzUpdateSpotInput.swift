@@ -10,5 +10,4 @@ struct SdzUpdateSpotInput: Codable {
     let approvalStatus: SdzSpotApprovalStatus?
     let parkAttributes: SdzSpotParkAttributes?
     let streetAttributes: SdzStreetAttributes?
-    let instagramTag: String?
 }

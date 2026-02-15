@@ -1,6 +1,5 @@
 import SwiftUI
 import CoreLocation
-import UIKit
 
 /// Editing screen for a spot posted by the current user.
 struct EditSpotView: View {
@@ -24,20 +23,29 @@ struct EditSpotView: View {
     @State private var parkWeekdayEnd: Date
     @State private var parkWeekendStart: Date
     @State private var parkWeekendEnd: Date
-    @State private var streetSurfaceMaterial: String
-    @State private var streetSurfaceRoughness: String
-    @State private var streetSurfaceCrack: String
-    @State private var streetDifficulty: String
+    @State private var streetSurfaceMaterialOption: String
+    @State private var streetSurfaceMaterialCustom: String
+    @State private var streetRoughnessLevel: Int?
+    @State private var streetCrackLevel: Int?
+    @State private var streetDifficultyLevel: Int?
+    @State private var streetNotes: String
     @State private var streetSections: [SdzStreetSectionInput]
-    @State private var instagramTag: String
     @State private var location: SdzSpotLocation?
     @State private var imageItems: [SdzSpotImageItem]
     @State private var isSaving: Bool = false
     @State private var saveMessage: String?
     @State private var showLocationPickerSheet: Bool = false
     @State private var showImagePicker: Bool = false
+    @State private var showSharedLocationAlert: Bool = false
+    @State private var showSharedLocationErrorAlert: Bool = false
+    @State private var showShareHelp: Bool = false
+    @State private var sharedLocationCandidate: SdzSpotLocation?
+    @State private var sharedLocationName: String = ""
+    @State private var sharedLocationErrorMessage: String = ""
     @State private var showUrlPickerSheet: Bool = false
     private let maxImagesPerSpot: Int = 3
+    private let streetSurfaceOptions: [String] = ["未入力", "コンクリート", "アスファルト", "木製", "その他"]
+    @State private var shouldApplyCurrentLocation: Bool = false
 
     init(spot: SdzSpot, onUpdated: ((SdzSpot) -> Void)? = nil) {
         self.spot = spot
@@ -94,12 +102,37 @@ struct EditSpotView: View {
                 fallback: SdzTimeDefaults.weekendEnd
             )
         )
-        _streetSurfaceMaterial = State(initialValue: streetAttributes?.surfaceMaterial ?? "")
-        _streetSurfaceRoughness = State(initialValue: streetAttributes?.surfaceCondition?.roughness ?? "")
-        _streetSurfaceCrack = State(initialValue: streetAttributes?.surfaceCondition?.crack ?? "")
-        _streetDifficulty = State(initialValue: streetAttributes?.difficulty ?? "")
+        let surfaceOptions = ["未入力", "コンクリート", "アスファルト", "木製", "その他"]
+        let parseLevel: (String?) -> Int? = { value in
+            guard let trimmed = value?.trimmingCharacters(in: .whitespacesAndNewlines),
+                  let level = Int(trimmed),
+                  (1...5).contains(level) else {
+                return nil
+            }
+            return level
+        }
+
+        let materialValue = streetAttributes?.surfaceMaterial?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let resolvedMaterialOption: String
+        let resolvedMaterialCustom: String
+        if materialValue.isEmpty {
+            resolvedMaterialOption = "未入力"
+            resolvedMaterialCustom = ""
+        } else if surfaceOptions.contains(materialValue) {
+            resolvedMaterialOption = materialValue
+            resolvedMaterialCustom = ""
+        } else {
+            resolvedMaterialOption = "その他"
+            resolvedMaterialCustom = materialValue
+        }
+
+        _streetSurfaceMaterialOption = State(initialValue: resolvedMaterialOption)
+        _streetSurfaceMaterialCustom = State(initialValue: resolvedMaterialCustom)
+        _streetRoughnessLevel = State(initialValue: parseLevel(streetAttributes?.surfaceCondition?.roughness))
+        _streetCrackLevel = State(initialValue: parseLevel(streetAttributes?.surfaceCondition?.crack))
+        _streetDifficultyLevel = State(initialValue: parseLevel(streetAttributes?.difficulty))
+        _streetNotes = State(initialValue: streetAttributes?.notes ?? "")
         _streetSections = State(initialValue: sectionInputs)
-        _instagramTag = State(initialValue: spot.instagramTag ?? "")
         _location = State(initialValue: spot.location)
         _imageItems = State(initialValue: spot.images.map { SdzSpotImageItem(remoteUrl: $0) })
     }
@@ -124,24 +157,23 @@ struct EditSpotView: View {
                 TextField("例: パーク, ストリート", text: $tagsString)
             }
 
-            Section(header: Text("位置情報")) {
-                SdzLocationPickerView(selectedLocation: $location, height: 360)
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
-                if location == nil {
-                    Text("地図をタップして位置を選択")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                HStack {
-                    Button("現在地を設定") {
+            Section(header: locationSectionHeader) {
+                SdzLocationPickerView(
+                    selectedLocation: $location,
+                    height: 360,
+                    onRequestCurrentLocation: {
+                        shouldApplyCurrentLocation = true
                         locationManager.requestCurrentLocation()
-                    }
-                    Spacer()
-                    Button("地図を拡大して選択") {
+                    },
+                    onRequestExpandedSelection: {
                         showLocationPickerSheet = true
                     }
-                }
+                )
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                Text("地図をタップしてピンを置きます。")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
                 if locationManager.authorizationStatus == .denied {
                     Text("位置情報の許可が必要です。")
                         .foregroundColor(.red)
@@ -181,8 +213,8 @@ struct EditSpotView: View {
                     }
                     .pickerStyle(.menu)
 
-                    if parkScheduleType == .irregular || parkScheduleType == .schoolOnly {
-                        TextField("営業時間の補足 (例: 不定休/スクール専用)", text: $parkScheduleNote)
+                    if parkScheduleType == .irregular || parkScheduleType == .schoolOnly || parkScheduleType == .manual {
+                        TextField("営業時間の補足 (例: 不定休/スクール専用/手動入力)", text: $parkScheduleNote)
                         Text("詳細は公式サイトや現地案内をご確認ください。")
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -236,7 +268,7 @@ struct EditSpotView: View {
                                     selection: $parkWeekendEnd,
                                     displayedComponents: .hourAndMinute
                                 )
-                            case .irregular, .schoolOnly:
+                            case .irregular, .schoolOnly, .manual:
                                 EmptyView()
                             }
                         }
@@ -247,12 +279,36 @@ struct EditSpotView: View {
             }
 
             Section(header: Text(spotCategory == .park ? "路面・セクション（任意）" : "ストリート情報")) {
-                TextField("路面の材質", text: $streetSurfaceMaterial)
-                HStack {
-                    TextField("粗さ", text: $streetSurfaceRoughness)
-                    TextField("ひび割れ", text: $streetSurfaceCrack)
+                Picker("路面", selection: $streetSurfaceMaterialOption) {
+                    ForEach(streetSurfaceOptions, id: \.self) { option in
+                        Text(option).tag(option)
+                    }
                 }
-                TextField("難易度", text: $streetDifficulty)
+                .pickerStyle(.menu)
+                .onChange(of: streetSurfaceMaterialOption) { _, newValue in
+                    if newValue != "その他" {
+                        streetSurfaceMaterialCustom = ""
+                    }
+                }
+                if streetSurfaceMaterialOption == "その他" {
+                    TextField("路面の詳細を入力", text: $streetSurfaceMaterialCustom)
+                }
+                ratingPicker(
+                    title: "粗さ",
+                    selection: $streetRoughnessLevel,
+                    helpText: "1: スムーズ / 3: 気にならない / 5: 悪い"
+                )
+                ratingPicker(
+                    title: "ひび割れ",
+                    selection: $streetCrackLevel,
+                    helpText: "1: ほぼない / 3: たまにある / 5: 多い"
+                )
+                ratingPicker(
+                    title: "難易度",
+                    selection: $streetDifficultyLevel,
+                    helpText: "1: 初心者には難しい / 3: 幅広く楽しめる / 5: 上級者向け"
+                )
+                TextField("備考（補足など）", text: $streetNotes, axis: .vertical)
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text("セクション")
@@ -270,11 +326,6 @@ struct EditSpotView: View {
                 }
             }
 
-            Section(header: Text("Instagram")) {
-                TextField("ハッシュタグ (例: osaka-skate)", text: $instagramTag)
-                    .textInputAutocapitalization(.never)
-            }
-
             Section {
                 if let saveMessage = saveMessage {
                     Text(saveMessage)
@@ -287,8 +338,68 @@ struct EditSpotView: View {
             }
         }
         .navigationTitle("投稿を編集")
-        .sheet(isPresented: $showLocationPickerSheet) {
-            SdzLocationPickerSheetView(selectedLocation: $location)
+        .onAppear {
+            appState.isEditingSpot = true
+            applyPendingSharedIfNeeded()
+        }
+        .onDisappear {
+            appState.isEditingSpot = false
+        }
+        .onChange(of: appState.pendingSharedLocationForEdit) { _, newValue in
+            guard let newValue = newValue else {
+                return
+            }
+            sharedLocationCandidate = newValue
+            sharedLocationName = appState.pendingSharedLocationNameForEdit ?? ""
+            showSharedLocationAlert = true
+        }
+        .onChange(of: appState.pendingSharedLocationErrorForEdit) { _, newValue in
+            guard let newValue = newValue else {
+                return
+            }
+            sharedLocationErrorMessage = newValue
+            showSharedLocationErrorAlert = true
+        }
+        .alert("位置情報を更新しますか？", isPresented: $showSharedLocationAlert) {
+            Button("更新") {
+                if let location = sharedLocationCandidate {
+                    self.location = location
+                }
+                appState.pendingSharedLocationForEdit = nil
+                appState.pendingSharedLocationNameForEdit = nil
+            }
+            Button("キャンセル", role: .cancel) {
+                appState.pendingSharedLocationForEdit = nil
+                appState.pendingSharedLocationNameForEdit = nil
+            }
+        } message: {
+            if !sharedLocationName.isEmpty {
+                Text(sharedLocationName)
+            } else if let location = sharedLocationCandidate {
+                Text("座標: \(location.lat), \(location.lng)")
+            } else {
+                Text("位置情報が見つかりませんでした。")
+            }
+        }
+        .alert("位置情報を取り込めませんでした", isPresented: $showSharedLocationErrorAlert) {
+            Button("OK") {
+                appState.pendingSharedLocationErrorForEdit = nil
+            }
+        } message: {
+            Text(sharedLocationErrorMessage)
+        }
+        .alert("共有で位置情報を取り込む手順", isPresented: $showShareHelp) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("1) Apple/Googleマップで場所を検索\n2) 共有 → spot-diggz を選択\n3) spot-diggzに戻って「位置情報を追加/更新しますか？」で反映")
+        }
+        .fullScreenCover(isPresented: $showLocationPickerSheet) {
+            SdzLocationPickerSheetView(
+                selectedLocation: $location,
+                onRequestCurrentLocation: {
+                    locationManager.requestCurrentLocation()
+                }
+            )
         }
         .sheet(isPresented: $showImagePicker) {
             SdzImagePicker(maxSelection: remainingImageSlots) { newImages in
@@ -305,10 +416,41 @@ struct EditSpotView: View {
             guard let coordinate = coordinate else {
                 return
             }
+            if location != nil && !shouldApplyCurrentLocation {
+                return
+            }
             location = SdzSpotLocation(
                 lat: coordinate.latitude,
                 lng: coordinate.longitude
             )
+            shouldApplyCurrentLocation = false
+        }
+    }
+
+    private var locationSectionHeader: some View {
+        HStack {
+            Text("位置情報")
+            Spacer()
+            Button {
+                showShareHelp = true
+            } label: {
+                Image(systemName: "questionmark.circle")
+                    .foregroundColor(.secondary)
+            }
+            .accessibilityLabel("共有で取り込む手順")
+        }
+    }
+
+    private func applyPendingSharedIfNeeded() {
+        if !showSharedLocationAlert, let pendingLocation = appState.pendingSharedLocationForEdit {
+            sharedLocationCandidate = pendingLocation
+            sharedLocationName = appState.pendingSharedLocationNameForEdit ?? ""
+            showSharedLocationAlert = true
+            return
+        }
+        if !showSharedLocationErrorAlert, let pendingError = appState.pendingSharedLocationErrorForEdit {
+            sharedLocationErrorMessage = pendingError
+            showSharedLocationErrorAlert = true
         }
     }
 
@@ -335,7 +477,6 @@ struct EditSpotView: View {
         let combinedDescription = buildDescription()
         let parkAttributes = spotCategory == .park ? buildParkAttributes() : nil
         let streetAttributes = buildStreetAttributes()
-        let instagramTag = normalizedInstagramTag()
 
         let apiClient = SdzApiClient(environment: appState.environment, idToken: appState.idToken)
         isSaving = true
@@ -360,8 +501,7 @@ struct EditSpotView: View {
                     images: combinedImages,
                     approvalStatus: nil,
                     parkAttributes: parkAttributes,
-                    streetAttributes: streetAttributes,
-                    instagramTag: instagramTag
+                    streetAttributes: streetAttributes
                 )
                 let updated = try await apiClient.updateSpot(id: spot.spotId, input: input)
                 await MainActor.run {
@@ -420,17 +560,6 @@ struct EditSpotView: View {
         return base.isEmpty ? nil : base
     }
 
-    private func normalizedInstagramTag() -> String? {
-        let trimmed = instagramTag.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else {
-            return nil
-        }
-        if trimmed.hasPrefix("#") {
-            return String(trimmed.dropFirst())
-        }
-        return trimmed
-    }
-
     private func buildParkAttributes() -> SdzSpotParkAttributes? {
         let officialUrl = parkOfficialUrl.trimmingCharacters(in: .whitespacesAndNewlines)
         let accessInfo = parkAccessInfo.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -458,7 +587,7 @@ struct EditSpotView: View {
         let noteValue = cleanedNote.isEmpty ? nil : cleanedNote
 
         switch parkScheduleType {
-        case .irregular, .schoolOnly:
+        case .irregular, .schoolOnly, .manual:
             return SdzSpotBusinessHours(
                 scheduleType: parkScheduleType,
                 is24Hours: false,
@@ -532,12 +661,13 @@ struct EditSpotView: View {
     }
 
     private func buildStreetAttributes() -> SdzStreetAttributes? {
-        let material = streetSurfaceMaterial.trimmingCharacters(in: .whitespacesAndNewlines)
-        let roughness = streetSurfaceRoughness.trimmingCharacters(in: .whitespacesAndNewlines)
-        let crack = streetSurfaceCrack.trimmingCharacters(in: .whitespacesAndNewlines)
-        let difficulty = streetDifficulty.trimmingCharacters(in: .whitespacesAndNewlines)
+        let material = resolvedSurfaceMaterial()
+        let roughness = stringLevel(from: streetRoughnessLevel)
+        let crack = stringLevel(from: streetCrackLevel)
+        let difficulty = stringLevel(from: streetDifficultyLevel)
+        let cleanedNotes = streetNotes.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let surfaceMaterial = material.isEmpty ? nil : material
+        let surfaceMaterial = material
         let surfaceCondition: SdzStreetSurfaceCondition? = (roughness.isEmpty && crack.isEmpty)
             ? nil
             : SdzStreetSurfaceCondition(
@@ -546,8 +676,9 @@ struct EditSpotView: View {
             )
         let sections = buildStreetSections()
         let cleanedDifficulty = difficulty.isEmpty ? nil : difficulty
+        let notes = cleanedNotes.isEmpty ? nil : cleanedNotes
 
-        if surfaceMaterial == nil && surfaceCondition == nil && sections == nil && cleanedDifficulty == nil {
+        if surfaceMaterial == nil && surfaceCondition == nil && sections == nil && cleanedDifficulty == nil && notes == nil {
             return nil
         }
 
@@ -555,7 +686,8 @@ struct EditSpotView: View {
             surfaceMaterial: surfaceMaterial,
             surfaceCondition: surfaceCondition,
             sections: sections,
-            difficulty: cleanedDifficulty
+            difficulty: cleanedDifficulty,
+            notes: notes
         )
     }
 
@@ -580,7 +712,7 @@ struct EditSpotView: View {
 
     private func validateBusinessHours() -> String? {
         switch parkScheduleType {
-        case .irregular, .schoolOnly:
+        case .irregular, .schoolOnly, .manual:
             let cleanedNote = parkScheduleNote.trimmingCharacters(in: .whitespacesAndNewlines)
             if cleanedNote.isEmpty {
                 return "営業時間の補足を入力してください。"
@@ -629,6 +761,46 @@ struct EditSpotView: View {
     private func minutes(from date: Date) -> Int {
         let components = Calendar.current.dateComponents([.hour, .minute], from: date)
         return (components.hour ?? 0) * 60 + (components.minute ?? 0)
+    }
+
+    private func resolvedSurfaceMaterial() -> String? {
+        switch streetSurfaceMaterialOption {
+        case "未入力":
+            return nil
+        case "その他":
+            let cleaned = streetSurfaceMaterialCustom.trimmingCharacters(in: .whitespacesAndNewlines)
+            return cleaned.isEmpty ? "その他" : cleaned
+        default:
+            return streetSurfaceMaterialOption
+        }
+    }
+
+    private func stringLevel(from level: Int?) -> String {
+        guard let level else {
+            return ""
+        }
+        return String(level)
+    }
+
+    @ViewBuilder
+    private func ratingPicker(title: String, selection: Binding<Int?>, helpText: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(title)
+                Spacer()
+                Picker(title, selection: selection) {
+                    Text("未入力").tag(Optional<Int>.none)
+                    ForEach(1...5, id: \.self) { value in
+                        Text("\(value)").tag(Int?.some(value))
+                    }
+                }
+                .labelsHidden()
+                .pickerStyle(.menu)
+            }
+            Text(helpText)
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
     }
 
     private func parseInt(_ value: String) -> Int? {

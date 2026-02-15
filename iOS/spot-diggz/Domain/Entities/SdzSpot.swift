@@ -20,6 +20,7 @@ enum SdzSpotBusinessScheduleType: String, Codable, CaseIterable, Identifiable {
     case weekendOnly
     case irregular
     case schoolOnly
+    case manual
 
     var id: String { rawValue }
 
@@ -35,6 +36,8 @@ enum SdzSpotBusinessScheduleType: String, Codable, CaseIterable, Identifiable {
             return "不定休"
         case .schoolOnly:
             return "スクールのみ"
+        case .manual:
+            return "手動入力"
         }
     }
 }
@@ -73,6 +76,7 @@ struct SdzStreetAttributes: Codable, Equatable {
     let surfaceCondition: SdzStreetSurfaceCondition?
     let sections: [SdzStreetSection]?
     let difficulty: String?
+    let notes: String?
 }
 
 /// Approval status for a spot.
@@ -93,7 +97,6 @@ struct SdzSpot: Codable, Identifiable {
     let approvalStatus: SdzSpotApprovalStatus?
     let parkAttributes: SdzSpotParkAttributes?
     let streetAttributes: SdzStreetAttributes?
-    let instagramTag: String?
     let userId: String
     let createdAt: Date
     let updatedAt: Date
@@ -114,7 +117,6 @@ extension SdzSpot {
             approvalStatus: nil,
             parkAttributes: nil,
             streetAttributes: nil,
-            instagramTag: nil,
             userId: "user",
             createdAt: Date(),
             updatedAt: Date()
