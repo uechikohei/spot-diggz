@@ -1,5 +1,5 @@
 import SwiftUI
-import CoreLocation
+import MapKit
 
 private enum SdzSpotListCategory: String, CaseIterable, Identifiable {
     case all
@@ -20,50 +20,21 @@ private enum SdzSpotListCategory: String, CaseIterable, Identifiable {
     }
 }
 
-private struct SdzSpotAddressSummary {
+private struct SdzSpotAddressSummary: Sendable {
     let countryName: String?
     let countryCode: String?
     let adminArea: String?
-    let locality: String?
-    let thoroughfare: String?
-    let subThoroughfare: String?
+    let compactAddress: String
+    let searchableAddressText: String
 
-    init(placemark: CLPlacemark) {
-        countryName = placemark.country
-        countryCode = placemark.isoCountryCode
-        adminArea = placemark.administrativeArea
-        locality = placemark.locality
-        thoroughfare = placemark.thoroughfare
-        subThoroughfare = placemark.subThoroughfare
-    }
-
-    var compactAddress: String {
-        let segments = [countryName, adminArea, locality, thoroughfare, subThoroughfare]
-            .compactMap { value -> String? in
-                guard let value, !value.isEmpty else {
-                    return nil
-                }
-                return value
-            }
-        return segments.joined(separator: " ")
-    }
-
-    var searchableAddressText: String {
-        [
-            countryName,
-            countryCode,
-            adminArea,
-            locality,
-            thoroughfare,
-            subThoroughfare
-        ]
-        .compactMap { value -> String? in
-            guard let value, !value.isEmpty else {
-                return nil
-            }
-            return value.lowercased()
-        }
-        .joined(separator: " ")
+    init?(mapItem: MKMapItem) {
+        guard let address = mapItem.address else { return nil }
+        let placemark = mapItem.placemark
+        self.countryName = placemark.country
+        self.countryCode = placemark.isoCountryCode
+        self.adminArea = placemark.administrativeArea
+        self.compactAddress = address.shortAddress ?? address.fullAddress ?? ""
+        self.searchableAddressText = (address.fullAddress ?? "").lowercased()
     }
 }
 
@@ -289,14 +260,14 @@ struct SpotListView: View {
     }
 
     private func reverseGeocode(location: SdzSpotLocation) async -> SdzSpotAddressSummary? {
-        let geocoder = CLGeocoder()
         let coordinate = CLLocation(latitude: location.lat, longitude: location.lng)
+        guard let request = MKReverseGeocodingRequest(location: coordinate) else {
+            return nil
+        }
         do {
-            let placemarks = try await geocoder.reverseGeocodeLocation(coordinate)
-            guard let first = placemarks.first else {
-                return nil
-            }
-            return SdzSpotAddressSummary(placemark: first)
+            let mapItems = try await request.mapItems
+            guard let first = mapItems.first else { return nil }
+            return SdzSpotAddressSummary(mapItem: first)
         } catch {
             return nil
         }
