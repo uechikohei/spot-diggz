@@ -132,7 +132,7 @@ variable "sdz_android_package_name" {
 variable "sdz_android_app_display_name" {
   type        = string
   description = "Firebase Android App display name"
-  default     = "spot-diggz android"
+  default     = "SpotDiggz Android"
 }
 
 variable "sdz_ios_bundle_id" {
@@ -144,5 +144,5 @@ variable "sdz_ios_bundle_id" {
 variable "sdz_ios_app_display_name" {
   type        = string
   description = "Firebase iOS App display name"
-  default     = "spot-diggz ios"
+  default     = "SpotDiggz iOS"
 }

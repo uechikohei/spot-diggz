@@ -82,19 +82,19 @@ resource "google_artifact_registry_repository" "sdz_api_repo" {
 
 resource "google_service_account" "sdz_dev_api_sa" {
   account_id   = "sdz-dev-api-sa"
-  display_name = "spot-diggz API用サービスアカウント"
+  display_name = "SpotDiggz API用サービスアカウント"
   project      = var.sdz_project_id
 }
 
 resource "google_service_account" "sdz_dev_deploy_sa" {
   account_id   = "sdz-dev-deploy-sa"
-  display_name = "spot-diggz デプロイ用サービスアカウント"
+  display_name = "SpotDiggz デプロイ用サービスアカウント"
   project      = var.sdz_project_id
 }
 
 resource "google_service_account" "sdz_dev_terraform_sa" {
   account_id   = "sdz-dev-terraform-sa"
-  display_name = "spot-diggz terraform用サービスアカウント"
+  display_name = "SpotDiggz Terraform用サービスアカウント"
   project      = var.sdz_project_id
 }
 

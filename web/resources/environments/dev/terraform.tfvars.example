@@ -18,7 +18,7 @@ sdz_wif_provider_id  = "github-provider"
 sdz_github_repository = "uechikohei/spot-diggz"
 sdz_github_ref       = "refs/heads/develop"
 
-sdz_web_app_display_name = "sdz-fb-dev"
+sdz_web_app_display_name = "SpotDiggz Dev"
 sdz_ui_public_members  = ["domain:321dev.org"]
 sdz_media_public_members = ["allUsers"]
 sdz_enable_cloud_run   = false
