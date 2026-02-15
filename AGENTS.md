@@ -268,67 +268,7 @@ gcloud budgets create \
   --notification-rule=pubsub-topic=projects/sdz_logs/topics/budget_alerts
 ```
 
-**命名規則**:
-
-| リソース種別 | 命名パターン | 例 |
-|-------------|-------------|----|
-| **GCPプロジェクト** | `sdz_{env}` | `sdz_dev`, `sdz_prod` |
-| **Cloud Run** | `sdz_{env}_api` | `sdz_dev_api` |
-| **Cloud Storage** | `sdz_{env}_{type}_bucket` | `sdz_prod_img_bucket` |
-| **Firestore** | `sdz_{type}` | `sdz_user`, `sdz_spot` |
-| **Service Account** | `sdz_{env}_{type}_sa` | `sdz_dev_api_sa` |
-| **サービス名** | `kebab-case` | `spot-diggz` |
-
-### 🏗️ 技術スタック別命名規約
-
-#### TypeScript/React（フロントエンド）
-```typescript
-// 変数・関数: camelCase + sdz プレフィックス
-const sdzUserProfile = getUserProfile();
-const sdzApiClient = new SdzApiClient();
-
-// 型・コンポーネント: PascalCase + Sdz プレフィックス
-interface SdzSpotData { spotId: string; }
-const SdzSpotCard = () => { /* */ };
-
-// 定数: SCREAMING_SNAKE_CASE + SDZ プレフィックス
-const SDZ_API_BASE_URL = 'https://api.spot-diggz.321dev.org';
-
-// ファイル名
-SdzSpotCard.tsx, sdz-api-client.ts
-```
-
-#### Rust（バックエンド）
-```rust
-// 変数・関数: snake_case + sdz プレフィックス
-let sdz_user_profile = get_user_profile();
-let sdz_config = SdzConfig::new();
-
-// 構造体・enum: PascalCase + Sdz プレフィックス  
-struct SdzSpotData { spot_id: String }
-enum SdzSpotType { Park, Street, Bowl }
-
-// 定数: SCREAMING_SNAKE_CASE + SDZ プレフィックス
-const SDZ_MAX_SPOTS: usize = 100;
-
-// ファイル名・モジュール
-sdz_spot_service.rs, sdz_models.rs
-```
-
-#### Terraform（Infrastructure）
-```hcl
-# リソース名: snake_case + sdz プレフィックス
-resource "google_cloud_run_service" "sdz_api" {
-  name = "sdz-${var.environment}-api"
-}
-
-# 変数: snake_case + sdz プレフィックス
-variable "sdz_environment" { type = string }
-variable "sdz_project_id" { type = string }
-
-# ファイル名
-sdz_cloud_run.tf, sdz_firestore.tf
-```
+**命名規則**: CLAUDE.md の「命名規約（4層ティア）」を参照。
 
 ### 🚫 技術別制約事項
 
@@ -457,7 +397,7 @@ resource "google_folder_organization_policy" "external_ip_deny" {
   "userId": "string",
   "username": "string", 
   "email": "string",
-  "profileImg": "gs://sdz_prod-img-bucket/{path}",
+  "profileImg": "gs://sdz-prod-img-spots/{path}",
   "createdAt": "timestamp",
   "updatedAt": "timestamp"
 }
@@ -472,7 +412,7 @@ resource "google_folder_organization_policy" "external_ip_deny" {
     "lng": "number",
     "address": "string"
   },
-  "images": ["gs://sdz_prod-img-bucket/{path}"],
+  "images": ["gs://sdz-prod-img-spots/{path}"],
   "userId": "string", // 作成者参照
   "tags": ["park", "street", "bowl", "vert", "transition"],
   "difficulty": "beginner|intermediate|advanced|pro",

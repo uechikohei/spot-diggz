@@ -8,8 +8,8 @@
 ## 命名規則（環境別）
 - Cloud Run サービス名: `sdz-{stage}-api`
 - Cloud Run イメージ: `{region}-docker.pkg.dev/sdz-{stage}/sdz-{stage}-api/sdz-api:latest`
-- UIホスティングバケット: `sdz-{stage}-ui-bucket`
-- 画像保存バケット: `sdz-{stage}-img-bucket`
+- UIホスティングバケット: `sdz-{stage}-ui-hosts`
+- 画像保存バケット: `sdz-{stage}-img-spots`
 
 ## 2. なぜAPI Gatewayが不要なのか / 使う場合はいつか (Why)
 - Cloud RunはHTTP(S)エンドポイントを自動で提供し、スケーリング・TLS終端・コンテナ実行管理を担うため、必須でAPI Gatewayを挟む必要はない。
@@ -21,7 +21,7 @@
 ## 3. デプロイフロー (How)
 1. `Dockerfile`でRust APIをコンテナ化（マルチステージビルドで軽量化）。
 2. Cloud BuildまたはGitHub Actionsでビルドし、Artifact Registryへプッシュ。
-3. `gcloud run deploy`（またはTerraform）でCloud Runサービス `sdz_{env}_api` を作成。
+3. `gcloud run deploy`（またはTerraform）でCloud Runサービス `sdz-{stage}-api` を作成。
 4. 必要ならCloud Runのインバウンドアクセスを`--ingress internal-and-cloud-load-balancing`にし、外部公開はHTTPS Load Balancer経由に限定する。
 5. 認証は以下いずれかで実装:
    - Cloud Run IAM + IDトークン（サービス間通信）
@@ -59,19 +59,44 @@ Cloud Run (Rust APIコンテナ)
 ## 6. 参考設定 (Terraformスニペット)
 ```hcl
 resource "google_cloud_run_service" "sdz_api" {
-  name     = "sdz-${var.sdz_environment}-api"
+  name     = "sdz-${var.sdz_stage}-api"
   location = var.sdz_region
+  project  = var.sdz_project_id
 
   template {
     spec {
+      service_account_name = google_service_account.sdz_dev_api_sa.email
       containers {
-        image = var.sdz_image
+        image = var.sdz_api_image
         env {
-          name  = "PORT"
-          value = "8080"
+          name  = "SDZ_AUTH_PROJECT_ID"
+          value = var.sdz_auth_project_id
+        }
+        env {
+          name  = "SDZ_USE_FIRESTORE"
+          value = var.sdz_use_firestore ? "1" : "0"
+        }
+        env {
+          name  = "SDZ_FIRESTORE_PROJECT_ID"
+          value = var.sdz_firestore_project_id
+        }
+        env {
+          name  = "SDZ_CORS_ALLOWED_ORIGINS"
+          value = var.sdz_cors_allowed_origins
+        }
+        env {
+          name  = "SDZ_STORAGE_BUCKET"
+          value = var.sdz_storage_bucket
+        }
+        env {
+          name  = "SDZ_STORAGE_SERVICE_ACCOUNT_EMAIL"
+          value = var.sdz_storage_service_account_email
+        }
+        env {
+          name  = "SDZ_STORAGE_SIGNED_URL_EXPIRES_SECS"
+          value = tostring(var.sdz_storage_signed_url_expires_secs)
         }
       }
-      container_concurrency = 80
     }
   }
 
@@ -79,6 +104,8 @@ resource "google_cloud_run_service" "sdz_api" {
     percent         = 100
     latest_revision = true
   }
+
+  depends_on = [google_project_service.sdz_services]
 }
 ```
 
