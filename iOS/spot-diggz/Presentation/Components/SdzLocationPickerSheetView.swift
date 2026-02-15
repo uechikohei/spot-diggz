@@ -3,6 +3,7 @@ import SwiftUI
 /// Full-screen location picker wrapper for better pin placement.
 struct SdzLocationPickerSheetView: View {
     @Binding var selectedLocation: SdzSpotLocation?
+    var onRequestCurrentLocation: (() -> Void)? = nil
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -20,12 +21,19 @@ struct SdzLocationPickerSheetView: View {
     }
 
     private var content: some View {
-        SdzLocationPickerView(selectedLocation: $selectedLocation, height: 440)
+        SdzLocationPickerView(
+            selectedLocation: $selectedLocation,
+            mode: .fullScreen,
+            onRequestCurrentLocation: onRequestCurrentLocation,
+            onConfirmSelection: { _ in
+                dismiss()
+            }
+        )
             .navigationTitle("位置を選択")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("完了") {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("キャンセル") {
                         dismiss()
                     }
                 }
@@ -38,6 +46,7 @@ struct SdzLocationPickerSheetView: View {
 struct SdzLocationPickerSheetView_Previews: PreviewProvider {
     static var previews: some View {
         SdzLocationPickerSheetView(selectedLocation: .constant(nil))
+            .environmentObject(SdzAppState())
     }
 }
 #endif
