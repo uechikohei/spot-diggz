@@ -1,17 +1,33 @@
-/.DS_Store
+# OS
+.DS_Store
+
+# Node
+node_modules/
+
+# Rust
 /web/api/target/
-/web/api/.env
-/web/ui/.env
-/web/ui/.env.local
-/web/ui/node_modules/
+
+# Environment / Secrets
+.env
+.env.local
+**/GoogleService-Info.plist
+
+# React (Vite)
 /web/ui/.vite/
 /web/ui/.next/
 /web/ui/build/
 /web/ui/dist/
 /web/ui/coverage/
-/web/resources/.terraform/
+
+# Terraform
+**/.terraform/
+**/terraform.tfstate
+**/terraform.tfstate.backup
 /web/resources/environments/**/terraform.tfvars
-/web/resources/terraform.tfstate*
+
+# Security scan
 /trivy-results.sarif
+
+# Xcode
 /iOS/spot-diggz.xcodeproj/project.xcworkspace/xcuserdata/
 **/*.xcuserstate
