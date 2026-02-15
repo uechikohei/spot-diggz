@@ -24,7 +24,7 @@ gcloud config set project sdz-dev
 
 2) 画像を削除（必要な場合のみ）
 ```bash
-gsutil -m rm "gs://sdz-dev-img-bucket/spots/**"
+gsutil -m rm "gs://sdz-dev-img-spots/spots/**"
 ```
 
 3) 環境変数を設定
@@ -50,7 +50,7 @@ SDZ_API_URL="${VITE_SDZ_API_URL}" \
 5) 反映確認
 ```bash
 gcloud firestore documents list spots --project sdz-dev
-gsutil ls gs://sdz-dev-img-bucket/spots
+gsutil ls gs://sdz-dev-img-spots/spots
 ```
 
 ## 注意点

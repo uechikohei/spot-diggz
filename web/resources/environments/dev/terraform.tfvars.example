@@ -2,8 +2,8 @@ sdz_project_id         = "sdz-dev"
 sdz_stage              = "dev"
 sdz_region             = "asia-northeast1"
 sdz_firestore_location = "asia-northeast1"
-sdz_storage_bucket     = "sdz-dev-img-bucket"
-sdz_ui_bucket          = "sdz-dev-ui-bucket"
+sdz_storage_bucket     = "sdz-dev-img-spots"
+sdz_ui_bucket          = "sdz-dev-ui-hosts"
 sdz_api_image          = "asia-northeast1-docker.pkg.dev/sdz-dev/sdz-dev-api/sdz-api:latest"
 sdz_auth_project_id    = "sdz-dev"
 sdz_use_firestore      = true
@@ -22,7 +22,7 @@ sdz_web_app_display_name = "SpotDiggz Dev"
 sdz_ui_public_members  = ["domain:321dev.org"]
 sdz_media_public_members = ["allUsers"]
 sdz_enable_cloud_run   = false
-sdz_cors_allowed_origins = "https://storage.googleapis.com,https://sdz-dev-ui-bucket.storage.googleapis.com,http://localhost:3000"
+sdz_cors_allowed_origins = "https://storage.googleapis.com,https://sdz-dev-ui-hosts.storage.googleapis.com,http://localhost:3000"
 
 # iOS/Androidは必要になったら設定する
 # sdz_android_package_name = "com.example.spotdiggz"

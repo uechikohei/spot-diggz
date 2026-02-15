@@ -232,7 +232,7 @@ jobs:
       SDZ_GCP_REGION: asia-northeast1
       SDZ_STAGE: dev
       SDZ_API_IMAGE: asia-northeast1-docker.pkg.dev/sdz-dev/sdz-dev-api/sdz-api:latest
-      SDZ_UI_BUCKET: sdz-dev-ui-bucket
+      SDZ_UI_BUCKET: sdz-dev-ui-hosts
       SDZ_VITE_SDZ_API_URL: ${{ secrets.SDZ_DEV_API_URL }}
       SDZ_VITE_FIREBASE_API_KEY: ${{ secrets.SDZ_DEV_FIREBASE_API_KEY }}
       SDZ_VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.SDZ_DEV_FIREBASE_AUTH_DOMAIN }}
