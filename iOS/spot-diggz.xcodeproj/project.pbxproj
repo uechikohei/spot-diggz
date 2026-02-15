@@ -10,13 +10,44 @@
 		55A1F0012F2000010055F1E1 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 55A1F1012F2000010055F1E1 /* FirebaseAuth */; };
 		55A1F0022F2000010055F1E1 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 55A1F1022F2000010055F1E1 /* FirebaseCore */; };
 		55A1F0032F2000010055F1E1 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 55A1F1032F2000010055F1E1 /* GoogleSignIn */; };
+		CFE41265CDEB4CD9908E1F24 /* SdzShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B1B3A2B96B4143BD9F11CB68 /* SdzShareExtension.appex */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		7081C8C8FD064905A93A3539 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 558C4B8B2F154F730055F1E1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2AEF5FCC4CAA4FCCAA71C040;
+			remoteInfo = SdzShareExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		791F850E4A394494BE723A38 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				CFE41265CDEB4CD9908E1F24 /* SdzShareExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		558C4B932F154F730055F1E1 /* spot-diggz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "spot-diggz.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1B3A2B96B4143BD9F11CB68 /* SdzShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SdzShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		52E93184775B4B83A3773D77 /* ShareExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ShareExtension;
+			sourceTree = "<group>";
+		};
 		558C4B952F154F730055F1E1 /* spot-diggz */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "spot-diggz";
@@ -35,6 +66,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DA6C3C8D441043D38E1D6FDA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -42,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				558C4B952F154F730055F1E1 /* spot-diggz */,
+				52E93184775B4B83A3773D77 /* ShareExtension */,
 				558C4B942F154F730055F1E1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -50,6 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				558C4B932F154F730055F1E1 /* spot-diggz.app */,
+				B1B3A2B96B4143BD9F11CB68 /* SdzShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -57,6 +97,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		2AEF5FCC4CAA4FCCAA71C040 /* SdzShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5D66A90F6C5648F4BF6C3CC8 /* Build configuration list for PBXNativeTarget "SdzShareExtension" */;
+			buildPhases = (
+				22E7E53517D3424F9AC8DF7A /* Sources */,
+				DA6C3C8D441043D38E1D6FDA /* Frameworks */,
+				0E2F492CF1844FD2B4A89BF9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				52E93184775B4B83A3773D77 /* ShareExtension */,
+			);
+			name = SdzShareExtension;
+			productName = SdzShareExtension;
+			productReference = B1B3A2B96B4143BD9F11CB68 /* SdzShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		558C4B922F154F730055F1E1 /* spot-diggz */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 558C4B9E2F154F740055F1E1 /* Build configuration list for PBXNativeTarget "spot-diggz" */;
@@ -64,10 +124,12 @@
 				558C4B8F2F154F730055F1E1 /* Sources */,
 				558C4B902F154F730055F1E1 /* Frameworks */,
 				558C4B912F154F730055F1E1 /* Resources */,
+				791F850E4A394494BE723A38 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				21089BC2930A4FDAA125D530 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				558C4B952F154F730055F1E1 /* spot-diggz */,
@@ -92,6 +154,9 @@
 				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
+					2AEF5FCC4CAA4FCCAA71C040 = {
+						CreatedOnToolsVersion = 26.0.1;
+					};
 					558C4B922F154F730055F1E1 = {
 						CreatedOnToolsVersion = 26.0.1;
 					};
@@ -116,11 +181,19 @@
 			projectRoot = "";
 			targets = (
 				558C4B922F154F730055F1E1 /* spot-diggz */,
+				2AEF5FCC4CAA4FCCAA71C040 /* SdzShareExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0E2F492CF1844FD2B4A89BF9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		558C4B912F154F730055F1E1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -131,6 +204,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		22E7E53517D3424F9AC8DF7A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		558C4B8F2F154F730055F1E1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -140,7 +220,34 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		21089BC2930A4FDAA125D530 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2AEF5FCC4CAA4FCCAA71C040 /* SdzShareExtension */;
+			targetProxy = 7081C8C8FD064905A93A3539 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		211CD2B1738446E0843E1DD0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = SW4S6FR5L9;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ShareExtensionInfo.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "ios-sdz-fb-dev.share";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		558C4B9C2F154F740055F1E1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -265,11 +372,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
+				CODE_SIGN_ENTITLEMENTS = "spot-diggz.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = SW4S6FR5L9;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleTypeRole = Editor;\n    CFBundleURLSchemes =     (\n        \"com.googleusercontent.apps.1053202159855-e5iargrqi6i5nks03bkc27c6uebu1v70\",\n        \"sdz\"\n    );\n}";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Allow access to your location to tag skate spots.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow access to your photo library to upload spot images.";
@@ -300,11 +410,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "spot-diggz.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = SW4S6FR5L9;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleTypeRole = Editor;\n    CFBundleURLSchemes =     (\n        \"com.googleusercontent.apps.1053202159855-e5iargrqi6i5nks03bkc27c6uebu1v70\",\n        \"sdz\"\n    );\n}";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Allow access to your location to tag skate spots.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow access to your photo library to upload spot images.";
@@ -330,6 +442,25 @@
 			};
 			name = Release;
 		};
+		58D8025FF4164480B9D1BA28 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = SW4S6FR5L9;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ShareExtensionInfo.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "ios-sdz-fb-dev.share";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -347,6 +478,15 @@
 			buildConfigurations = (
 				558C4B9F2F154F740055F1E1 /* Debug */,
 				558C4BA02F154F740055F1E1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5D66A90F6C5648F4BF6C3CC8 /* Build configuration list for PBXNativeTarget "SdzShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58D8025FF4164480B9D1BA28 /* Debug */,
+				211CD2B1738446E0843E1DD0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
