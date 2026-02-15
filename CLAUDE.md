@@ -66,7 +66,7 @@ terraform init -backend=false && terraform validate  # バリデーション
 | ---- | -------------- | --------------------- | ------------------------------------------------- | -------------------------- |
 | 1    | Display Name   | `SpotDiggz`           | UI表示、ロゴ、ドキュメント見出し                  | `<title>SpotDiggz</title>` |
 | 2    | Machine Name   | `spotdiggz`           | リポジトリ名、ディレクトリ名、ドメイン            | `uechikohei/spotdiggz`     |
-| 3    | Infra Resource | `sdz-{env}-{purpose}` | GCPリソース名（全小文字・ハイフンのみ）           | `sdz-dev-img-spots`        |
+| 3    | Infra Resource | `sdz-{env}-{typepurpose}` | GCPリソース名・外部連携キー（全小文字・ハイフン区切り3セグメント） | `sdz-dev-imgspots`        |
 | 4    | Source Code    | 言語規約準拠          | コード内識別子（`sdz`/`Sdz`/`SDZ`プレフィックス） | `sdzUserProfile`           |
 
 #### Tier 1: Display Name（表示名）
@@ -81,21 +81,33 @@ terraform init -backend=false && terraform validate  # バリデーション
 
 #### Tier 3: Infrastructure Resource Name（インフラリソース名）
 
-- **全小文字・ハイフンのみ**（アンダースコア禁止）
-  - GCP/AWSタグの小文字正規化でキー衝突を防止
-  - BigQuery/Athena連携時のアンダースコア制約を回避
-- セグメント構成: `sdz-{env}-{purpose}`
-- 冗長な型サフィックスは付けない（例: Cloud Storageに`bucket`は不要）
+- **ハイフン区切りで必ず3セグメント**: `sdz-{env}-{typepurpose}`
+- **全小文字のみ**（大文字禁止 — Datadog等の監視ツールがタグを小文字に正規化するため）
+- **アンダースコア禁止**（GCP/AWSタグの正規化でキー衝突を防止）
+- **3セグメント目（typepurpose）内にハイフン・アンダースコア禁止** — 小文字+数字のみで構成
+- 3セグメント目はリソース種別を先、用途を後に配置（例: `saapi` = SA種別 + API用途）
+- `sdz` は `spotdiggz` をインフラ層・外部連携で識別するための外部キー
+- GCPリソースの `display_name` にも Tier 1（`SpotDiggz`）は使わず、`sdz` ベースで統一
+- GCP自動生成リソース（Cloud Build バケット、Firebase Admin SDK SA等）は対象外
 
-| リソース          | 命名パターン            | 例                    |
-| ----------------- | ----------------------- | --------------------- |
-| GCPプロジェクト   | `sdz-{env}`             | `sdz-dev`             |
-| Cloud Run         | `sdz-{env}-api`         | `sdz-dev-api`         |
-| 画像Storage       | `sdz-{env}-img-spots`   | `sdz-dev-img-spots`   |
-| UIホスティング    | `sdz-{env}-ui-hosts`    | `sdz-dev-ui-hosts`    |
-| Service Account   | `sdz-{env}-{role}-sa`   | `sdz-dev-api-sa`      |
-| Artifact Registry | `sdz-{env}-api`         | `sdz-dev-api`         |
-| WIF Pool          | `sdz-{env}-github-pool` | `sdz-dev-github-pool` |
+| セグメント | 内容 | 例 |
+| ---------- | ---- | -- |
+| 1: アプリキー | `sdz` 固定 | `sdz` |
+| 2: 環境 | `dev` / `stg` / `prod` / `logs` / `billing` | `dev` |
+| 3: 種別+用途 | リソース種別略称 + 機能名（小文字+数字のみ） | `saapi`, `imgspots` |
+
+| リソース          | 命名パターン                | 例                       |
+| ----------------- | --------------------------- | ------------------------ |
+| GCPプロジェクト   | `sdz-{env}`                 | `sdz-dev`                |
+| Cloud Run         | `sdz-{env}-api`             | `sdz-dev-api`            |
+| 画像Storage       | `sdz-{env}-imgspots`        | `sdz-dev-imgspots`       |
+| UIホスティング    | `sdz-{env}-uihost`          | `sdz-dev-uihost`         |
+| Service Account   | `sdz-{env}-sa{role}`        | `sdz-dev-saapi`          |
+| Artifact Registry | `sdz-{env}-ar{purpose}`     | `sdz-dev-arapi`          |
+| WIF Pool          | `sdz-{env}-wifpool{idp}`    | `sdz-dev-wifpoolgh`      |
+| WIF Provider      | `sdz-{env}-wifprov{idp}`    | `sdz-dev-wifprovgh`      |
+| Firebase Web App  | `sdz-{env}-fb{platform}`    | `sdz-dev-fbweb`          |
+| Firebase iOS App  | `sdz-{env}-fb{platform}`    | `sdz-dev-fbios`          |
 
 #### Tier 4: Source Code Name（ソースコード名）
 
