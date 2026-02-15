@@ -8,8 +8,8 @@
 ## 命名規則（環境別）
 - Cloud Run サービス名: `sdz-{stage}-api`
 - Cloud Run イメージ: `{region}-docker.pkg.dev/sdz-{stage}/sdz-{stage}-api/sdz-api:latest`
-- UIホスティングバケット: `sdz-{stage}-ui-hosts`
-- 画像保存バケット: `sdz-{stage}-img-spots`
+- UIホスティングバケット: `sdz-{stage}-uihost`
+- 画像保存バケット: `sdz-{stage}-imgspots`
 
 ## 2. なぜAPI Gatewayが不要なのか / 使う場合はいつか (Why)
 - Cloud RunはHTTP(S)エンドポイントを自動で提供し、スケーリング・TLS終端・コンテナ実行管理を担うため、必須でAPI Gatewayを挟む必要はない。

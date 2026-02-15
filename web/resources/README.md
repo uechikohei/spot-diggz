@@ -18,15 +18,15 @@ cp environments/dev/terraform.tfvars.example environments/dev/terraform.tfvars
 ```bash
 terraform import \
   module.sdz_dev.google_service_account.sdz_dev_api_sa \
-  projects/sdz-dev/serviceAccounts/sdz-dev-api-sa@sdz-dev.iam.gserviceaccount.com
+  projects/sdz-dev/serviceAccounts/sdz-dev-saapi@sdz-dev.iam.gserviceaccount.com
 
 terraform import \
   module.sdz_dev.google_service_account.sdz_dev_deploy_sa \
-  projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com
+  projects/sdz-dev/serviceAccounts/sdz-dev-sadeploy@sdz-dev.iam.gserviceaccount.com
 
 terraform import \
   module.sdz_dev.google_service_account.sdz_dev_terraform_sa \
-  projects/sdz-dev/serviceAccounts/sdz-dev-terraform-sa@sdz-dev.iam.gserviceaccount.com
+  projects/sdz-dev/serviceAccounts/sdz-dev-satf@sdz-dev.iam.gserviceaccount.com
 
 terraform import \
   module.sdz_dev.google_service_account.sdz_firebase_adminsdk_sa \
@@ -40,9 +40,9 @@ terraform apply -var-file=environments/dev/terraform.tfvars
 ```
 
 ## 補足
-- `sdz-{env}-img-spots` を Storage バケット命名の標準とする。
-- `sdz-{env}-ui-hosts` を UIホスティング用バケット命名の標準とする。
-- Firebase Web App の displayName は `SpotDiggz {Env}` を標準とする（Tier 1準拠）。
+- `sdz-{env}-imgspots` を Storage バケット命名の標準とする。
+- `sdz-{env}-uihost` を UIホスティング用バケット命名の標準とする。
+- Firebase Web App の displayName は `sdz-{env}-fbweb` を標準とする（Tier 3準拠）。
 - Firebase Web App は常に作成し、iOS/Android は bundle/package が設定された場合のみ作成する。
 - Cloud Run / Artifact Registry も IaC に含める（アプリのデプロイはCI/CDで行う）。
 - `sdz_ui_public_members` で UI バケットの公開権限を付与する。組織ポリシーで `allUsers` が禁止の場合は `domain:321dev.org` などに切り替える。

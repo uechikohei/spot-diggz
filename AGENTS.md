@@ -397,7 +397,7 @@ resource "google_folder_organization_policy" "external_ip_deny" {
   "userId": "string",
   "username": "string", 
   "email": "string",
-  "profileImg": "gs://sdz-prod-img-spots/{path}",
+  "profileImg": "gs://sdz-prod-imgspots/{path}",
   "createdAt": "timestamp",
   "updatedAt": "timestamp"
 }
@@ -412,7 +412,7 @@ resource "google_folder_organization_policy" "external_ip_deny" {
     "lng": "number",
     "address": "string"
   },
-  "images": ["gs://sdz-prod-img-spots/{path}"],
+  "images": ["gs://sdz-prod-imgspots/{path}"],
   "userId": "string", // 作成者参照
   "tags": ["park", "street", "bowl", "vert", "transition"],
   "difficulty": "beginner|intermediate|advanced|pro",

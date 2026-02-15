@@ -74,27 +74,27 @@ resource "google_storage_bucket_iam_member" "sdz_ui_public_read" {
 
 resource "google_artifact_registry_repository" "sdz_api_repo" {
   location      = var.sdz_region
-  repository_id = "sdz-${var.sdz_stage}-api"
+  repository_id = "sdz-${var.sdz_stage}-arapi"
   format        = "DOCKER"
 
   depends_on = [google_project_service.sdz_services]
 }
 
 resource "google_service_account" "sdz_dev_api_sa" {
-  account_id   = "sdz-dev-api-sa"
-  display_name = "SpotDiggz API用サービスアカウント"
+  account_id   = "sdz-dev-saapi"
+  display_name = "sdz-dev-saapi"
   project      = var.sdz_project_id
 }
 
 resource "google_service_account" "sdz_dev_deploy_sa" {
-  account_id   = "sdz-dev-deploy-sa"
-  display_name = "SpotDiggz デプロイ用サービスアカウント"
+  account_id   = "sdz-dev-sadeploy"
+  display_name = "sdz-dev-sadeploy"
   project      = var.sdz_project_id
 }
 
 resource "google_service_account" "sdz_dev_terraform_sa" {
-  account_id   = "sdz-dev-terraform-sa"
-  display_name = "SpotDiggz Terraform用サービスアカウント"
+  account_id   = "sdz-dev-satf"
+  display_name = "sdz-dev-satf"
   project      = var.sdz_project_id
 }
 
@@ -102,7 +102,7 @@ resource "google_iam_workload_identity_pool" "sdz_github" {
   count                     = var.sdz_enable_wif ? 1 : 0
   project                   = var.sdz_project_id
   workload_identity_pool_id = var.sdz_wif_pool_id
-  display_name              = "sdz-github-pool"
+  display_name              = "sdz-dev-wifpoolgh"
   description               = "GitHub Actions OIDC pool"
 }
 
@@ -111,7 +111,7 @@ resource "google_iam_workload_identity_pool_provider" "sdz_github" {
   project                            = var.sdz_project_id
   workload_identity_pool_id          = var.sdz_wif_pool_id
   workload_identity_pool_provider_id = var.sdz_wif_provider_id
-  display_name                       = "sdz-github-provider"
+  display_name                       = "sdz-dev-wifprovgh"
   description                        = "GitHub Actions OIDC provider"
 
   oidc {

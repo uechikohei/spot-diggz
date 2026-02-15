@@ -39,8 +39,8 @@ spot-diggzのCD（継続的デプロイ）の確定仕様を記載する。
 
 - Cloud Run サービス名: `sdz-{stage}-api`
 - Cloud Run イメージ: `{region}-docker.pkg.dev/sdz-{stage}/sdz-{stage}-api/sdz-api:latest`
-- UI バケット名: `sdz-{stage}-ui-hosts`
-- 画像バケット名: `sdz-{stage}-img-spots`
+- UI バケット名: `sdz-{stage}-uihost`
+- 画像バケット名: `sdz-{stage}-imgspots`
 
 ## 公開ポリシー
 

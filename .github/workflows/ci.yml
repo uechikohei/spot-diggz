@@ -231,15 +231,15 @@ jobs:
       SDZ_GCP_PROJECT_ID: sdz-dev
       SDZ_GCP_REGION: asia-northeast1
       SDZ_STAGE: dev
-      SDZ_API_IMAGE: asia-northeast1-docker.pkg.dev/sdz-dev/sdz-dev-api/sdz-api:latest
-      SDZ_UI_BUCKET: sdz-dev-ui-hosts
+      SDZ_API_IMAGE: asia-northeast1-docker.pkg.dev/sdz-dev/sdz-dev-arapi/sdz-api:latest
+      SDZ_UI_BUCKET: sdz-dev-uihost
       SDZ_VITE_SDZ_API_URL: ${{ secrets.SDZ_DEV_API_URL }}
       SDZ_VITE_FIREBASE_API_KEY: ${{ secrets.SDZ_DEV_FIREBASE_API_KEY }}
       SDZ_VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.SDZ_DEV_FIREBASE_AUTH_DOMAIN }}
       SDZ_VITE_FIREBASE_PROJECT_ID: ${{ secrets.SDZ_DEV_FIREBASE_PROJECT_ID }}
-      SDZ_WIF_PROVIDER: projects/1053202159855/locations/global/workloadIdentityPools/sdz-dev-github-pool/providers/sdz-dev-github-provider
-      SDZ_WIF_SERVICE_ACCOUNT: sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com
-      SDZ_DEPLOY_SA_RESOURCE: projects/sdz-dev/serviceAccounts/sdz-dev-deploy-sa@sdz-dev.iam.gserviceaccount.com
+      SDZ_WIF_PROVIDER: projects/1053202159855/locations/global/workloadIdentityPools/sdz-dev-wifpoolgh/providers/sdz-dev-wifprovgh
+      SDZ_WIF_SERVICE_ACCOUNT: sdz-dev-sadeploy@sdz-dev.iam.gserviceaccount.com
+      SDZ_DEPLOY_SA_RESOURCE: projects/sdz-dev/serviceAccounts/sdz-dev-sadeploy@sdz-dev.iam.gserviceaccount.com
     
     steps:
       - name: 📥 Checkout repository
