@@ -5,7 +5,7 @@ import SwiftUI
 struct SdzApp: App {
     /// Global application state.
     @StateObject private var appState = SdzAppState()
-    @StateObject private var themeManager = SdzThemeManager()
+    @State private var themeManager = SdzThemeManager()
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
@@ -24,7 +24,7 @@ struct SdzApp: App {
                 }
             }
             .environmentObject(appState)
-            .environmentObject(themeManager)
+            .environment(themeManager)
             .preferredColorScheme(themeManager.resolvedColorScheme)
             .task {
                 await appState.restoreSession()

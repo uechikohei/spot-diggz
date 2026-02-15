@@ -4,7 +4,7 @@ import UIKit
 /// Displays settings and profile-related actions for the current user.
 struct ProfileView: View {
     @EnvironmentObject var appState: SdzAppState
-    @EnvironmentObject var themeManager: SdzThemeManager
+    @Environment(SdzThemeManager.self) var themeManager
 
     @State private var user: SdzUser?
     @State private var mySpots: [SdzSpot] = []
@@ -409,7 +409,7 @@ struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         ProfileView()
             .environmentObject(SdzAppState())
-            .environmentObject(SdzThemeManager())
+            .environment(SdzThemeManager())
     }
 }
 #endif

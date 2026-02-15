@@ -916,7 +916,7 @@ private struct SdzHomeMapView: UIViewRepresentable {
         }
 
         private func clusterTintColor(for cluster: SdzClusterAnnotation) -> UIColor {
-            cluster.isPark ? UIColor.sdzPark : UIColor.sdzStreet
+            UIColor(cluster.isPark ? Color.sdzPark : Color.sdzStreet)
         }
 
         private func zoomToCluster(_ cluster: SdzClusterAnnotation, in mapView: MKMapView) {

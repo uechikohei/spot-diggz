@@ -31,9 +31,20 @@ enum SdzColorSchemePreference: String, CaseIterable, Identifiable {
     }
 }
 
-/// Manages color scheme preference with persistence via AppStorage.
-final class SdzThemeManager: ObservableObject {
-    @AppStorage("sdz_color_scheme") var preference: SdzColorSchemePreference = .system
+/// Manages color scheme preference with persistence via UserDefaults.
+@Observable
+final class SdzThemeManager {
+    var preference: SdzColorSchemePreference {
+        didSet {
+            UserDefaults.standard.set(preference.rawValue, forKey: "sdz_color_scheme")
+        }
+    }
+
+    init() {
+        let raw = UserDefaults.standard.string(forKey: "sdz_color_scheme")
+            ?? SdzColorSchemePreference.system.rawValue
+        self.preference = SdzColorSchemePreference(rawValue: raw) ?? .system
+    }
 
     /// Resolved color scheme for `.preferredColorScheme()`.
     /// Returns `nil` for system (follows device setting).

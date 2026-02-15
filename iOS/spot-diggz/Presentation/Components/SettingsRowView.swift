@@ -44,7 +44,7 @@ struct SettingsRowView_Previews: PreviewProvider {
             SdzDividerView()
             SettingsRowView(iconName: "rectangle.portrait.and.arrow.right", title: "ログアウト", showsChevron: false, isDestructive: true)
         }
-        .background(Color.sdzSurface)
+        .background { Color.sdzSurface }
         .previewLayout(.sizeThatFits)
     }
 }
