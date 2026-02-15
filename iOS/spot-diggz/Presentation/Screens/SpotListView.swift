@@ -227,10 +227,7 @@ struct SpotListView: View {
     }
 
     private func isParkSpot(_ spot: SdzSpot) -> Bool {
-        if spot.parkAttributes != nil {
-            return true
-        }
-        return spot.tags.contains("パーク")
+        spot.sdzIsPark
     }
 
     private func normalized(_ value: String) -> String {

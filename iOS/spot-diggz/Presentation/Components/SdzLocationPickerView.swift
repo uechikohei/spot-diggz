@@ -620,13 +620,13 @@ struct SdzLocationPickerView: View {
     }
 
     private func isParkSpot(_ spot: SdzSpot) -> Bool {
-        spot.parkAttributes != nil || spot.tags.contains(SdzSpotCategory.park.defaultTag)
+        spot.sdzIsPark
     }
 
     private func nearbySpotTintColor(for spot: SdzSpot) -> Color {
         isParkSpot(spot)
-            ? Color(red: 0.01, green: 0.61, blue: 0.53)
-            : Color(red: 0.94, green: 0.58, blue: 0.08)
+            ? Color.sdzPark
+            : Color.sdzStreet
     }
 
 }

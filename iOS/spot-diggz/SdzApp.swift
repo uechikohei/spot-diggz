@@ -5,6 +5,7 @@ import SwiftUI
 struct SdzApp: App {
     /// Global application state.
     @StateObject private var appState = SdzAppState()
+    @StateObject private var themeManager = SdzThemeManager()
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
@@ -19,11 +20,12 @@ struct SdzApp: App {
                 } else if appState.isAuthenticated {
                     RootTabView()
                 } else {
-                    // Present login/signup when unauthenticated.
                     AuthView()
                 }
             }
             .environmentObject(appState)
+            .environmentObject(themeManager)
+            .preferredColorScheme(themeManager.resolvedColorScheme)
             .task {
                 await appState.restoreSession()
                 appState.consumeSharedPayloadIfNeeded()

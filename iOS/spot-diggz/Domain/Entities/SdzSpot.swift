@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 /// Location information for a spot.
 struct SdzSpotLocation: Codable, Identifiable, Equatable {
@@ -105,6 +106,29 @@ struct SdzSpot: Codable, Identifiable {
 }
 
 extension SdzSpot {
+    /// Whether this spot is a park (based on parkAttributes or tags).
+    var sdzIsPark: Bool {
+        if parkAttributes != nil {
+            return true
+        }
+        return tags.contains("パーク")
+    }
+
+    /// The design system color for this spot's pin.
+    var sdzPinColor: Color {
+        sdzIsPark ? .sdzPark : .sdzStreet
+    }
+
+    /// The UIColor variant for MapKit annotation views.
+    var sdzPinUIColor: UIColor {
+        sdzIsPark ? .sdzPark : .sdzStreet
+    }
+
+    /// A localized label for the spot type.
+    var sdzTypeLabel: String {
+        sdzIsPark ? "スケートパーク" : "ストリート"
+    }
+
     /// Creates a sample spot for preview and development.
     static func sample(id: String, name: String) -> SdzSpot {
         return SdzSpot(

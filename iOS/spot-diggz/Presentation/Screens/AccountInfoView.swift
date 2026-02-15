@@ -13,89 +13,95 @@ struct AccountInfoView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            Color.sdzBackground.ignoresSafeArea()
             ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
+                VStack(alignment: .leading, spacing: SdzSpacing.lg + 2) {
                     accountCard
                     postCard
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 18)
-                .padding(.bottom, 24)
+                .padding(.horizontal, SdzSpacing.lg)
+                .padding(.top, SdzSpacing.lg + 2)
+                .padding(.bottom, SdzSpacing.xl)
             }
         }
         .navigationTitle("アカウント情報")
         .navigationBarTitleDisplayMode(.inline)
-        .preferredColorScheme(.dark)
     }
 
     private var accountCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: SdzSpacing.md) {
+            HStack(spacing: SdzSpacing.md) {
                 avatarView
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: SdzSpacing.xxs) {
                     Text(displayName)
-                        .font(.headline)
-                        .foregroundColor(.white)
+                        .font(SdzTypography.headline)
+                        .foregroundColor(.sdzTextPrimary)
                     if let email, !email.isEmpty {
                         Text(email)
-                            .font(.subheadline)
-                            .foregroundColor(.white.opacity(0.72))
+                            .font(SdzTypography.subheadline)
+                            .foregroundColor(.sdzTextSecondary)
                     }
                 }
                 Spacer()
             }
-            Divider().overlay(Color.white.opacity(0.12))
+            SdzDividerView()
             accountInfoRow(title: "ユーザーID", value: userId)
             accountInfoRow(title: "ログイン方法", value: providerLabel)
             if let email, !email.isEmpty {
                 accountInfoRow(title: "メール", value: email)
             }
             Text(emailChangeNote)
-                .font(.caption)
-                .foregroundColor(.white.opacity(0.62))
-                .padding(.top, 6)
+                .font(SdzTypography.caption1)
+                .foregroundColor(.sdzTextTertiary)
+                .padding(.top, SdzSpacing.xs + 2)
         }
-        .padding(16)
-        .background(cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .padding(SdzSpacing.lg)
+        .background(Color.sdzSurfaceElevated)
+        .clipShape(RoundedRectangle(cornerRadius: SdzRadius.xl, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: SdzRadius.xl, style: .continuous)
+                .stroke(Color.sdzBorder, lineWidth: 1)
+        )
     }
 
     private var postCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: SdzSpacing.md) {
             Text("自分の投稿")
-                .font(.headline)
-                .foregroundColor(.white)
-                .padding(.horizontal, 16)
-                .padding(.top, 16)
+                .font(SdzTypography.headline)
+                .foregroundColor(.sdzTextPrimary)
+                .padding(.horizontal, SdzSpacing.lg)
+                .padding(.top, SdzSpacing.lg)
 
             if mySpots.isEmpty {
                 Text("投稿がありません")
-                    .font(.subheadline)
-                    .foregroundColor(.white.opacity(0.72))
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 16)
+                    .font(SdzTypography.subheadline)
+                    .foregroundColor(.sdzTextSecondary)
+                    .padding(.horizontal, SdzSpacing.lg)
+                    .padding(.bottom, SdzSpacing.lg)
             } else {
                 VStack(spacing: 0) {
                     ForEach(Array(mySpots.enumerated()), id: \.element.id) { index, spot in
                         NavigationLink(destination: SpotDetailView(spot: spot)) {
                             SpotCardView(spot: spot)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 4)
+                                .padding(.horizontal, SdzSpacing.lg)
+                                .padding(.vertical, SdzSpacing.xs)
                         }
                         .buttonStyle(.plain)
                         if index < mySpots.count - 1 {
-                            Divider()
-                                .overlay(Color.white.opacity(0.1))
-                                .padding(.horizontal, 16)
+                            SdzDividerView()
+                                .padding(.horizontal, SdzSpacing.lg)
                         }
                     }
                 }
-                .padding(.bottom, 8)
+                .padding(.bottom, SdzSpacing.sm)
             }
         }
-        .background(cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .background(Color.sdzSurfaceElevated)
+        .clipShape(RoundedRectangle(cornerRadius: SdzRadius.xl, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: SdzRadius.xl, style: .continuous)
+                .stroke(Color.sdzBorder, lineWidth: 1)
+        )
     }
 
     private var avatarView: some View {
@@ -107,10 +113,10 @@ struct AccountInfoView: View {
                     .scaledToFill()
             } else {
                 Circle()
-                    .fill(Color.white.opacity(0.16))
+                    .fill(Color.sdzBgTertiary)
                     .overlay(
                         Image(systemName: "person.fill")
-                            .foregroundColor(.white.opacity(0.88))
+                            .foregroundColor(.sdzTextSecondary)
                     )
             }
         }
@@ -121,25 +127,14 @@ struct AccountInfoView: View {
     private func accountInfoRow(title: String, value: String) -> some View {
         HStack {
             Text(title)
-                .font(.subheadline)
-                .foregroundColor(.white.opacity(0.7))
+                .font(SdzTypography.subheadline)
+                .foregroundColor(.sdzTextSecondary)
             Spacer(minLength: 10)
             Text(value)
-                .font(.subheadline)
-                .foregroundColor(.white)
+                .font(SdzTypography.subheadline)
+                .foregroundColor(.sdzTextPrimary)
                 .lineLimit(1)
         }
-    }
-
-    private var cardBackground: some View {
-        LinearGradient(
-            colors: [
-                Color(red: 0.14, green: 0.14, blue: 0.15),
-                Color(red: 0.1, green: 0.1, blue: 0.11)
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
     }
 }
 
@@ -157,7 +152,6 @@ struct AccountInfoView_Previews: PreviewProvider {
             )
             .environmentObject(SdzAppState())
         }
-        .preferredColorScheme(.dark)
     }
 }
 #endif

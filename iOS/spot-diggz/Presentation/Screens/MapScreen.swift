@@ -64,7 +64,7 @@ struct MapScreen: View {
                         }) {
                             Image(systemName: "mappin.circle.fill")
                                 .font(.title)
-                                .foregroundColor(.accentColor)
+                                .foregroundColor(annotation.spot.sdzPinColor)
                         }
                     }
                 }
@@ -78,7 +78,7 @@ struct MapScreen: View {
                     }) {
                         Image(systemName: "mappin.circle.fill")
                             .font(.title)
-                            .foregroundColor(.accentColor)
+                            .foregroundColor(annotation.spot.sdzPinColor)
                     }
                 }
             }

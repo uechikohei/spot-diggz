@@ -27,33 +27,6 @@ private enum SdzSpotType: String, CaseIterable, Identifiable {
     }
 }
 
-private func sdzIsParkSpot(_ spot: SdzSpot) -> Bool {
-    if spot.parkAttributes != nil {
-        return true
-    }
-    return spot.tags.contains(SdzSpotType.park.tagValue)
-}
-
-private func sdzPinColor(for spot: SdzSpot) -> Color {
-    sdzIsParkSpot(spot) ? sdzPinColorForPark() : sdzPinColorForStreet()
-}
-
-private func sdzPinColorForPark() -> Color {
-    Color(red: 0.24, green: 0.72, blue: 0.36)
-}
-
-private func sdzPinColorForStreet() -> Color {
-    Color(red: 0.20, green: 0.48, blue: 0.92)
-}
-
-private func sdzFloatingActionBlue() -> Color {
-    sdzPinColorForStreet()
-}
-
-private func sdzFloatingActionActiveRed() -> Color {
-    Color(.systemRed)
-}
-
 private struct TopOverlayHeightKey: PreferenceKey {
     static var defaultValue: CGFloat = 0
 
@@ -206,13 +179,13 @@ struct HomeView: View {
     }
 
     private var topOverlay: some View {
-        VStack(spacing: 10) {
-            searchField
+        VStack(spacing: SdzSpacing.sm + 2) {
+            SdzSearchBar(placeholder: "スポットを検索", text: $searchText)
             spotTypeChips
             tagFilterChips
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 12)
+        .padding(.horizontal, SdzSpacing.lg)
+        .padding(.top, SdzSpacing.md)
         .background(
             GeometryReader { proxy in
                 Color.clear
@@ -223,7 +196,7 @@ struct HomeView: View {
 
     @ViewBuilder
     private var bottomOverlay: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: SdzSpacing.md) {
             if isLoading {
                 statusBanner(
                     title: "読み込み中...",
@@ -257,8 +230,8 @@ struct HomeView: View {
                 .buttonStyle(.plain)
             }
         }
-        .padding(.horizontal, 12)
-        .padding(.bottom, 8)
+        .padding(.horizontal, SdzSpacing.md)
+        .padding(.bottom, SdzSpacing.sm)
     }
 
     private enum StatusTone {
@@ -267,20 +240,20 @@ struct HomeView: View {
     }
 
     private func statusBanner(title: String, tone: StatusTone, actionTitle: String?, action: (() -> Void)?) -> some View {
-        HStack(spacing: 12) {
+        HStack(spacing: SdzSpacing.md) {
             Text(title)
-                .font(.caption)
-                .foregroundColor(tone == .error ? .red : .secondary)
+                .font(SdzTypography.caption1)
+                .foregroundColor(tone == .error ? .sdzError : .sdzTextSecondary)
             Spacer()
             if let actionTitle = actionTitle, let action = action {
                 Button(actionTitle, action: action)
                     .buttonStyle(.bordered)
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
+        .padding(.horizontal, SdzSpacing.md + 2)
+        .padding(.vertical, SdzSpacing.sm + 2)
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: SdzRadius.md, style: .continuous))
     }
 
     private func floatingActionButtons(proxy: GeometryProxy) -> some View {
@@ -288,17 +261,17 @@ struct HomeView: View {
             Spacer()
             HStack {
                 Spacer()
-                VStack(spacing: 12) {
+                VStack(spacing: SdzSpacing.md) {
                     Button(action: {
                         locationManager.requestCurrentLocation()
                     }) {
                         Image(systemName: "location.fill")
                             .font(.title3)
-                            .padding(12)
+                            .padding(SdzSpacing.md)
                             .foregroundColor(.white)
-                            .background(sdzFloatingActionBlue())
+                            .background(Color.sdzStreet)
                             .clipShape(Circle())
-                            .shadow(color: Color.black.opacity(0.22), radius: 6, x: 0, y: 3)
+                            .sdzShadow(.md)
                     }
                     .accessibilityLabel("現在地に移動")
 
@@ -306,56 +279,34 @@ struct HomeView: View {
                         handleTapCreateSpotButton()
                     }) {
                         Image(systemName: "plus")
-                            .font(.system(size: 28, weight: .semibold))
+                            .font(SdzTypography.title1)
                             .foregroundColor(.white)
                             .frame(width: 66, height: 66)
                             .background(
                                 Circle()
-                                    .fill(draftPinLocation == nil ? sdzFloatingActionBlue() : sdzFloatingActionActiveRed())
+                                    .fill(draftPinLocation == nil ? Color.sdzStreet : Color.sdzError)
                             )
-                            .shadow(color: Color.black.opacity(0.22), radius: 8, x: 0, y: 4)
+                            .sdzShadow(.lg)
                     }
                     .accessibilityLabel("選択した位置で投稿")
                 }
             }
-            .padding(.trailing, 16)
-            .padding(.bottom, proxy.safeAreaInsets.bottom + 12)
+            .padding(.trailing, SdzSpacing.lg)
+            .padding(.bottom, proxy.safeAreaInsets.bottom + SdzSpacing.md)
         }
-    }
-
-    private var searchField: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(sdzFloatingActionBlue())
-            TextField("スポットを検索", text: $searchText)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled(true)
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
-        .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(Color(.systemBackground))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(sdzFloatingActionBlue().opacity(0.35), lineWidth: 1.5)
-        )
-        .shadow(color: Color.black.opacity(0.14), radius: 8, x: 0, y: 4)
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var spotTypeChips: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                FilterChip(
+            HStack(spacing: SdzSpacing.sm) {
+                SdzChip(
                     title: "すべて",
                     isSelected: selectedSpotType == nil
                 ) {
                     selectedSpotType = nil
                 }
                 ForEach(SdzSpotType.allCases) { spotType in
-                    FilterChip(
+                    SdzChip(
                         title: spotType.label,
                         isSelected: selectedSpotType == spotType
                     ) {
@@ -363,13 +314,13 @@ struct HomeView: View {
                     }
                 }
             }
-            .padding(.vertical, 4)
+            .padding(.vertical, SdzSpacing.xs)
         }
     }
 
     private var tagFilterChips: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
+            HStack(spacing: SdzSpacing.sm) {
                 Menu {
                     ForEach(tagOptions, id: \.self) { tag in
                         Button {
@@ -385,7 +336,7 @@ struct HomeView: View {
                 .disabled(tagOptions.isEmpty)
 
                 ForEach(selectedTags.sorted(), id: \.self) { tag in
-                    FilterChip(
+                    SdzChip(
                         title: tag,
                         isSelected: true,
                         systemImage: "xmark.circle.fill"
@@ -394,7 +345,7 @@ struct HomeView: View {
                     }
                 }
             }
-            .padding(.vertical, 4)
+            .padding(.vertical, SdzSpacing.xs)
         }
     }
 
@@ -403,53 +354,10 @@ struct HomeView: View {
 
         var body: some View {
             Image(systemName: "tag.circle.fill")
-                .font(.system(size: 24, weight: .semibold))
-                .foregroundColor(isDisabled ? .gray : sdzFloatingActionBlue())
-                .padding(.vertical, 4)
+                .font(SdzTypography.title2)
+                .foregroundColor(isDisabled ? .gray : Color.sdzStreet)
+                .padding(.vertical, SdzSpacing.xs)
                 .accessibilityLabel("タグを追加")
-        }
-    }
-
-    private struct ChipLabel: View {
-        let title: String
-        let isSelected: Bool
-        let systemImage: String?
-
-        var body: some View {
-            HStack(spacing: 6) {
-                if let systemImage = systemImage {
-                    Image(systemName: systemImage)
-                        .font(.caption)
-                }
-                Text(title)
-                    .font(.caption)
-            }
-            .foregroundColor(isSelected ? .white : .primary)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(isSelected ? Color.accentColor : Color(.systemBackground).opacity(0.85))
-            .clipShape(Capsule())
-        }
-    }
-
-    private struct FilterChip: View {
-        let title: String
-        let isSelected: Bool
-        let systemImage: String?
-        let action: () -> Void
-
-        init(title: String, isSelected: Bool, systemImage: String? = nil, action: @escaping () -> Void) {
-            self.title = title
-            self.isSelected = isSelected
-            self.systemImage = systemImage
-            self.action = action
-        }
-
-        var body: some View {
-            Button(action: action) {
-                ChipLabel(title: title, isSelected: isSelected, systemImage: systemImage)
-            }
-            .buttonStyle(.plain)
         }
     }
 
@@ -522,11 +430,11 @@ struct HomeView: View {
     }
 
     private func pinColor(for spot: SdzSpot) -> Color {
-        sdzPinColor(for: spot)
+        spot.sdzPinColor
     }
 
     private func isParkSpot(_ spot: SdzSpot) -> Bool {
-        sdzIsParkSpot(spot)
+        spot.sdzIsPark
     }
 
     private func focusOnCoordinate(_ coordinate: CLLocationCoordinate2D) {
@@ -1008,7 +916,7 @@ private struct SdzHomeMapView: UIViewRepresentable {
         }
 
         private func clusterTintColor(for cluster: SdzClusterAnnotation) -> UIColor {
-            cluster.isPark ? UIColor(sdzPinColorForPark()) : UIColor(sdzPinColorForStreet())
+            cluster.isPark ? UIColor.sdzPark : UIColor.sdzStreet
         }
 
         private func zoomToCluster(_ cluster: SdzClusterAnnotation, in mapView: MKMapView) {
@@ -1054,7 +962,7 @@ private struct SdzHomeMapView: UIViewRepresentable {
         }
 
         private func clusterTypeKey(for spot: SdzSpot) -> String {
-            sdzIsParkSpot(spot) ? "park" : "street"
+            spot.sdzIsPark ? "park" : "street"
         }
 
         private func updateCluster(_ cluster: SdzClusterAnnotation, with annotations: [SdzSpotAnnotation]) {
@@ -1074,7 +982,7 @@ private struct SdzHomeMapView: UIViewRepresentable {
             cluster.coordinate = centerPoint.coordinate
             cluster.count = annotations.count
             if let spot = annotations.first?.spot {
-                cluster.isPark = sdzIsParkSpot(spot)
+                cluster.isPark = spot.sdzIsPark
             }
             cluster.memberMapRect = rect
             cluster.memberSpotIds = annotations.compactMap { $0.spot?.spotId }
@@ -1155,7 +1063,7 @@ private final class SdzSpotAnnotationView: MKAnnotationView {
 
     func update(spot: SdzSpot, isFocused: Bool) {
         let view = AnyView(
-            HomeViewPinView(spot: spot, isFocused: isFocused)
+            SdzMapPinView(spot: spot, isFocused: isFocused)
         )
         if let hostingController = hostingController {
             hostingController.rootView = view
@@ -1179,146 +1087,6 @@ private final class SdzSpotAnnotationView: MKAnnotationView {
     }
 }
 
-private struct HomeViewPinView: View {
-    let spot: SdzSpot
-    let isFocused: Bool
-
-    var body: some View {
-        let pinColor = sdzPinColor(for: spot)
-        let isApproved = spot.approvalStatus == .approved
-
-        VStack(spacing: 4) {
-            VStack(spacing: 2) {
-                if isFocused {
-                    ZStack(alignment: .topTrailing) {
-                        SdzBalloonIconView(color: pinColor, diameter: 48, tailWidth: 14, tailHeight: 8) {
-                            Image(isParkSpot(spot) ? "SkateparkIcon" : "StreetIcon")
-                                .renderingMode(.template)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 24, height: 24)
-                                .foregroundColor(.white)
-                        }
-                        if isApproved {
-                            Image(systemName: "checkmark.seal.fill")
-                                .font(.caption)
-                                .foregroundColor(.white)
-                                .background(
-                                    Circle()
-                                        .fill(pinColor)
-                                        .frame(width: 16, height: 16)
-                                )
-                                .offset(x: 12, y: -12)
-                        }
-                    }
-                } else {
-                    ZStack(alignment: .topTrailing) {
-                        Image(isParkSpot(spot) ? "SkateparkIcon" : "StreetIcon")
-                            .renderingMode(.template)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 20, height: 20)
-                            .foregroundColor(pinColor)
-                            .shadow(color: Color.black.opacity(0.2), radius: 1, x: 0, y: 1)
-                        if isApproved {
-                            Image(systemName: "checkmark.seal.fill")
-                                .font(.caption2)
-                                .foregroundColor(.white)
-                                .background(
-                                    Circle()
-                                        .fill(pinColor)
-                                        .frame(width: 14, height: 14)
-                                )
-                                .offset(x: 6, y: -6)
-                        }
-                    }
-                }
-                ZStack {
-                    Circle()
-                        .fill(pinColor)
-                        .frame(width: isFocused ? 10 : 8, height: isFocused ? 10 : 8)
-                    if !isApproved {
-                        Circle()
-                            .stroke(
-                                Color.white.opacity(0.8),
-                                style: StrokeStyle(lineWidth: 2, dash: [3, 2])
-                            )
-                            .frame(width: isFocused ? 16 : 14, height: isFocused ? 16 : 14)
-                    }
-                }
-            }
-            if isFocused {
-                Text(spot.name)
-                    .font(.caption.bold())
-                    .foregroundColor(.primary)
-                    .lineLimit(1)
-                    .shadow(color: Color.black.opacity(0.15), radius: 1, x: 0, y: 1)
-            }
-        }
-        .animation(.spring(response: 0.25, dampingFraction: 0.8), value: isFocused)
-    }
-
-    private func isParkSpot(_ spot: SdzSpot) -> Bool {
-        sdzIsParkSpot(spot)
-    }
-}
-
-private struct SdzBalloonIconView<Content: View>: View {
-    let color: Color
-    let diameter: CGFloat
-    let tailWidth: CGFloat
-    let tailHeight: CGFloat
-    let content: Content
-
-    init(color: Color, diameter: CGFloat = 36, tailWidth: CGFloat = 12, tailHeight: CGFloat = 7, @ViewBuilder content: () -> Content) {
-        self.color = color
-        self.diameter = diameter
-        self.tailWidth = tailWidth
-        self.tailHeight = tailHeight
-        self.content = content()
-    }
-
-    var body: some View {
-        VStack(spacing: 0) {
-            ZStack {
-                Circle()
-                    .fill(color)
-                    .frame(width: diameter, height: diameter)
-                    .shadow(color: Color.black.opacity(0.25), radius: 2, x: 0, y: 1)
-                content
-            }
-            TrianglePointer()
-                .fill(color)
-                .frame(width: tailWidth, height: tailHeight)
-                .offset(y: -1)
-        }
-    }
-}
-
-private struct TrianglePointer: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: rect.midX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
-        path.closeSubpath()
-        return path
-    }
-}
-
-private struct SdzClusterBubbleView: View {
-    let count: Int
-    let color: Color
-
-    var body: some View {
-        SdzBalloonIconView(color: color) {
-            Text("＋\(count)")
-                .font(.caption.bold())
-                .foregroundColor(.white)
-        }
-    }
-}
-
 private final class SdzClusterAnnotationView: MKAnnotationView {
     private var hostingController: UIHostingController<AnyView>?
 
@@ -1336,7 +1104,7 @@ private final class SdzClusterAnnotationView: MKAnnotationView {
 
     func update(count: Int, tintColor: UIColor) {
         let view = AnyView(
-            SdzClusterBubbleView(count: count, color: Color(tintColor))
+            SdzClusterBubble(count: count, color: Color(tintColor))
         )
         if let hostingController = hostingController {
             hostingController.rootView = view

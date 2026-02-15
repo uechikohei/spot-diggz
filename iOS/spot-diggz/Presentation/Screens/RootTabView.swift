@@ -6,6 +6,7 @@ struct RootTabView: View {
 
     var body: some View {
         TabView(selection: $appState.selectedTab) {
+
             HomeView()
                 .tabItem {
                     Label("スポット", systemImage: "map")
@@ -22,6 +23,7 @@ struct RootTabView: View {
                 }
                 .tag(SdzTab.settings)
         }
+        .tint(Color.sdzStreet)
         .sheet(isPresented: $appState.isPostComposerPresented) {
             PostView()
         }

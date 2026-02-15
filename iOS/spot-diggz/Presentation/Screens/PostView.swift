@@ -346,8 +346,8 @@ struct PostView: View {
             Text("画像")
             Spacer()
             Text("\(imageItems.count)/\(maxImagesPerSpot)")
-                .font(.caption)
-                .foregroundColor(imageItems.count >= maxImagesPerSpot ? .red : .secondary)
+                .font(SdzTypography.caption1)
+                .foregroundColor(imageItems.count >= maxImagesPerSpot ? .sdzError : .sdzTextSecondary)
         }
     }
 

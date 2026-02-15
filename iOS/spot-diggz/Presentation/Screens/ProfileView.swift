@@ -4,6 +4,7 @@ import UIKit
 /// Displays settings and profile-related actions for the current user.
 struct ProfileView: View {
     @EnvironmentObject var appState: SdzAppState
+    @EnvironmentObject var themeManager: SdzThemeManager
 
     @State private var user: SdzUser?
     @State private var mySpots: [SdzSpot] = []
@@ -27,7 +28,6 @@ struct ProfileView: View {
                 }
             }
         }
-        .preferredColorScheme(.dark)
         .onAppear {
             loadData()
         }
@@ -61,23 +61,25 @@ struct ProfileView: View {
 
     private var profileContent: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            Color.sdzBackground.ignoresSafeArea()
             ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
+                VStack(alignment: .leading, spacing: SdzSpacing.lg + 2) {
                     if let errorMessage {
                         Text(errorMessage)
-                            .font(.footnote)
-                            .foregroundColor(.red.opacity(0.92))
-                            .padding(.horizontal, 12)
+                            .font(SdzTypography.caption1)
+                            .foregroundColor(.sdzError)
+                            .padding(.horizontal, SdzSpacing.md)
                     }
                     sectionLabel("設定")
                     settingsCard
+                    sectionLabel("テーマ")
+                    themeCard
                     sectionLabel("アプリ")
                     appCard
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 12)
-                .padding(.bottom, 24)
+                .padding(.horizontal, SdzSpacing.lg)
+                .padding(.top, SdzSpacing.md)
+                .padding(.bottom, SdzSpacing.xl)
             }
         }
         .navigationTitle("設定")
@@ -99,7 +101,7 @@ struct ProfileView: View {
             } label: {
                 SettingsRowView(iconName: "person.crop.circle", title: "アカウント情報")
             }
-            settingsDivider
+            SdzDividerView()
             NavigationLink {
                 MyListDetailView()
                     .environmentObject(appState)
@@ -110,14 +112,14 @@ struct ProfileView: View {
                     value: "\(appState.favoriteSpots.count)"
                 )
             }
-            settingsDivider
+            SdzDividerView()
             Button {
                 showAvatarPicker = true
             } label: {
                 SettingsRowView(iconName: "camera.circle", title: "アイコン変更")
             }
             .buttonStyle(.plain)
-            settingsDivider
+            SdzDividerView()
             Button {
                 appState.signOut()
             } label: {
@@ -130,11 +132,58 @@ struct ProfileView: View {
             }
             .buttonStyle(.plain)
         }
-        .background(cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .background(Color.sdzSurfaceElevated)
+        .clipShape(RoundedRectangle(cornerRadius: SdzRadius.xl, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(Color.white.opacity(0.08), lineWidth: 1)
+            RoundedRectangle(cornerRadius: SdzRadius.xl, style: .continuous)
+                .stroke(Color.sdzBorder, lineWidth: 1)
+        )
+    }
+
+    private var themeCard: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: SdzSpacing.md) {
+                ForEach(SdzColorSchemePreference.allCases) { preference in
+                    Button {
+                        withAnimation(SdzAnimation.standard) {
+                            themeManager.preference = preference
+                        }
+                    } label: {
+                        VStack(spacing: SdzSpacing.xs) {
+                            Image(systemName: preference.iconName)
+                                .font(SdzTypography.title3)
+                                .foregroundColor(
+                                    themeManager.preference == preference
+                                        ? .sdzStreet
+                                        : .sdzTextTertiary
+                                )
+                            Text(preference.label)
+                                .font(SdzTypography.caption1)
+                                .foregroundColor(
+                                    themeManager.preference == preference
+                                        ? .sdzTextPrimary
+                                        : .sdzTextTertiary
+                                )
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, SdzSpacing.md)
+                        .background(
+                            themeManager.preference == preference
+                                ? Color.sdzStreet.opacity(0.1)
+                                : Color.clear
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: SdzRadius.sm, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(SdzSpacing.lg)
+        }
+        .background(Color.sdzSurfaceElevated)
+        .clipShape(RoundedRectangle(cornerRadius: SdzRadius.xl, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: SdzRadius.xl, style: .continuous)
+                .stroke(Color.sdzBorder, lineWidth: 1)
         )
     }
 
@@ -146,14 +195,14 @@ struct ProfileView: View {
                 SettingsRowView(iconName: "square.and.arrow.up", title: "シェア")
             }
             .buttonStyle(.plain)
-            settingsDivider
+            SdzDividerView()
             Button {
                 openFeedbackMail()
             } label: {
                 SettingsRowView(iconName: "paperplane", title: "ご意見・ご要望")
             }
             .buttonStyle(.plain)
-            settingsDivider
+            SdzDividerView()
             Button {
                 showAboutSheet = true
             } label: {
@@ -161,34 +210,19 @@ struct ProfileView: View {
             }
             .buttonStyle(.plain)
         }
-        .background(cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .background(Color.sdzSurfaceElevated)
+        .clipShape(RoundedRectangle(cornerRadius: SdzRadius.xl, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(Color.white.opacity(0.08), lineWidth: 1)
+            RoundedRectangle(cornerRadius: SdzRadius.xl, style: .continuous)
+                .stroke(Color.sdzBorder, lineWidth: 1)
         )
     }
 
     private func sectionLabel(_ title: String) -> some View {
         Text(title)
-            .font(.subheadline.weight(.semibold))
-            .foregroundColor(.white.opacity(0.72))
-            .padding(.horizontal, 2)
-    }
-
-    private var settingsDivider: some View {
-        Divider().overlay(Color.white.opacity(0.1))
-    }
-
-    private var cardBackground: some View {
-        LinearGradient(
-            colors: [
-                Color(red: 0.15, green: 0.15, blue: 0.16),
-                Color(red: 0.1, green: 0.1, blue: 0.11)
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
+            .font(SdzTypography.subheadlineMedium)
+            .foregroundColor(.sdzTextSecondary)
+            .padding(.horizontal, SdzSpacing.xxs)
     }
 
     private var resolvedUserId: String {
@@ -248,29 +282,29 @@ struct ProfileView: View {
     }
 
     private var aboutSheet: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: SdzSpacing.lg) {
             Capsule()
-                .fill(Color.white.opacity(0.18))
+                .fill(Color.sdzTextTertiary)
                 .frame(width: 42, height: 5)
-                .padding(.top, 10)
+                .padding(.top, SdzSpacing.sm + 2)
             Text("SpotDiggzについて")
-                .font(.headline)
+                .font(SdzTypography.headline)
             Text(appVersionText)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+                .font(SdzTypography.subheadline)
+                .foregroundColor(.sdzTextSecondary)
             Text("スケートスポットを地図と一覧で見つけ、投稿できるアプリです。")
-                .font(.footnote)
+                .font(SdzTypography.caption1)
                 .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
-                .padding(.horizontal, 20)
+                .foregroundColor(.sdzTextSecondary)
+                .padding(.horizontal, SdzSpacing.xl - 4)
             Button("閉じる") {
                 showAboutSheet = false
             }
             .buttonStyle(.borderedProminent)
-            .padding(.bottom, 12)
+            .padding(.bottom, SdzSpacing.md)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(Color(.systemBackground).ignoresSafeArea())
+        .background(Color.sdzBackground.ignoresSafeArea())
         .presentationDetents([.fraction(0.35), .medium])
     }
 
@@ -375,7 +409,7 @@ struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         ProfileView()
             .environmentObject(SdzAppState())
-            .preferredColorScheme(.dark)
+            .environmentObject(SdzThemeManager())
     }
 }
 #endif

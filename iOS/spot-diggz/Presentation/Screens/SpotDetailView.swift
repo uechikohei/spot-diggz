@@ -54,7 +54,7 @@ struct SpotDetailView: View {
                     }
                     .frame(height: 220)
                     .tabViewStyle(.page)
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: SdzRadius.md, style: .continuous))
                 }
 
                 VStack(alignment: .leading, spacing: 6) {
@@ -232,13 +232,13 @@ struct SpotDetailView: View {
     private var approvalStatusColor: Color {
         switch spot.approvalStatus {
         case .approved:
-            return .green
+            return .sdzSuccess
         case .pending:
-            return .orange
+            return .sdzWarning
         case .rejected:
-            return .red
+            return .sdzError
         case .none:
-            return .secondary
+            return .sdzTextTertiary
         }
     }
 

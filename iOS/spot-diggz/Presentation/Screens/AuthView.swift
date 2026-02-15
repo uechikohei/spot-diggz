@@ -15,8 +15,7 @@ struct AuthView: View {
         VStack {
             Spacer()
             Text("SpotDiggz")
-                .font(.largeTitle)
-                .bold()
+                .font(SdzTypography.display)
 
             TextField("メールアドレス", text: $email)
                 .textContentType(.emailAddress)
@@ -24,29 +23,29 @@ struct AuthView: View {
                 .textInputAutocapitalization(.never)
                 .disabled(isBusy)
                 .padding()
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(8)
+                .background(Color.sdzBgSecondary)
+                .cornerRadius(SdzRadius.sm)
 
             SecureField("パスワード", text: $password)
                 .textContentType(isSignUp ? .newPassword : .password)
                 .disabled(isBusy)
                 .padding()
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(8)
+                .background(Color.sdzBgSecondary)
+                .cornerRadius(SdzRadius.sm)
 
             if isSignUp {
                 SecureField("パスワード（確認）", text: $confirmPassword)
                     .textContentType(.newPassword)
                     .disabled(isBusy)
                     .padding()
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(8)
+                    .background(Color.sdzBgSecondary)
+                    .cornerRadius(SdzRadius.sm)
             }
 
             if let errorMessage = errorMessage {
                 Text(errorMessage)
-                    .foregroundColor(.red)
-                    .padding(.top, 4)
+                    .foregroundColor(.sdzError)
+                    .padding(.top, SdzSpacing.xs)
             }
 
             Button(action: {
@@ -55,11 +54,11 @@ struct AuthView: View {
                 Text(isBusy ? "処理中..." : (isSignUp ? "新規登録" : "ログイン"))
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.accentColor)
+                    .background(Color.sdzStreet)
                     .foregroundColor(.white)
-                    .cornerRadius(8)
+                    .cornerRadius(SdzRadius.sm)
             }
-            .padding(.top, 16)
+            .padding(.top, SdzSpacing.lg)
             .disabled(isBusy)
 
             Button(action: {
@@ -68,22 +67,22 @@ struct AuthView: View {
                 Label("Googleで続ける", systemImage: "g.circle.fill")
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color(.secondarySystemBackground))
-                    .foregroundColor(.primary)
-                    .cornerRadius(8)
+                    .background(Color.sdzBgSecondary)
+                    .foregroundColor(.sdzTextPrimary)
+                    .cornerRadius(SdzRadius.sm)
             }
-            .padding(.top, 8)
+            .padding(.top, SdzSpacing.sm)
             .disabled(isBusy)
 
             Button(action: {
-                withAnimation(.easeInOut(duration: 0.2)) {
+                withAnimation(SdzAnimation.fast) {
                     isSignUp.toggle()
                     errorMessage = nil
                 }
             }) {
                 Text(isSignUp ? "ログインに戻る" : "新規登録")
-                    .foregroundColor(.accentColor)
-                    .padding(.top, 8)
+                    .foregroundColor(.sdzStreet)
+                    .padding(.top, SdzSpacing.sm)
             }
             .disabled(isBusy)
             Spacer()
