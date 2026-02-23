@@ -156,15 +156,29 @@ Claude Codeの作業中にトラブルシューティングが発生し解消し
 - FirebaseのAPIキーをローテーションした場合、`GoogleService-Info.plist`の`API_KEY`は自動更新されないため手動で差し替え（ファイルはGit追跡しない）
 - iOSで期待動作しない場合「設定 > 一般 > VPNとデバイス管理」で開発者アプリの信頼確認（Issue #188）
 - Terraformバージョンは `web/.terraform-version` で固定（tfenv想定）
-- `.env`ファイル・シークレット情報は絶対にコミットしない
+- `.env`ファイル・シークレット情報は絶対にコミットしない（`.env.tpl` は `op://` 参照のみなのでコミットOK）
+- シークレット値の追加・変更時は 1Password アイテムと `.env.tpl` の両方を更新する（手順: `docs/secrets_management.md`）
 
 ## ローカル起動手順
+
+### 前提条件
+
+- 1Password CLI (`op`): `brew install --cask 1password-cli`
+- 1Password デスクトップアプリとの CLI 連携を有効化（推奨）
+- `gcloud` CLI 認証済み: `gcloud auth login`
+
+### シークレット取得（初回 or 更新時）
+
+```bash
+make secrets    # 1Password から .env / .env.local を生成（gcloud token も自動取得）
+```
+
+### サーバー起動
 
 ```bash
 # 1) Rust API
 cd web/api
 set -a && source ./.env && set +a
-export SDZ_FIRESTORE_TOKEN=$(gcloud auth print-access-token)
 cargo run
 
 # 2) React UI（別ターミナル）
@@ -174,6 +188,9 @@ cd web/ui && npm install && npm run dev
 # UI: http://localhost:3000
 # API: http://localhost:8080/sdz/health
 ```
+
+📋 `SDZ_FIRESTORE_TOKEN` は `make secrets` 実行時に `gcloud auth print-access-token` で自動取得される。
+トークン期限切れ時は `make secrets` を再実行するか、手動で `export SDZ_FIRESTORE_TOKEN=$(gcloud auth print-access-token)` を実行する。
 
 ## スラッシュコマンド
 
@@ -185,9 +202,16 @@ cd web/ui && npm install && npm run dev
 |                  | `/scan-frontend` | フロントエンド: npm依存関係, Node.js, React, Firebase JS SDK, サプライチェーン |
 |                  | `/scan-ios`      | iOS: Swift Package, Firebase iOS SDK, GoogleSignIn, gRPC, Xcode/Swift          |
 | **品質チェック** | `/verify`        | ローカルCI実行（fmt/clippy/test/lint/type-check/build）                        |
-| **レビュー**     | `/review`        | 差分のセキュリティ・バグ・命名規則・シークレット漏洩レビュー                   |
-|                  | `/simplify`      | 変更差分のコード簡素化                                                         |
-| **課題管理**     | `/issue [内容]`  | STAR/4F形式を自動選択しIssue起票 → Project追加                                 |
+| **レビュー**     | `/review`              | 差分のセキュリティ・バグ・命名規則・シークレット漏洩レビュー                   |
+|                  | `/simplify`            | 変更差分のコード簡素化                                                         |
+|                  | `/review-appstore`     | App Store審査ガイドライン準拠チェック（iOS実装のストア申請レビュー）            |
+| **AIDDレビュー** | `/design-review`       | 設計レビュー（直斗＋八幡＋臨也）                                               |
+|                  | `/code-review`         | コードレビュー（八幡＋雪乃＋ヒュルケン）                                       |
+|                  | `/ux-review`           | UI/UXレビュー（玉縄＋雪乃）                                                    |
+|                  | `/cost-optimization`   | コスト最適化相談（雪乃＋臨也）                                                 |
+|                  | `/security-review`     | セキュリティレビュー（ヒュルケン＋臨也＋直斗）                                 |
+|                  | `/team-review`         | 全員参加フルレビュー会議（6名全員）                                            |
+| **課題管理**     | `/issue [内容]`        | STAR/4F形式を自動選択しIssue起票 → Project追加                                 |
 
 ### `/daily-scan` のフェーズ構成
 
@@ -294,6 +318,7 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 ## ドキュメント参照
 
 - [開発環境セットアップ](docs/DEVELOPMENT_SETUP.md)
+- [シークレット管理（1Password CLI）](docs/secrets_management.md)
 - [CD設計](docs/cd_architecture.md)
 - [dev seed運用ルール](docs/seed_runbook.md)
 - [ユーザー識別ポリシー](docs/user_identity_policy.md)
@@ -314,3 +339,10 @@ SDZ_API_URL=http://localhost:8080 SDZ_ID_TOKEN="${SDZ_ID_TOKEN}" ./web/scripts/f
 - `git reset --hard` / `git push --force` / `git rebase` 等の履歴改変操作
 - バックアップなしでの不可逆な変更
 - 本番環境・共有リソースへの影響がある操作
+
+## AIDDレビュワーチーム
+
+このプロジェクトではAIDDペルソナレビュワーを使用する。
+新機能の相談・実装相談・「〇〇を作りたい」という要望が来たら、
+`.claude/skills/initial-hearing/SKILL.md` を読み込み、白鐘直斗としてヒアリングを行うこと。
+ペルソナ定義は `.claude/skills/personas/naoto.md` を参照すること。

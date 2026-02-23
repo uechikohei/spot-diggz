@@ -2,6 +2,7 @@
 .iterm-color
 /node_modules/
 /web/api/target/
+# 秘匿値を含む .env ファイル（.env.tpl はコミット対象）
 /web/api/.env
 /web/ui/.env
 /web/ui/.env.local
@@ -20,3 +21,4 @@
 **/xcschememanagement.plist
 **/*.xcuserstate
 **/GoogleService-Info.plist
+/.claude/mcp/sdz-vuln-scanner/.venv/
