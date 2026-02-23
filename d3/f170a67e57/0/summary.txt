@@ -1,0 +1,33 @@
+全ファイルの作成・更新が完了しました。作成・変更したファイルの一覧です:
+
+## 作成したファイル
+
+| ファイル | 説明 |
+|----------|------|
+| `web/api/.env.tpl` | API用テンプレート（`op://sdz-dev/api/*` 参照） |
+| `web/ui/.env.tpl` | UI用テンプレート（`op://sdz-dev/ui/*` 参照） |
+| `web/scripts/secrets.sh` | シークレット取得スクリプト（op CLI チェック、gcloud token 自動取得込み） |
+| `Makefile` | `make secrets` / `secrets-api` / `secrets-ui` ターゲット |
+| `docs/secrets_management.md` | 運用手順ドキュメント（初期セットアップ〜シークレット追加手順） |
+
+## 更新したファイル
+
+| ファイル | 変更内容 |
+|----------|----------|
+| `.gitignore` | `.env` 除外にコメント追記（`.env.tpl` はコミット対象であることを明記） |
+| `CLAUDE.md` | ローカル起動手順を `make secrets` ベースに更新、ドキュメント参照にリンク追加、落とし穴セクションに `.env.tpl` の注記追加 |
+| `docs/DEVELOPMENT_SETUP.md` | 環境変数設定セクションを 1Password CLI 推奨に更新（フォールバック手順も残存） |
+
+## 1Password のシークレット分類
+
+| 分類 | テンプレートでの扱い |
+|------|---------------------|
+| 非秘匿（`RUST_LOG`, `SDZ_AUTH_PROJECT_ID` 等） | テンプレートに直接記載 |
+| 秘匿（`FIREBASE_WEB_API_KEY`, `TEST_USER_PASSWORD` 等） | `op://sdz-dev/{api,ui}/フィールド名` |
+| 動的トークン（`SDZ_FIRESTORE_TOKEN`, `SDZ_STORAGE_SIGNING_TOKEN`） | スクリプトが `gcloud auth print-access-token` で自動注入 |
+
+## 利用開始に必要な作業
+
+1. `op vault create sdz-dev` で Vault を作成
+2. `docs/secrets_management.md` の「管理者向け」セクションに従って `api` / `ui` アイテムを作成
+3. `make secrets` を実行 → `.env` / `.env.local` が生成される

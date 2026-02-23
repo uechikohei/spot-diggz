@@ -1,0 +1,31 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "d3f170a67e57",
+  "session_id": "d7d2bd1f-d306-44d2-b585-11b52c85efc4",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-23T02:21:34.501356Z",
+  "branch": "feature/ios-remaining-issues",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".gitignore",
+    "CLAUDE.md",
+    "Makefile",
+    "docs/DEVELOPMENT_SETUP.md",
+    "docs/secrets_management.md",
+    "web/api/.env.tpl",
+    "web/scripts/secrets.sh",
+    "web/ui/.env.tpl"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "e890b7136581",
+  "transcript_identifier_at_start": "6b90dcf1-ec05-4c9d-917f-762eeaf9b55c",
+  "checkpoint_transcript_start": 2,
+  "transcript_lines_at_start": 2,
+  "token_usage": {
+    "input_tokens": 21,
+    "cache_creation_tokens": 53577,
+    "cache_read_tokens": 840914,
+    "output_tokens": 5978,
+    "api_call_count": 19
+  }
+}
