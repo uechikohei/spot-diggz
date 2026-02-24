@@ -1,0 +1,17 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "c5abf02af697",
+  "strategy": "auto-commit",
+  "branch": "feature/ios-remaining-issues",
+  "checkpoints_count": 0,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/c5/abf02af697/0/metadata.json",
+      "transcript": "/c5/abf02af697/0/full.jsonl",
+      "context": "",
+      "content_hash": "/c5/abf02af697/0/content_hash.txt",
+      "prompt": ""
+    }
+  ]
+}
