@@ -8,7 +8,7 @@ spot-diggz: スケートスポット検索・シェアアプリ（旧SkateSpotSe
 
 - バックエンド: Rust（スクラッチ実装、フレームワーク非使用） → `web/api/`
 - フロントエンド: React + TypeScript → `web/ui/`
-- インフラ: GCP (Cloud Run, Firestore) + Terraform → `web/resources/`
+- インフラ: GCP (Cloud Run, Firestore, BigQuery, Cloud Functions) + Terraform → `web/resources/`
 - モバイル: iOS (`iOS/`), Android (`android/`) ※予定
 - CI/CD: GitHub Actions (`.github/workflows/ci.yml`)
 - リポジトリ: `uechikohei/spot-diggz`（モノレポ構成）
@@ -282,18 +282,22 @@ gh auth login                              # GitHub CLI認証
 
 ## APIエンドポイント（現在の実装状況）
 
-| メソッド | パス                    | 認証 | 説明                                              |
-| -------- | ----------------------- | ---- | ------------------------------------------------- |
-| GET      | `/sdz/health`           | 不要 | ヘルスチェック                                    |
-| GET      | `/sdz/users/me`         | 必須 | Firebase IDトークンを検証し、ユーザー情報を返却   |
-| POST     | `/sdz/spots`            | 必須 | スポット作成（UUIDの`spotId`を払い出し）          |
-| POST     | `/sdz/spots/upload-url` | 必須 | 画像アップロード用の署名URLを発行（モバイル専用） |
-| GET      | `/sdz/spots/{id}`       | 不要 | スポット詳細取得（存在しなければ404）             |
-| GET      | `/sdz/spots`            | 不要 | スポット一覧取得                                  |
-| PATCH    | `/sdz/spots/{id}`       | 必須 | スポット更新                                      |
-| POST     | `/sdz/mylists/{id}`     | 必須 | マイリストにスポット追加                          |
-| DELETE   | `/sdz/mylists/{id}`     | 必須 | マイリストからスポット削除                        |
-| GET      | `/sdz/mylists`          | 必須 | マイリスト一覧取得                                |
+📋 2026-02-28 データアーキテクチャ再設計により、APIは Tier 1 マスターデータの読み取り配信が主な役割。
+書き込みエンドポイントは休眠中（将来の Tier 2 → Tier 1 昇格で再利用の可能性）。
+詳細: `docs/designs/tier2-spot-data-architecture.md`
+
+| メソッド | パス                    | 認証 | 説明                                              | ステータス |
+| -------- | ----------------------- | ---- | ------------------------------------------------- | ---------- |
+| GET      | `/sdz/health`           | 不要 | ヘルスチェック                                    | ✅ 稼働中  |
+| GET      | `/sdz/users/me`         | 必須 | Firebase IDトークンを検証し、ユーザー情報を返却   | ✅ 稼働中  |
+| GET      | `/sdz/spots`            | 不要 | Tier 1 スポット一覧取得                           | ✅ 稼働中  |
+| GET      | `/sdz/spots/{id}`       | 不要 | Tier 1 スポット詳細取得（存在しなければ404）      | ✅ 稼働中  |
+| POST     | `/sdz/spots`            | 必須 | スポット作成                                      | 💤 休眠中  |
+| PATCH    | `/sdz/spots/{id}`       | 必須 | スポット更新                                      | 💤 休眠中  |
+| POST     | `/sdz/spots/upload-url` | 必須 | 画像アップロード用の署名URL発行                   | 💤 休眠中  |
+| POST     | `/sdz/mylists/{id}`     | 必須 | マイリストにスポット追加                          | 💤 休眠中  |
+| DELETE   | `/sdz/mylists/{id}`     | 必須 | マイリストからスポット削除                        | 💤 休眠中  |
+| GET      | `/sdz/mylists`          | 必須 | マイリスト一覧取得                                | 💤 休眠中  |
 
 ## 動作確認手順（IDトークン取得→CRUDスモーク）
 

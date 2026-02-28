@@ -35,5 +35,14 @@
 
 ## 影響範囲
 
-- お気に入り、投稿者表示、ルート作成など全機能で `userId` を使用
+- Tier 1 マスターデータ: `userId` は管理者のみが使用（バッチ投入時の createdBy）
+- Tier 2 ユーザー個人データ: SwiftData + CloudKit で管理。`userId` でフィルタリング
+- マイリスト: SwiftData + CloudKit で管理（Firestore API 経由から移行済み）
+- アカウント削除時: SwiftData ローカルストアと CloudKit データを `userId` で特定して削除
 - 表示名やメール変更はUI表示のみ影響し、データの紐付けには影響しない
+
+## アーキテクチャ変更（2026-02-28）
+
+- ユーザー個人データ（Tier 2 スポット、マイリスト）は Firestore に保存しない
+- Firestore の `users/{uid}` ドキュメントは認証・プロファイル用途のみ継続
+- 詳細: `docs/designs/tier2-spot-data-architecture.md`

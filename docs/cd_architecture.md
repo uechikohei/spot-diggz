@@ -62,3 +62,15 @@ CLAUDE.md「命名規約（4層ティア）> Tier 3」に準拠する。
 - 反映先の環境変数は Terraform の値と一致させている
 - UI 配信後は `index.html` を no-cache で配置している
 - 変更があった場合は本ファイルを先に更新している
+
+## 📋 アーキテクチャ変更（2026-02-28）
+
+データアーキテクチャ再設計により、以下の変更が予定されている:
+
+- Firestore: Cloud Run サービスアカウントの IAM 権限を読み取り専用（`roles/datastore.viewer`）に変更
+- BigQuery: マスターデータの ETL パイプライン用データセットを追加
+- Cloud Functions: BigQuery → Firestore データ同期関数を追加
+- API: 書き込みエンドポイント（POST/PATCH spots, mylists）を休眠化
+- マスターデータ投入: API 経由 → BigQuery パイプライン経由に変更
+
+詳細: `docs/designs/tier2-spot-data-architecture.md`

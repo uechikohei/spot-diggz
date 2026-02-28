@@ -100,7 +100,10 @@ spot-diggz/
 
 ### 開発ルール
 
-- iOSで登録フィールドを追加したら、Create/Update APIの入力/保存/返却にパラメーターが反映されているか必ず確認する（iOSのCreate/Update入力・APIのUseCase・Firestore保存の両方）。
+- Tier 1 マスターデータ: BigQuery → Cloud Functions → Firestore のパイプラインで投入。API は読み取り専用。
+- Tier 2 ユーザーデータ: iOS SwiftData + CloudKit でローカル管理。API / Firestore は不使用。
+- マイリスト: iOS SwiftData + CloudKit でローカル管理（Firestore API 経由から移行）。
+- 詳細: `docs/designs/tier2-spot-data-architecture.md`
 
 ## 🧰 ローカル環境のTerraform（tfenv）
 
