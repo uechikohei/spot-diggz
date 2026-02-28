@@ -1,0 +1,28 @@
+{
+  "name": "spot-diggz Development",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "installOhMyZsh": true,
+      "upgradePackages": true
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-json",
+        "openai.chatgpt"
+      ]
+    }
+  },
+
+  "forwardPorts": [3000, 8080],
+  
+  "remoteUser": "vscode",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  
+  "postStartCommand": "echo 'spot-diggz開発環境が起動しました 🚀'"
+}
