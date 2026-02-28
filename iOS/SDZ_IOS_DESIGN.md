@@ -2,8 +2,15 @@
 
 ## 0. 概要
 - 目的: 既存Rust APIに接続するiOSアプリの設計を確定し、Xcode実装を継続可能にする。
-- 対象: iOSネイティブアプリ（Swift/SwiftUI + Firebase Auth + MapKit）。
-- スコープ: スポット一覧/詳細/投稿（画像アップロード含む）/編集/認証/プロフィール/お気に入り/おすすめ診断/ルート計画。
+- 対象: iOSネイティブアプリ（Swift/SwiftUI + Firebase Auth + MapKit + SwiftData + CloudKit）。
+- スコープ: スポット一覧/詳細/Tier 2スポット登録/認証/プロフィール/お気に入り/ルート計画。
+
+### データアーキテクチャ（2026-02-28 再設計）
+
+- Tier 1（マスターデータ）: Rust API 経由で Firestore から読み取り。公開スポット。
+- Tier 2（ユーザー個人データ）: SwiftData + CloudKit でローカル管理。サーバーには保存しない。
+- マイリスト: SwiftData + CloudKit でローカル管理（Firestore API 経由から移行）。
+- 詳細: `docs/designs/tier2-spot-data-architecture.md` を参照。
 
 ## 1. 参照
 - `docs/spot_diggz_overview.md` (iOS想定/マルチチャネル方針)
@@ -41,16 +48,25 @@
 
 ## 3. iOSアプリの機能要件
 ### 3.1 コア機能
+
+📋 Tier 1 マスターデータ（API経由・読み取り専用）:
 - スポット一覧（GET /sdz/spots）
 - スポット詳細（GET /sdz/spots/{spot_id}）
 - スポット詳細拡張（営業時間/営業日/公式サイト/アクセス）※parkのみ表示
-- スポット投稿（POST /sdz/spots）※認証必須 + `X-SDZ-Client: ios`
-- スポット編集（PATCH /sdz/spots/{spot_id}）※認証必須 + `X-SDZ-Client: ios`
-- 画像アップロード（POST /sdz/spots/upload-url → PUT Signed URL）
 - プロフィール表示（GET /sdz/users/me）
-- お気に入り管理（端末ローカル保持）
+
+📋 Tier 2 ユーザー個人データ（SwiftData + CloudKit・ローカル管理）:
+- Tier 2 スポット登録（地図タップ → 位置選択 → 詳細入力）
+- Tier 2 スポット編集・削除
+- Tier 2 画像添付（ローカル保存、@Attribute(.externalStorage)）
+- マイリスト管理（SwiftData + CloudKit）
 - マイリスト詳細（お気に入りの一覧）
-- 承認リクエスト（スポットの公開申請）
+
+📋 休眠中（将来の Tier 2 → Tier 1 昇格で再利用の可能性）:
+- ~~スポット投稿（POST /sdz/spots）~~ → Tier 2 はローカル保存
+- ~~スポット編集（PATCH /sdz/spots/{spot_id}）~~ → Tier 2 はローカル保存
+- ~~画像アップロード（POST /sdz/spots/upload-url）~~ → Tier 2 画像はローカル保存
+- ~~承認リクエスト（スポットの公開申請）~~ → 将来の拡張ポイント
 
 ### 3.2 追加価値（iOS特化）
 - MapKit表示、現在地連動、スポットピン表示
@@ -58,12 +74,16 @@
 - Apple Maps/Google Mapsへの外部ナビ連携
 - ルート計画（詳細から追加/ルートタブで作成/移動手段の選択）
 
-### 3.3 公開/承認フロー
-- `approvalStatus=approved` は承認済みスポットとして公開対象。
-- `approvalStatus=pending` は申請中（投稿者のみ自分の投稿に表示）。
-- `approvalStatus=rejected` と `approvalStatus=null` は未承認（再申請可）。
-- 投稿詳細から承認リクエストを送信し、承認後に公開へ切り替える。
-- Firestoreは `approvalStatus` を文字列で保持し、未申請は `null`。旧`trustLevel`は読み取り互換で`approved`にマップする。
+### 3.3 データティアと公開フロー
+
+📋 現行設計（2026-02-28 再設計後）:
+- Tier 1 マスターデータ: 管理者がキュレーションしたスポット。全ユーザーに公開。
+- Tier 2 ユーザー個人データ: ユーザーが個人的にプロットしたスポット。作成者本人のみ閲覧可。
+- Tier 2 → Tier 1 昇格機能は将来の拡張ポイント（現時点ではスコープ外）。
+
+📋 旧設計（参考・現時点では未実装）:
+- `approvalStatus` フィールドによる承認フローは、Tier 昇格機能の実装時に再検討する。
+- 旧 `trustLevel` は使用しない。
 
 ### 3.4 スポット種別と表示
 - `spotType=park` は施設詳細（営業時間/営業日/公式サイト/アクセス）を表示。
@@ -349,10 +369,20 @@ struct SdzRoutePlan: Codable, Identifiable {
 - 将来的に最適化（所要時間最短/人気順）を検討。
 
 ## 11. ローカル保持/キャッシュ
-- お気に入り: `UserDefaults` にspotId配列を保存。
-- ルート計画: `UserDefaults` にスポットID配列を保存。
-- 一覧キャッシュ: メモリキャッシュ（初期は不要なら未実装）。
-- 画像キャッシュ: `URLCache` / `AsyncImage` を利用。
+
+📋 SwiftData + CloudKit（主データストア）:
+- Tier 2 スポット: SwiftData で永続化。iCloud オン時は CloudKit で同期。
+- マイリスト（お気に入り）: SwiftData で永続化。iCloud オン時は CloudKit で同期。
+- ルート計画: SwiftData で永続化（将来実装）。
+
+📋 iCloud オフ時の注意:
+- アプリ削除で Tier 2 データ・マイリストが失われることをユーザーに通知。
+- 「iCloudを有効にするとバックアップできます」の表示。
+
+📋 キャッシュ:
+- Tier 1 一覧キャッシュ: メモリキャッシュ（API レスポンス）。
+- 画像キャッシュ: `URLCache` / `AsyncImage` を利用（Tier 1 画像）。
+- Tier 2 画像: `@Attribute(.externalStorage)` でローカル保存。
 
 ## 12. エラーハンドリング
 - APIエラーは `SdzErrorResponse` に変換。
@@ -382,7 +412,8 @@ struct SdzRoutePlan: Codable, Identifiable {
 - UIテスト: ログイン/投稿/一覧表示のスモーク。
 
 ## 15. 未決定/今後の検討
-- お気に入りのサーバー同期有無
-- 投稿時のオフラインキュー
-- 画像の圧縮/リサイズ方針
-- 承認申請フロー（approvalStatusのUI）
+- ~~お気に入りのサーバー同期有無~~ → SwiftData + CloudKit に決定（2026-02-28）
+- ~~投稿時のオフラインキュー~~ → Tier 2 はローカル保存のためオフライン対応は不要
+- 画像の圧縮/リサイズ方針（Tier 2 ローカル画像の最適化）
+- Tier 2 → Tier 1 昇格フロー（将来の拡張ポイント）
+- アカウント削除時の SwiftData + CloudKit データクリア処理
