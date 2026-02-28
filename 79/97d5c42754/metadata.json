@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "7997d5c42754",
+  "strategy": "auto-commit",
+  "branch": "feature/ios-remaining-issues",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "docs/designs/tier2-spot-data-architecture.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/79/97d5c42754/0/metadata.json",
+      "transcript": "/79/97d5c42754/0/full.jsonl",
+      "context": "",
+      "content_hash": "/79/97d5c42754/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 5,
+    "cache_creation_tokens": 4719,
+    "cache_read_tokens": 230434,
+    "output_tokens": 104,
+    "api_call_count": 3
+  }
+}
