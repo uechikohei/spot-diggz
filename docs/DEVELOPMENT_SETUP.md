@@ -100,7 +100,10 @@ spot-diggz/
 
 ### 開発ルール
 
-- iOSで登録フィールドを追加したら、Create/Update APIの入力/保存/返却にパラメーターが反映されているか必ず確認する（iOSのCreate/Update入力・APIのUseCase・Firestore保存の両方）。
+- Tier 1 マスターデータ: BigQuery → Cloud Functions → Firestore のパイプラインで投入。API は読み取り専用。
+- Tier 2 ユーザーデータ: iOS SwiftData + CloudKit でローカル管理。API / Firestore は不使用。
+- マイリスト: iOS SwiftData + CloudKit でローカル管理（Firestore API 経由から移行）。
+- 詳細: `docs/designs/tier2-spot-data-architecture.md`
 
 ## 🧰 ローカル環境のTerraform（tfenv）
 
@@ -150,18 +153,33 @@ gcloud auth login
 gcloud config set project sdz-dev  # 開発環境プロジェクト
 ```
 
-### 環境変数設定（API）
+### 環境変数設定（1Password CLI 推奨）
 
 ```bash
-# Rust API用の例（web/api/.env）
+# 1Password CLI のインストール（初回のみ）
+brew install --cask 1password-cli
+
+# プロジェクトルートで実行 → .env / .env.local が自動生成される
+make secrets
+```
+
+`make secrets` は以下を行う:
+- `web/api/.env.tpl` から `web/api/.env` を生成（1Password から秘匿値を注入）
+- `web/ui/.env.tpl` から `web/ui/.env.local` を生成
+- `gcloud auth print-access-token` で Firestore/Storage トークンを自動取得
+
+詳細は [シークレット管理ガイド](secrets_management.md) を参照。
+
+#### 1Password を使わない場合（フォールバック）
+
+```bash
+# Rust API用
 cd web/api
 cp .env.example .env
-# .env を編集して自分の値に置き換える（コミットしない）
-
-# Firestoreトークンは期限があるため起動時に都度export
+# .env を手動編集して実際の値に置き換える（コミットしない）
 export SDZ_FIRESTORE_TOKEN=$(gcloud auth print-access-token)
 
-# UI用の例（web/ui/.env.local）
+# UI用
 cd ../ui
 cat > .env.local << 'EOF'
 VITE_SDZ_API_URL=http://localhost:8080

@@ -15,7 +15,7 @@ final class SdzLocationManager: NSObject, ObservableObject, CLLocationManagerDel
         authorizationStatus = manager.authorizationStatus
         super.init()
         manager.delegate = self
-        manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        manager.desiredAccuracy = kCLLocationAccuracyBest
     }
 
     func requestWhenInUseAuthorization() {
@@ -24,24 +24,41 @@ final class SdzLocationManager: NSObject, ObservableObject, CLLocationManagerDel
 
     func requestCurrentLocation() {
         lastErrorMessage = nil
-        if authorizationStatus == .notDetermined {
+        switch authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
+            if let cachedCoordinate = manager.location?.coordinate {
+                currentCoordinate = cachedCoordinate
+            }
+            manager.requestLocation()
+        case .notDetermined:
             requestWhenInUseAuthorization()
-        }
-        manager.requestLocation()
-    }
-
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        authorizationStatus = manager.authorizationStatus
-        if authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways {
+        case .denied, .restricted:
+            lastErrorMessage = "位置情報の利用が許可されていません。設定アプリで許可してください。"
+        @unknown default:
             manager.requestLocation()
         }
     }
 
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        authorizationStatus = manager.authorizationStatus
+        switch authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
+            requestCurrentLocation()
+        case .denied, .restricted:
+            lastErrorMessage = "位置情報の利用が許可されていません。設定アプリで許可してください。"
+        default:
+            break
+        }
+    }
+
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        currentCoordinate = locations.first?.coordinate
+        currentCoordinate = locations.last?.coordinate
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        if let locationError = error as? CLError, locationError.code == .locationUnknown {
+            return
+        }
         lastErrorMessage = error.localizedDescription
     }
 }

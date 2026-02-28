@@ -72,6 +72,8 @@ mod tests {
             sdz_park_attributes: None,
             sdz_street_attributes: None,
             sdz_instagram_tag: None,
+            sdz_instagram_location_url: None,
+            sdz_instagram_profile_url: None,
             sdz_user_id: "user-1".into(),
             created_at: tz.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap(),
             updated_at: tz.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap(),

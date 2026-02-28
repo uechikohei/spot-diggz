@@ -304,6 +304,10 @@ struct FirestoreSpotFields {
     street_attributes: Option<FirestoreStreetAttributesField>,
     #[serde(rename = "instagramTag")]
     instagram_tag: Option<StringField>,
+    #[serde(rename = "instagramLocationUrl")]
+    instagram_location_url: Option<StringField>,
+    #[serde(rename = "instagramProfileUrl")]
+    instagram_profile_url: Option<StringField>,
     location: Option<MapField>,
     #[serde(rename = "createdAt")]
     created_at: Option<TimestampField>,
@@ -460,6 +464,7 @@ struct FirestoreStreetAttributesFields {
     surface_condition: Option<FirestoreStreetSurfaceConditionField>,
     sections: Option<FirestoreStreetSectionsField>,
     difficulty: Option<StringField>,
+    notes: Option<StringField>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -562,6 +567,8 @@ impl FirestoreSpotDoc {
                 .street_attributes
                 .and_then(|attrs| attrs.into_attributes()),
             sdz_instagram_tag: fields.instagram_tag.map(|s| s.string_value),
+            sdz_instagram_location_url: fields.instagram_location_url.map(|s| s.string_value),
+            sdz_instagram_profile_url: fields.instagram_profile_url.map(|s| s.string_value),
             sdz_user_id: fields.user_id.map(|s| s.string_value).unwrap_or_default(),
             created_at,
             updated_at,
@@ -658,11 +665,13 @@ impl FirestoreStreetAttributesField {
             .sections
             .and_then(|sections| sections.into_sections());
         let difficulty = fields.difficulty.map(|f| f.string_value);
+        let notes = fields.notes.map(|f| f.string_value);
 
         if surface_material.is_none()
             && surface_condition.is_none()
             && sections.is_none()
             && difficulty.is_none()
+            && notes.is_none()
         {
             return None;
         }
@@ -672,6 +681,7 @@ impl FirestoreStreetAttributesField {
             surface_condition,
             sections,
             difficulty,
+            notes,
         })
     }
 }
@@ -774,6 +784,18 @@ fn build_firestore_doc(spot: &SdzSpot) -> Result<serde_json::Value, SdzApiError>
     if let Some(tag) = &spot.sdz_instagram_tag {
         fields.insert("instagramTag".into(), json!({ "stringValue": tag }));
     }
+    if let Some(location_url) = &spot.sdz_instagram_location_url {
+        fields.insert(
+            "instagramLocationUrl".into(),
+            json!({ "stringValue": location_url }),
+        );
+    }
+    if let Some(profile_url) = &spot.sdz_instagram_profile_url {
+        fields.insert(
+            "instagramProfileUrl".into(),
+            json!({ "stringValue": profile_url }),
+        );
+    }
     if let Some(loc) = &spot.location {
         fields.insert(
             "location".into(),
@@ -865,6 +887,9 @@ fn build_street_attributes(attrs: &SdzStreetAttributes) -> Option<serde_json::Va
     }
     if let Some(difficulty) = &attrs.difficulty {
         fields.insert("difficulty".into(), string_value(difficulty));
+    }
+    if let Some(notes) = &attrs.notes {
+        fields.insert("notes".into(), string_value(notes));
     }
     if fields.is_empty() {
         return None;
@@ -960,6 +985,7 @@ fn parse_schedule_type(value: String) -> Option<SdzSpotBusinessScheduleType> {
         "weekendOnly" => Some(SdzSpotBusinessScheduleType::WeekendOnly),
         "irregular" => Some(SdzSpotBusinessScheduleType::Irregular),
         "schoolOnly" => Some(SdzSpotBusinessScheduleType::SchoolOnly),
+        "manual" => Some(SdzSpotBusinessScheduleType::Manual),
         _ => None,
     }
 }
@@ -979,6 +1005,7 @@ fn schedule_type_as_str(schedule_type: &SdzSpotBusinessScheduleType) -> &'static
         SdzSpotBusinessScheduleType::WeekendOnly => "weekendOnly",
         SdzSpotBusinessScheduleType::Irregular => "irregular",
         SdzSpotBusinessScheduleType::SchoolOnly => "schoolOnly",
+        SdzSpotBusinessScheduleType::Manual => "manual",
     }
 }
 

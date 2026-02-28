@@ -72,6 +72,6 @@ struct SdzUrlWebView: UIViewRepresentable {
     }
 
     private func defaultUrl() -> String {
-        "https://www.google.com/search?q=skatepark"
+        "https://www.google.com"
     }
 }

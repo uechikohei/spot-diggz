@@ -76,16 +76,3 @@ enum SdzMapNavigator {
         "\(coordinate.latitude),\(coordinate.longitude)"
     }
 }
-
-extension SdzRouteMode {
-    var navigationMode: SdzMapNavigationMode {
-        switch self {
-        case .walk:
-            return .walk
-        case .transit:
-            return .transit
-        case .drive:
-            return .drive
-        }
-    }
-}

@@ -9,5 +9,4 @@ struct SdzCreateSpotInput: Codable {
     let images: [String]?
     let parkAttributes: SdzSpotParkAttributes?
     let streetAttributes: SdzStreetAttributes?
-    let instagramTag: String?
 }

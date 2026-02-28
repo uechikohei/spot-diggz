@@ -213,6 +213,16 @@ components:
       type: object
       required: [is24Hours, sameAsWeekday]
       properties:
+        scheduleType:
+          type: string
+          nullable: true
+          enum:
+            - regular
+            - weekdayOnly
+            - weekendOnly
+            - irregular
+            - schoolOnly
+            - manual
         is24Hours:
           type: boolean
           example: false
@@ -224,6 +234,9 @@ components:
           nullable: true
         weekend:
           $ref: "#/components/schemas/SpotTimeRange"
+          nullable: true
+        note:
+          type: string
           nullable: true
     SpotParkAttributes:
       type: object
@@ -285,6 +298,9 @@ components:
             $ref: "#/components/schemas/SpotStreetSection"
           nullable: true
         difficulty:
+          type: string
+          nullable: true
+        notes:
           type: string
           nullable: true
     Spot:

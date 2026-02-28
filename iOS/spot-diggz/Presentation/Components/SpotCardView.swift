@@ -18,7 +18,7 @@ struct SpotCardView: View {
                             .scaledToFill()
                             .frame(width: 80, height: 80)
                             .clipped()
-                            .cornerRadius(8)
+                            .cornerRadius(SdzRadius.sm)
                     case .failure:
                         placeholderImage
                     @unknown default:
@@ -29,53 +29,33 @@ struct SpotCardView: View {
                 placeholderImage
             }
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: SdzSpacing.xs) {
                 Text(spot.name)
-                    .font(.headline)
+                    .font(SdzTypography.headline)
+                    .foregroundColor(.sdzTextPrimary)
                 if let description = spot.description, !description.isEmpty {
                     Text(description)
-                        .font(.subheadline)
+                        .font(SdzTypography.subheadline)
+                        .foregroundColor(.sdzTextSecondary)
                         .lineLimit(2)
                 }
                 if !spot.tags.isEmpty {
                     Text(spot.tags.joined(separator: ", "))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        .font(SdzTypography.caption1)
+                        .foregroundColor(.sdzTextTertiary)
                 }
             }
             Spacer()
-            approvalStatusView
+            SdzStatusBadge(status: spot.approvalStatus, style: .compact)
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, SdzSpacing.sm)
     }
 
     private var placeholderImage: some View {
         Rectangle()
-            .fill(Color.gray.opacity(0.3))
+            .fill(Color.sdzBgTertiary)
             .frame(width: 80, height: 80)
-            .cornerRadius(8)
-    }
-
-    @ViewBuilder
-    private var approvalStatusView: some View {
-        switch spot.approvalStatus {
-        case .approved:
-            Text("✓")
-                .font(.headline)
-                .foregroundColor(.green)
-        case .pending:
-            Text("審査中")
-                .font(.caption)
-                .foregroundColor(.orange)
-        case .rejected:
-            Text("差戻し")
-                .font(.caption)
-                .foregroundColor(.red)
-        case .none:
-            Text("未申請")
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
+            .cornerRadius(SdzRadius.sm)
     }
 }
 

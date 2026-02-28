@@ -59,6 +59,8 @@ mod tests {
             None,
             None,
             None,
+            None,
+            None,
             user_id.to_string(),
         )
         .expect("valid spot")

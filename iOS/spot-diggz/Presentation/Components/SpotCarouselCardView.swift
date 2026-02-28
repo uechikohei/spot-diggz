@@ -6,41 +6,42 @@ struct SpotCarouselCardView: View {
     let isFavorite: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: SdzSpacing.sm) {
             ZStack(alignment: .topTrailing) {
                 coverImage
                 if isFavorite {
                     Image(systemName: "heart.fill")
                         .foregroundColor(.pink)
-                        .padding(8)
+                        .padding(SdzSpacing.sm)
                         .background(.ultraThinMaterial)
                         .clipShape(Circle())
-                        .padding(8)
+                        .padding(SdzSpacing.sm)
                 }
             }
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: SdzSpacing.xs) {
                 Text(spot.name)
-                    .font(.headline)
+                    .font(SdzTypography.headline)
+                    .foregroundColor(.sdzTextPrimary)
                     .lineLimit(1)
                 if let description = spot.description, !description.isEmpty {
                     Text(description)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        .font(SdzTypography.caption1)
+                        .foregroundColor(.sdzTextSecondary)
                         .lineLimit(2)
                 }
                 if !spot.tags.isEmpty {
                     Text(spot.tags.joined(separator: " / "))
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .font(SdzTypography.caption2)
+                        .foregroundColor(.sdzTextTertiary)
                 }
             }
-            .padding(.horizontal, 12)
-            .padding(.bottom, 12)
+            .padding(.horizontal, SdzSpacing.md)
+            .padding(.bottom, SdzSpacing.md)
         }
         .frame(width: 280)
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
+        .clipShape(RoundedRectangle(cornerRadius: SdzRadius.lg, style: .continuous))
+        .sdzShadow(.md)
     }
 
     private var coverImage: some View {
@@ -71,10 +72,10 @@ struct SpotCarouselCardView: View {
 
     private var placeholderImage: some View {
         Rectangle()
-            .fill(Color.gray.opacity(0.3))
+            .fill(Color.sdzBgTertiary)
             .overlay(
                 Image(systemName: "photo")
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(.sdzTextTertiary)
             )
     }
 }
