@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "753184fcb0aa",
+  "session_id": "ee732449-bc8f-44d9-af64-0a5f7ec6e084",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-01T01:51:04.989006Z",
+  "branch": "feature/227-map-fullscreen-redesign",
+  "checkpoints_count": 3,
+  "files_touched": [
+    ".claude/settings.json"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "1ed3e5b91cf4",
+  "token_usage": {
+    "input_tokens": 5161,
+    "cache_creation_tokens": 91234,
+    "cache_read_tokens": 1240051,
+    "output_tokens": 16181,
+    "api_call_count": 20
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-01T01:51:04.817721Z",
+    "agent_lines": 0,
+    "human_added": 0,
+    "human_modified": 3,
+    "human_removed": 0,
+    "total_committed": 0,
+    "agent_percentage": 0
+  }
+}
