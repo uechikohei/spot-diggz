@@ -1,0 +1,1060 @@
+Implement the following plan:
+
+# UIリデザイン実装計画 — #227 + #228 ワンセットリリース
+
+## Context
+
+設計書 `docs/designs/ui-redesign-discovery-app.md` で「発見アプリ」への転換が合意済み（ステータス: レビュー完了・実装待ち）。
+Issue #227（地図フルスクリーン化 + タブ再構成）と #228（スポット詳細CTA再設計）をワンセットでリリースする。
+ブランチ: `feature/227-map-fullscreen-redesign`
+
+### スコープ
+
+- P0-1: 地図フルスクリーン化 + タブ再構成
+- P0-2: スポット詳細CTA再設計
+- `instagramUrl` フィールドの追加はP2スコープ。P0ではフォールバック（「Instagramでこの場所を検索」）のみ実装
+- 登録フロー（ドラフトピン → PostView）は現状維持（P1スコープ）
+
+---
+
+## ファイル変更マップ
+
+### 新規作成（6ファイル）
+
+| ファイル | パス | 目的 |
+|:--|:--|:--|
+| `SdzDistanceCalculator.swift` | `Presentation/Components/` | 距離計算 + フォーマット（「2.3km先」「300m先」） |
+| `SdzInstagramLauncher.swift` | `Presentation/Components/` | Instagram URLスキーム起動 + Webフォールバック |
+| `SdzFullScreenMapView.swift` | `Presentation/Components/` | HomeViewから抽出したUIViewRepresentable地図 + Coordinator + Annotation群 |
+| `SdzMapOverlayView.swift` | `Presentation/Components/` | フローティング検索バー + フィルタパネル |
+| `SdzSpotBottomSheetView.swift` | `Presentation/Components/` | ピン選択時のボトムシート（ミニカード + 距離 + アクション） |
+| `SdzSpotDetailCTAView.swift` | `Presentation/Components/` | 詳細画面のCTAセクション（Instagram / 公式 / ナビの動的表示） |
+
+### 変更（8ファイル）
+
+| ファイル | 変更内容 |
+|:--|:--|
+| `SdzAppState.swift` | `SdzTab` enum: `.spots` → `.map` にリネーム、`.myList` を追加。参照箇所8箇所を修正 |
+| `RootTabView.swift` | 3タブ → 4タブ（Map / List / MyList / Profile） |
+| `HomeView.swift` | 地図フルスクリーン化。UIViewRepresentable・オーバーレイ・ボトムシートを外部ファイルに分離。body構造をZStack + sheet に刷新。~1,139行 → ~400行 |
+| `SpotDetailView.swift` | CTA再設計。ディシジョンファネル構造（Instagram CTA → スポット情報 → 公式+ナビ CTA）に書き換え。パーク/ストリート分岐を明確化 |
+| `SdzSpotMiniCardView.swift` | 距離表示追加、「ナビ」「詳細を見る」アクションボタン追加 |
+| `SdzSearchBar.swift` | `.floating` スタイル追加（`.ultraThinMaterial` 背景） |
+| `SdzLocationManager.swift` | `distanceTo(_ location:)` メソッド追加 |
+| `SpotListView.swift` | 距離順ソート追加、カードに距離表示追加 |
+
+### 削除（1ファイル）
+
+| ファイル | 理由 |
+|:--|:--|
+| `MapScreen.swift` | 未使用（RootTabViewから参照なし）。HomeViewの下位互換で重複 |
+
+---
+
+## 実装順序（4ステップ）
+
+### Step 1: 基盤ユーティリティ
+
+依存なし。並行で実装可能。
+
+1. `SdzDistanceCalculator.swift` 新規作成
+   - `distance(from: CLLocationCoordinate2D, to: SdzSpotLocation) -> CLLocationDistance`
+   - `formattedDistance(meters:) -> String`（1km以上は「X.Xkm先」、未満は「Xm先」）
+
+2. `SdzLocationManager.swift` に距離メソッド追加
+   - `distanceTo(_ location: SdzSpotLocation) -> CLLocationDistance?`
+   - 内部で `SdzDistanceCalculator.distance()` を呼ぶ
+
+3. `SdzInstagramLauncher.swift` 新規作成
+   - `searchOnInstagram(spotName:)` — `instagram://` スキーム → Web版フォールバック
+   - `isInstagramInstalled: Bool` — `canOpenURL` チェック
+
+4. `SdzAppState.swift` の `SdzTab` enum変更
+   - `.spots` → `.map` にリネーム
+   - `.myList` case追加
+   - 影響箇所（8箇所）を全て `.map` に修正:
+     - `SdzAppState.swift`: L40, L126, L158, L171, L241, L295, L302
+     - `HomeView.swift`: L493
+     - `RootTabView.swift`: L14
+
+コミット: `feat(ios): 距離計算・Instagramランチャー追加 + SdzTab enum再構成`
+
+### Step 2: UIコンポーネント
+
+Step 1に依存。
+
+1. `SdzSearchBar.swift` に `.floating` スタイル追加
+   - `SdzSearchBarStyle` enum: `.standard` / `.floating`
+   - `.floating` 時は `.ultraThinMaterial` 背景
+
+2. `SdzSpotMiniCardView.swift` 改修
+   - イニシャライザに `distance: String?`, `onTapDetail`, `onTapNav` を追加
+   - 距離表示（「パーク・2.3km先」形式）
+   - 下部にアクションボタン行
+
+3. `SdzMapOverlayView.swift` 新規作成
+   - HomeViewの `topOverlay` から抽出
+   - 通常: 検索バー1行 + フィルタボタン（≡）のみ
+   - フィルタ展開時: タイプチップ + タグフィルタ
+   - バインディング: `searchText`, `selectedSpotType`, `selectedTags`, `isFilterExpanded`
+
+4. `SdzSpotBottomSheetView.swift` 新規作成
+   - `SdzSpotMiniCardView` を内包
+   - `.presentationDetents([.fraction(0.15), .fraction(0.4)])` で段階表示
+
+5. `SdzSpotDetailCTAView.swift` 新規作成
+   - Instagram CTA（P0では全てフォールバック: 「Instagramでこの場所を検索」）
+   - 公式サイトCTA（`parkAttributes?.officialUrl` がある場合のみ表示）
+   - ナビCTA（常に表示。公式サイトがなければメインCTAに昇格）
+   - 動的表示ルール:
+
+     | 状態 | Instagram | 公式サイト | ナビ |
+     |:--|:--|:--|:--|
+     | 公式URLあり | フォールバック検索 | 表示 | 表示 |
+     | 公式URLなし | フォールバック検索 | 非表示 | メインCTAに昇格 |
+
+コミット: `feat(ios): フローティング検索バー・ボトムシート・CTAコンポーネント追加`
+
+### Step 3: 画面リファクタ
+
+Step 2に依存。
+
+1. `MapScreen.swift` 削除
+
+2. `SdzFullScreenMapView.swift` 新規作成
+   - HomeView内の `SdzHomeMapView`（UIViewRepresentable）をそのまま移動
+   - `Coordinator`, `SdzSpotAnnotation`, `SdzClusterAnnotation`, `SdzSpotAnnotationView`, `SdzClusterAnnotationView` も一緒に移動
+   - `private` → `internal` に変更
+   - `HomeView.AnnotationItem` → `SdzMapAnnotationItem` にリネーム
+   - `.ignoresSafeArea(edges: .all)` でフルスクリーン
+
+3. `HomeView.swift` リファクタ（~1,139行 → ~400行）
+   - body構造の刷新:
+     ```
+     ZStack {
+         SdzFullScreenMapView(...)
+             .ignoresSafeArea()
+         VStack {
+             SdzMapOverlayView(...)    // 半透明フローティング
+                 .padding(.top, safeAreaInsets.top)
+             Spacer()
+             HStack { locationButton; createSpotFAB }
+         }
+     }
+     .sheet(item: $selectedSpot) {
+         SdzSpotBottomSheetView(...)
+             .presentationDetents([.fraction(0.15), .fraction(0.4)])
+     }
+     .sheet(item: $detailSpot) {
+         SpotDetailView(...)
+     }
+     ```
+   - `TopOverlayHeightKey` 廃止（フローティングではtopInset計算が不要）
+   - `SdzSpotType` enumを `SdzMapOverlayView.swift` に移動
+   - 検索・フィルタロジック（`fetchSpots`, `scheduleSearch`, `filteredSpots`）はHomeViewに残す
+   - FABサイズを66→52に縮小
+   - ドラフトピン・Share連携のロジックは現状維持
+
+4. `RootTabView.swift` タブ構成変更
+   ```swift
+   HomeView()      → .tag(SdzTab.map)    Label("マップ", systemImage: "map")
+   SpotListView()  → .tag(SdzTab.list)   Label("一覧", systemImage: "list.bullet.rectangle")
+   MyListView()    → .tag(SdzTab.myList)  Label("マイリスト", systemImage: "heart")
+   ProfileView()   → .tag(SdzTab.settings) Label("設定", systemImage: "gearshape")
+   ```
+
+5. `SpotDetailView.swift` CTA再設計
+   - 画面構造をディシジョンファネル順に再配置:
+     1. 画像カルーセル（高さ拡大: 220→280）
+     2. 基本情報（名前 + タイプ + 距離）
+     3. Instagram CTA（`SdzSpotDetailCTAView` の上部）
+     4. パーク固有情報 or ストリート固有情報（`sdzIsPark` で分岐）
+     5. 公式サイト + ナビ CTA（`SdzSpotDetailCTAView` の下部）
+     6. セクション情報 + タグ
+     7. メタデータ（DisclosureGroupで折りたたみ）
+     8. オーナーセクション
+   - `actionSection` 廃止 → `SdzSpotDetailCTAView` に置き換え
+   - `locationSection`（緯度経度の生値）廃止
+   - 公式サイトLinkを `parkDetailSection` から CTA領域に移動
+   - お気に入りボタンをナビゲーションバー右上に移動
+
+6. `SpotListView.swift` 距離ソート追加
+   - `@StateObject private var locationManager = SdzLocationManager()`
+   - デフォルトソートを距離順に変更（現在地取得可能時）
+   - 各カードに距離テキスト表示
+
+コミット分割:
+- `refactor(ios): HomeViewから地図UIViewRepresentableを分離`
+- `feat(ios): 地図フルスクリーン化とタブ再構成 (#227)`
+- `feat(ios): スポット詳細CTA再設計 (#228)`
+- `feat(ios): 一覧画面に距離ソートを追加`
+
+### Step 4: 統合テスト
+
+`/verify` 実行 + 手動検証。
+
+---
+
+## 検証手順
+
+### ビルド確認
+
+```bash
+cd iOS && xcodebuild -scheme spot-diggz -destination 'platform=iOS Simulator,name=iPhone 16' build 2>&1 | tail -10
+```
+
+### 手動検証チェックリスト
+
+- [ ] 4タブが正しく表示され、切り替わること
+- [ ] アプリ起動時に「マップ」タブが選択されていること
+- [ ] 地図が画面の90%以上を占めていること
+- [ ] 検索バーが半透明フローティングで表示されること
+- [ ] フィルタボタンタップでパネルが展開/収納されること
+- [ ] ピンタップでボトムシートにミニカードが表示されること
+- [ ] ミニカードに距離が表示されること（現在地取得時）
+- [ ] 「詳細を見る」で SpotDetailView が開くこと
+- [ ] 「ナビ」で Google Maps / Apple Maps 選択ダイアログが出ること
+- [ ] 詳細画面のCTAが Instagram → スポット情報 → 公式+ナビ の順であること
+- [ ] Instagram CTA で Instagram アプリ or Web が開くこと
+- [ ] パーク/ストリートで表示セクションが異なること
+- [ ] クラスタリングが正常に動作すること
+- [ ] ドラフトピン配置 → PostView 遷移が壊れていないこと
+- [ ] Share拡張連携が正常に動作すること
+- [ ] 一覧画面で距離順ソートが機能すること
+
+### 回帰リスク
+
+| リスク | 対策 |
+|:--|:--|
+| `SdzTab.spots` 参照の取りこぼし | enumリネームによりコンパイラが全箇所検出。Grepで `.spots` を事前確認済み（8箇所） |
+| HomeViewリファクタでクラスタリング破損 | Coordinatorのロジックは一切変更せずファイル移動のみ |
+| `.presentationDetents` の iOS 15以下 | 既存コードで `#available` 分岐済み。新規シートも同様の分岐を入れる |
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/kohei/.claude/projects/-Users-kohei-workspace-uechikohei-spot-diggz/ee732449-bc8f-44d9-af64-0a5f7ec6e084.jsonl
+
+If this plan can be broken down into multiple independent tasks, consider using the TeamCreate tool to create a team and parallelize the work.
+
+---
+
+Base directory for this skill: /Users/kohei/workspace/uechikohei/spot-diggz/.claude/skills/verify
+
+CI相当のチェックをローカルで全て実行し、結果を報告してください。
+
+実行順序:
+
+1. Rust API チェック
+   ```
+   cd web/api
+   cargo fmt -- --check
+   cargo clippy -- -D warnings
+   cargo test --verbose
+   ```
+2. React UI チェック
+   ```
+   cd web/ui
+   npm run lint
+   npm run type-check
+   npm test -- --coverage --watch=false
+   npm run build
+   ```
+3. Terraform チェック（web/resources/ に変更がある場合のみ）
+   ```
+   cd web/resources
+   terraform fmt -check -recursive
+   ```
+
+結果サマリ:
+
+- 全PASS → 「CI Ready」と表示
+- 失敗あり → 失敗箇所と修正案を提示
+
+---
+
+ありがとうございます。これってちなみに、八幡さんのソースコードの実装方法のところってレビューとか入っているのかな？あと出来上がったソースコード、動作確認をこちらでするんですけども、各設計の意図したところになっているかっていうところの確認を、玉縄さんしかり、直人くんにもちょっとやってほしいのと、あとはセキュリティに関連して、セキュリティシフトという考え方もあるので、セキュリティの観点でもっとこうした方がいいんじゃないかみたいなレビュー、イシューみたいなのを上げてもらえるといいかなと思います。
+
+同時に、幸野さんによるコスト最適化の面でも、今あるソースコードのところ、修正した方がいいよみたいなところがあればレビューお願いします。それに合わせてイシューを起票して、今後の改善の優先順位とかはつけていきたいなと思うので
+
+---
+
+あとは実装いただいたところですけども、多分今後Google Cloud側にビッグクエリを追加で実装したりとか、あと既存のFirestoreのデータ構造を変えるための作業とか、Xcodeのビルドとかそういった雑作業があると思うんですが、そこのダンタスクというか、何をするべきかみたいな手順とかイシューとかって整理してもらえますか？次を何するかっていうのを知りたいって感じです。
+
+---
+
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Analysis:
+Let me chronologically analyze the entire conversation:
+
+1. The user asked to implement a detailed UI redesign plan for their iOS app (spot-diggz), covering #227 (map fullscreen + tab restructuring) and #228 (spot detail CTA redesign).
+
+2. I explored the codebase structure, read all relevant files, and implemented the plan in 4 steps:
+   - Step 1: Base utilities (SdzDistanceCalculator, SdzInstagramLauncher, SdzTab enum changes, SdzLocationManager update)
+   - Step 2: UI components (SdzSearchBar floating style, SdzSpotMiniCardView, SdzMapOverlayView, SdzSpotBottomSheetView, SdzSpotDetailCTAView)
+   - Step 3: Screen refactoring (SdzFullScreenMapView extraction, HomeView rewrite, RootTabView 4-tab, SpotDetailView CTA redesign, SpotListView distance sort, MapScreen.swift deletion)
+   - Step 4: Build verification and /verify
+
+3. The user then asked about code review status and requested 4 parallel reviews:
+   - UX/Design review by Tamanawa + Naoto
+   - Security review by Hülkenberg + Izaya + Naoto
+   - Cost optimization review by Yukino + Izaya
+   - Code review by Hachiman + Yukino + Hülkenberg
+
+4. The user then asked for remaining tasks/issues to be organized - what needs to be done next (BigQuery, Firestore data structure changes, Xcode build tasks, etc.)
+
+5. I launched an agent to analyze remaining work items from design docs and existing issues.
+
+6. All 4 review agents completed with detailed findings. I need to:
+   - Summarize the review results
+   - Create GitHub Issues from the review findings
+   - Present the remaining task roadmap
+
+Key errors encountered:
+- `SdzTab.spots` references needed to be updated in multiple files (8 locations)
+- The replace_all command needed different indentation variants
+- iPhone 16 simulator not available, had to use iPhone 17 Pro
+- SourceKit diagnostics for new files not yet in Xcode project (expected, PBXFileSystemSynchronizedRootGroup handles auto-discovery)
+
+All 4 background review agents have completed. The remaining work analysis agent also completed. I need to:
+1. Summarize all review findings
+2. Create GitHub Issues from the findings
+3. Present the remaining task roadmap organized by priority
+
+Summary:
+1. Primary Request and Intent:
+   - The user requested implementation of a comprehensive UI redesign plan for the iOS app (spot-diggz), covering Issue #227 (map fullscreen + tab restructuring) and #228 (spot detail CTA redesign) on branch `feature/227-map-fullscreen-redesign`.
+   - After implementation, the user asked about whether Hachiman's code review was included, and requested 4 parallel AIDD persona reviews: UX/Design (Tamanawa+Naoto), Security (Hülkenberg+Izaya+Naoto), Cost Optimization (Yukino+Izaya), and Code (Hachiman+Yukino+Hülkenberg). Each review should produce GitHub Issues for future improvements.
+   - The user then asked for remaining tasks to be organized - what needs to be done next including BigQuery implementation, Firestore data structure changes, Xcode build tasks, and other operational work, with Issues to be filed for prioritization.
+
+2. Key Technical Concepts:
+   - SwiftUI + UIViewRepresentable (MKMapView wrapping)
+   - Custom map clustering with grid-based algorithm
+   - PBXFileSystemSynchronizedRootGroup (Xcode 16+ auto-discovery of Swift files)
+   - `.presentationDetents` for bottom sheet sizing
+   - `SdzSpotType` enum extraction from private to shared scope
+   - Instagram URL scheme launching with web fallback
+   - Distance calculation using CLLocation
+   - 4-tab navigation (Map/List/MyList/Settings)
+   - Decision funnel UI pattern (Discovery → Verification → Confirmation → Action)
+   - Tier 1 master data architecture (BigQuery → Cloud Functions → Firestore)
+   - Security shift-left approach for URL scheme safety
+   - AIDD persona-based code review system
+
+3. Files and Code Sections:
+
+   - **NEW: `iOS/spot-diggz/Presentation/Components/SdzDistanceCalculator.swift`**
+     - Distance calculation utility + formatted output ("2.3km先", "300m先")
+     ```swift
+     enum SdzDistanceCalculator {
+         static func distance(from coordinate: CLLocationCoordinate2D, to location: SdzSpotLocation) -> CLLocationDistance
+         static func formattedDistance(meters: CLLocationDistance) -> String
+     }
+     ```
+
+   - **NEW: `iOS/spot-diggz/Presentation/Components/SdzInstagramLauncher.swift`**
+     - Instagram URL scheme launch + web fallback
+     - Security concern identified: uses `addingPercentEncoding` instead of `URLComponents` for URL building
+     ```swift
+     @MainActor enum SdzInstagramLauncher {
+         static var isInstagramInstalled: Bool
+         static func searchOnInstagram(spotName: String)
+     }
+     ```
+
+   - **NEW: `iOS/spot-diggz/Presentation/Components/SdzFullScreenMapView.swift`**
+     - Extracted UIViewRepresentable map + Coordinator + all annotation models/views from HomeView
+     - Contains `SdzMapAnnotationItem`, `SdzSpotAnnotation`, `SdzClusterAnnotation`, `SdzSpotAnnotationView`, `SdzClusterAnnotationView`
+     - ~370 lines, moved from HomeView's ~480 lines of map code
+
+   - **NEW: `iOS/spot-diggz/Presentation/Components/SdzMapOverlayView.swift`**
+     - Floating search bar + collapsible filter panel
+     - Contains shared `SdzSpotType` enum (moved from HomeView's private scope)
+     - Bindings: `searchText`, `selectedSpotType`, `selectedTags`, `isFilterExpanded`, `tagOptions`
+
+   - **NEW: `iOS/spot-diggz/Presentation/Components/SdzSpotBottomSheetView.swift`**
+     - Pin selection bottom sheet with mini card + distance + nav action
+     - Uses `.presentationDetents([.fraction(0.18), .fraction(0.4)])`
+
+   - **NEW: `iOS/spot-diggz/Presentation/Components/SdzSpotDetailCTAView.swift`**
+     - Detail screen CTA section (Instagram / Official site / Nav with dynamic display)
+     - Dynamic rules: officialUrl present → show all 3 CTAs; absent → nav becomes primary CTA
+
+   - **MODIFIED: `iOS/spot-diggz/SdzAppState.swift`**
+     - `SdzTab` enum: `.spots` → `.map` renamed, `.myList` added
+     - Default tab changed to `.map`
+     - All 8 references to `.spots` updated to `.map`
+
+   - **MODIFIED: `iOS/spot-diggz/Presentation/Screens/RootTabView.swift`**
+     - 3 tabs → 4 tabs (マップ/一覧/マイリスト/設定)
+     - Added `MyListView()` tab with `.tag(SdzTab.myList)`
+
+   - **MODIFIED: `iOS/spot-diggz/Presentation/Screens/HomeView.swift`**
+     - Major rewrite: ~1,139 lines → ~370 lines
+     - Body structure changed to ZStack with SdzFullScreenMapView + SdzMapOverlayView overlay
+     - Removed: TopOverlayHeightKey, private SdzSpotType, SdzHomeMapView, all annotation classes
+     - Added: distance calculation, bottom sheet for spot selection, filter expand state
+     - FAB size reduced from 66→52
+
+   - **MODIFIED: `iOS/spot-diggz/Presentation/Screens/SpotDetailView.swift`**
+     - CTA redesigned with decision funnel structure
+     - Added `@StateObject private var locationManager = SdzLocationManager()` for distance
+     - Image carousel height increased 220→280
+     - Removed: `locationSection` (raw lat/lng), `actionSection` (old favorite/nav buttons)
+     - Added: `SdzSpotDetailCTAView`, toolbar favorite button, `DisclosureGroup` for metadata, tag section
+     - Favorite button moved to navigation bar trailing
+
+   - **MODIFIED: `iOS/spot-diggz/Presentation/Components/SdzSpotMiniCardView.swift`**
+     - Added: `distance: String?`, `onTapDetail: (() -> Void)?`, `onTapNav: (() -> Void)?`
+     - Added action button row (ナビ + 詳細を見る)
+
+   - **MODIFIED: `iOS/spot-diggz/Presentation/DesignSystem/Components/SdzSearchBar.swift`**
+     - Added `SdzSearchBarStyle` enum (`.standard` / `.floating`)
+     - `.floating` style uses `.ultraThinMaterial` background
+
+   - **MODIFIED: `iOS/spot-diggz/Data/Repositories/SdzLocationManager.swift`**
+     - Added `distanceTo(_ location: SdzSpotLocation) -> CLLocationDistance?` method
+
+   - **MODIFIED: `iOS/spot-diggz/Presentation/Screens/SpotListView.swift`**
+     - Added `@StateObject private var locationManager = SdzLocationManager()`
+     - Added `sortedFilteredSpots` computed property for distance-based sorting
+     - Added `distanceText(for:)` helper
+     - Cards now show distance text
+
+   - **DELETED: `iOS/spot-diggz/Presentation/Screens/MapScreen.swift`**
+     - Unused file, redundant with HomeView
+
+4. Errors and fixes:
+   - `.spots` reference replacement: `replace_all` with 16-space indentation didn't catch all variants. Fixed by running separate replacements for different indentation levels and checking with Grep.
+   - iPhone 16 simulator not available: Build failed with "no matching device". Fixed by using `iPhone 17 Pro` simulator instead (iOS 26 SDK environment).
+   - SourceKit diagnostics showing "Cannot find type" for new files: Expected behavior since files aren't recognized by SourceKit outside Xcode. Confirmed project uses `PBXFileSystemSynchronizedRootGroup` (objectVersion 77) so new files auto-discovered.
+
+5. Problem Solving:
+   - Successfully reduced HomeView from ~1,139 lines to ~370 lines by extracting map UIViewRepresentable, overlay, and annotation code
+   - All `.spots` → `.map` references resolved across 3 files (SdzAppState, RootTabView, HomeView)
+   - Build succeeded with `** BUILD SUCCEEDED **`
+   - `/verify` passed all checks: Rust fmt/clippy/test (26 tests), React lint/type-check/test (3 tests)/build
+
+6. All user messages:
+   - Message 1: "Implement the following plan: [detailed UI redesign implementation plan for #227 + #228]"
+   - Message 2: "ありがとうございます。これってちなみに、八幡さんのソースコードの実装方法のところってレビューとか入っているのかな？あと出来上がったソースコード、動作確認をこちらでするんですけども、各設計の意図したところになっているかっていうところの確認を、玉縄さんしかり、直人くんにもちょっとやってほしいのと、あとはセキュリティに関連して、セキュリティシフトという考え方もあるので、セキュリティの観点でもっとこうした方がいいんじゃないかみたいなレビュー、イシューみたいなのを上げてもらえるといいかなと思います。同時に、幸野さんによるコスト最適化の面でも、今あるソースコードのところ、修正した方がいいよみたいなところがあればレビューお願いします。それに合わせてイシューを起票して、今後の改善の優先順位とかはつけていきたいなと思うので" (Requesting 4 parallel AIDD persona reviews with Issue creation)
+   - Message 3: "あとは実装いただいたところですけども、多分今後Google Cloud側にビッグクエリを追加で実装したりとか、あと既存のFirestoreのデータ構造を変えるための作業とか、Xcodeのビルドとかそういった雑作業があると思うんですが、そこのダンタスクというか、何をするべきかみたいな手順とかイシューとかって整理してもらえますか？次を何するかっていうのを知りたいって感じです。" (Requesting remaining task/issue organization for what's next)
+
+7. Pending Tasks:
+   - Summarize all 4 completed review results to the user
+   - Create GitHub Issues from review findings (UX: 13 items, Security: 10 items, Cost: 10 items, Code: 16 items)
+   - Present the remaining task roadmap organized by priority (P1/P2 UI features, BigQuery pipeline #216/#218, Firestore IAM #217, Instagram URL field addition, Xcode config, CI/CD, testing)
+   - The remaining work analysis agent identified these un-filed items needing Issues: P1-1 (search/filter interaction), P1-2 (spot registration flow simplification), P2-1 (Instagram URL + fallback), P2-2 (list screen role redefinition)
+
+8. Current Work:
+   All 4 background review agents have completed with detailed findings:
+   
+   - UX/Design Review (Tamanawa+Naoto): 2 P0, 5 P1, 6 P2 items. Key P0s: bottom sheet animation collision, Instagram tag search inappropriate for place search.
+   - Security Review (Hülkenberg+Izaya+Naoto): 3 P0, 4 P1, 3 P2 items. Key P0s: URL injection in SdzInstagramLauncher, officialUrl scheme validation missing, Deep Link input validation.
+   - Cost Optimization (Yukino+Izaya): 2 P0, 4 P1, 4 P2 items. Key P0s: SdzLocationManager triple instantiation, fetchSpots missing cache/TTL.
+   - Code Review (Hachiman+Yukino+Hülkenberg): 3 P0, 6 P1, 7 P2 items. Key P0s: SpotDetailView Task lifecycle, AnnotationView prepareForReuse missing, MKReverseGeocodingRequest iOS version guard.
+   
+   The remaining work analysis agent also completed with a full roadmap of post-P0 tasks.
+   
+   I was about to summarize all review results and create GitHub Issues, plus present the organized remaining task roadmap.
+
+9. Optional Next Step:
+   Summarize the 4 completed review results to the user, then create GitHub Issues from the review findings and the remaining task roadmap. The user explicitly asked: "イシューを起票して、今後の改善の優先順位とかはつけていきたい" and "次を何するかっていうのを知りたい". I need to:
+   1. Present a consolidated summary of all review findings with priority rankings
+   2. Create GitHub Issues using `gh issue create` for the review findings and remaining tasks
+   3. Present the organized next-steps roadmap
+
+If you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/kohei/.claude/projects/-Users-kohei-workspace-uechikohei-spot-diggz/014e6ad3-a39d-4179-81c1-5660fb76a8a2.jsonl
+Please continue the conversation from where we left off without asking the user any further questions. Continue with the last task that you were asked to work on.
+
+---
+
+ありがとうございます。では、プライオリティゼロから実装をお願いします。ちなみにこの並列動作、エージェントモードでやってほしいんですけど、エージェントモード、5人のメンバー、今回サブエージェントで設定してると思うんですけど、そのメンバーで相談の上実装するようにやってくれませんか?
+
+---
+
+<teammate-message teammate_id="security-instagram" color="blue" summary="Task #1 Instagram P0修正2件完了">
+Task #1 完了しました。`SdzInstagramLauncher.swift` に以下の2つのP0修正を適用しました。
+
+### 修正1: #231 URL injection修正
+- `addingPercentEncoding` + 文字列補間を廃止 → `URLComponents` + `URLQueryItem` に置き換え
+- `sdzMaxSpotNameLength = 200` で文字数上限チェック追加
+- URL構築失敗時は `guard let ... else { return }` でサイレントフォールバック
+
+### 修正2: #230 Instagram CTA場所検索
+- `instagram://tags?tag=` のタグ検索を廃止
+- `instagram://` スキーム分岐自体を削除し、Google検索経由（`site:instagram.com {spotName}`）に統一
+- `URLQueryItem` がクエリパラメータを自動エスケープするため injection 不可
+
+変更ファイル: `iOS/spot-diggz/Presentation/Components/SdzInstagramLauncher.swift`
+</teammate-message>
+
+<teammate-message teammate_id="security-instagram" color="blue">
+{"type":"idle_notification","from":"security-instagram","timestamp":"2026-03-01T02:22:33.361Z","idleReason":"available"}
+</teammate-message>
+
+<teammate-message teammate_id="security-instagram" color="blue">
+{"type":"idle_notification","from":"security-instagram","timestamp":"2026-03-01T02:22:36.396Z","idleReason":"available"}
+</teammate-message>
+
+<teammate-message teammate_id="security-cta" color="green" summary="Task #2 CTA/DeepLink P0修正完了">
+Task #2 完了しました。
+
+### 修正1: #232 officialUrlスキーム検証 (`SdzSpotDetailCTAView.swift`)
+- `sdzIsAllowedUrl()` を追加。`https`/`http`のみ許可、`javascript:`/`data:`/`file:`等すべてブロック
+- `hasOfficialUrl` と `officialSiteCTA` の両方のガード条件に組み込み済み
+- 不正URLの場合はCTAボタン自体が非表示になる
+
+### 修正2: #233 Deep Link入力バリデーション (`SdzAppState.swift`)
+- `sdzIsValidCoordinate()`: lat -90〜90, lng -180〜180 の範囲チェック
+- `sdzTrimmedName()`: 500文字超のスポット名をトリム
+- `applyShareSelectionToPost()` / `applyShareSelectionToMap()` の両方に適用済み
+- 範囲外座標は `clearShareSelection()` で安全にスキップ
+</teammate-message>
+
+<teammate-message teammate_id="security-cta" color="green">
+{"type":"idle_notification","from":"security-cta","timestamp":"2026-03-01T02:23:03.999Z","idleReason":"available"}
+</teammate-message>
+
+---
+
+<teammate-message teammate_id="code-quality" color="yellow" summary="Task #5 完了: prepareForReuse + iOS 18ガード修正">
+Task #5 完了しました。
+
+### 修正1: prepareForReuse() (#237)
+対象: `iOS/spot-diggz/Presentation/Components/SdzFullScreenMapView.swift`
+- `SdzSpotAnnotationView` に `override func prepareForReuse()` を追加（L420-427）
+  - `super.prepareForReuse()` 呼び出し
+  - `image = nil` でアイコンリセット
+  - ホスティングコントローラのビュー除去 + nil化
+  - `backgroundColor = .clear` と `annotation = nil` でリセット
+- `SdzClusterAnnotationView` にも同様の `prepareForReuse()` を追加（L470-477）
+
+### 修正2: MKReverseGeocodingRequest iOS 18+ガード (#238)
+対象: `iOS/spot-diggz/Presentation/Screens/SpotListView.swift`
+- `reverseGeocode(location:)` に `if #available(iOS 18.0, *)` ガードを追加（L315）
+- iOS 18+: 既存の `MKReverseGeocodingRequest` パス
+- iOS 18未満: `CLGeocoder().reverseGeocodeLocation` フォールバック
+- `SdzSpotAddressSummary` に `init?(placemark: CLPlacemark)` を追加（L40-59）
+  - `locality` + `subLocality` → `compactAddress`
+  - フルアドレス → `searchableAddressText`
+</teammate-message>
+
+<teammate-message teammate_id="security-cta" color="green" summary="Buttonイニシャライザは正常、修正不要と判断">
+L110付近のButtonイニシャライザを確認しました。
+
+```swift
+Button(action: {
+    showNavigationDialog = true
+}) {
+    HStack { ... }
+}
+```
+
+これは `Button(action:label:)` イニシャライザのtrailing closure構文で、SwiftUIの標準的な書き方です。`label:` 引数がtrailing closureとして省略されているだけで、引数ラベルの誤りはありません。
+
+同ファイルのL46（instagramCTA）でも全く同じ形式が使われており、一貫性もあります。コンパイルエラーや実行時の問題は発生しないため、修正不要と判断しました。
+</teammate-message>
+
+<teammate-message teammate_id="code-quality" color="yellow">
+{"type":"idle_notification","from":"code-quality","timestamp":"2026-03-01T02:23:22.301Z","idleReason":"available"}
+</teammate-message>
+
+<teammate-message teammate_id="security-cta" color="green">
+{"type":"idle_notification","from":"security-cta","timestamp":"2026-03-01T02:23:23.352Z","idleReason":"available"}
+</teammate-message>
+
+---
+
+<teammate-message teammate_id="code-quality" color="yellow">
+{"type":"idle_notification","from":"code-quality","timestamp":"2026-03-01T02:23:28.605Z","idleReason":"available"}
+</teammate-message>
+
+<teammate-message teammate_id="security-cta" color="green">
+{"type":"idle_notification","from":"security-cta","timestamp":"2026-03-01T02:23:29.760Z","idleReason":"available"}
+</teammate-message>
+
+---
+
+<teammate-message teammate_id="perf-specialist" color="purple" summary="Task #4完了: LocationManager共有化 + SpotCache実装">
+Task #4 完了しました。パフォーマンス関連の2つのP0修正を実施しました。
+
+## 修正1: #234 SdzLocationManager共有インスタンス化
+
+変更ファイルと要点:
+
+1. `/Users/kohei/workspace/uechikohei/spot-diggz/iOS/spot-diggz/Presentation/Screens/RootTabView.swift`
+   - `@StateObject private var locationManager = SdzLocationManager()` を追加
+   - `.environmentObject(locationManager)` でTabView全体に注入
+   - Preview用にも `.environmentObject(SdzLocationManager())` を追加
+
+2. `/Users/kohei/workspace/uechikohei/spot-diggz/iOS/spot-diggz/Presentation/Screens/HomeView.swift`
+   - `@StateObject private var locationManager = SdzLocationManager()` → `@EnvironmentObject var locationManager: SdzLocationManager` に変更
+   - Preview用にも `.environmentObject(SdzLocationManager())` を追加
+
+3. `/Users/kohei/workspace/uechikohei/spot-diggz/iOS/spot-diggz/Presentation/Screens/SpotListView.swift`
+   - `@StateObject private var locationManager = SdzLocationManager()` → `@EnvironmentObject var locationManager: SdzLocationManager` に変更
+   - Preview用にも `.environmentObject(SdzLocationManager())` を追加
+
+4. `/Users/kohei/workspace/uechikohei/spot-diggz/iOS/spot-diggz/Presentation/Screens/SpotDetailView.swift`
+   - `@StateObject private var locationManager = SdzLocationManager()` → `@EnvironmentObject var locationManager: SdzLocationManager` に変更
+   - Preview用にも `.environmentObject(SdzLocationManager())` を追加
+
+## 修正2: #235 fetchSpotsキャッシュ/TTL
+
+新規・変更ファイルと要点:
+
+5. `/Users/kohei/workspace/uechikohei/spot-diggz/iOS/spot-diggz/Data/Repositories/SdzSpotCache.swift` (新規)
+   - Actor型で実装（スレッドセーフ）
+   - `static let shared` シングルトン
+   - TTL 5分（300秒）
+   - `cachedSpots(for:)` / `store(spots:for:)` / `invalidate()` メソッド
+   - キーは `SdzSpotSearchQuery?`（Hashable準拠を追加済み）
+
+6. `/Users/kohei/workspace/uechikohei/spot-diggz/iOS/spot-diggz/Domain/Entities/SdzSpotSearchQuery.swift`
+   - `struct SdzSpotSearchQuery` に `Hashable` 準拠を追加（キャッシュのDictionaryキーとして使用するため）
+
+7. HomeView の `fetchSpots` メソッド:
+   - `forceRefresh` パラメータ追加（デフォルト `false`）
+   - API呼び出し前にキャッシュチェック → ヒットすればAPIスキップ
+   - API取得成功後にキャッシュにstore
+
+8. SpotListView の `reloadSpots` メソッド:
+   - API呼び出し前にキャッシュチェック → ヒットすればAPIスキップ
+   - API取得成功後にキャッシュにstore
+   - `.refreshable` でキャッシュを `invalidate()` してからリロード
+
+Task #3（UX修正）がこのタスクの完了を待っていた場合、着手可能になっています。
+</teammate-message>
+
+---
+
+Base directory for this skill: /Users/kohei/workspace/uechikohei/spot-diggz/.claude/skills/verify
+
+CI相当のチェックをローカルで全て実行し、結果を報告してください。
+
+実行順序:
+
+1. Rust API チェック
+   ```
+   cd web/api
+   cargo fmt -- --check
+   cargo clippy -- -D warnings
+   cargo test --verbose
+   ```
+2. React UI チェック
+   ```
+   cd web/ui
+   npm run lint
+   npm run type-check
+   npm test -- --coverage --watch=false
+   npm run build
+   ```
+3. Terraform チェック（web/resources/ に変更がある場合のみ）
+   ```
+   cd web/resources
+   terraform fmt -check -recursive
+   ```
+
+結果サマリ:
+
+- 全PASS → 「CI Ready」と表示
+- 失敗あり → 失敗箇所と修正案を提示
+
+---
+
+<teammate-message teammate_id="perf-specialist" color="purple">
+{"type":"idle_notification","from":"perf-specialist","timestamp":"2026-03-01T02:25:33.311Z","idleReason":"available"}
+</teammate-message>
+
+<teammate-message teammate_id="perf-specialist" color="purple">
+{"type":"idle_notification","from":"perf-specialist","timestamp":"2026-03-01T02:25:39.064Z","idleReason":"available"}
+</teammate-message>
+
+<teammate-message teammate_id="system">
+{"type":"teammate_terminated","message":"security-instagram has shut down."}
+</teammate-message>
+
+<teammate-message teammate_id="system">
+{"type":"teammate_terminated","message":"security-cta has shut down."}
+</teammate-message>
+
+<teammate-message teammate_id="system">
+{"type":"teammate_terminated","message":"code-quality has shut down."}
+</teammate-message>
+
+<teammate-message teammate_id="system">
+{"type":"teammate_terminated","message":"perf-specialist has shut down."}
+</teammate-message>
+
+<teammate-message teammate_id="security-instagram" color="blue">
+{"type":"shutdown_approved","requestId":"shutdown-1772332115037@security-instagram","from":"security-instagram","timestamp":"2026-03-01T02:28:39.015Z","paneId":"in-process","backendType":"in-process"}
+</teammate-message>
+
+<teammate-message teammate_id="security-cta" color="green">
+{"type":"shutdown_approved","requestId":"shutdown-1772332115701@security-cta","from":"security-cta","timestamp":"2026-03-01T02:28:39.871Z","paneId":"in-process","backendType":"in-process"}
+</teammate-message>
+
+<teammate-message teammate_id="code-quality" color="yellow">
+{"type":"shutdown_approved","requestId":"shutdown-1772332116358@code-quality","from":"code-quality","timestamp":"2026-03-01T02:28:40.276Z","paneId":"in-process","backendType":"in-process"}
+</teammate-message>
+
+<teammate-message teammate_id="perf-specialist" color="purple">
+{"type":"shutdown_approved","requestId":"shutdown-1772332117106@perf-specialist","from":"perf-specialist","timestamp":"2026-03-01T02:28:41.361Z","paneId":"in-process","backendType":"in-process"}
+</teammate-message>
+
+<teammate-message teammate_id="team-lead">
+{"type":"task_assignment","taskId":"3","subject":"UX修正: ボトムシートアニメーション競合 + SpotDetailView Taskライフサイクル (#229, #236)","description":"HomeViewとSpotDetailViewに対するP0修正を実施する。\n\n1. #229 ボトムシートアニメーション競合:\n   - `HomeView.swift`で`selectedSpot = nil` → `detailSpot = spot`の遷移にディレイを入れる\n   - `.sheet(item:)`の排他制御\n\n2. #236 SpotDetailView Task ライフサイクル:\n   - `SpotDetailView.swift`内の全`Task {}`起動箇所を洗い出し\n   - `@State private var activeTask: Task<Void, Never>?`パターンで管理\n   - `.onDisappear`でキャンセルを保証\n   - `.task {}`（SwiftUI管理）への統一を検討\n\n対象ファイル:\n- `iOS/spot-diggz/Presentation/Screens/HomeView.swift`（ボトムシート遷移部分のみ）\n- `iOS/spot-diggz/Presentation/Screens/SpotDetailView.swift`","assignedBy":"team-lead","timestamp":"2026-03-01T02:28:45.322Z"}
+</teammate-message>
+
+---
+
+ありがとうございます。この後の実装のスケジュールみたいなところをお聞きしたいんですけど、今動作確認しているとUIの方ですね。玉縄さんと相談したところで、いい感じにUIとして設計が再作成できているところと、あとなんかできてなさそうなところもありました。特にUIとしては問題ないのかな。微妙だなと思っているのは、微妙というか設計と少し違ったのかなと思っているところは、データの構造のところで、スポット一つ一つのデータの構造で、Tier2とTier1にするっていうところで、公開ステータスとしては承認済み、未承認っていうのは剥除するっていう話だったのかなって思うんですけど、これどうしよう、公開ステータス承認済みってなっててもユーザーからしたらあんまり何のこと言ってるのかわからないんで、ユーザーからすると元々登録されているデータプラスサブ機能で自分で登録できるデータが表示されるっていうぐらいなので、そんなにわかります?言ってること。そこが1点気になるなって思いますね。そのあたりの実装って今回はしてるんでしたっけ?まだFirestoreの方をGoogleのビッグクエリもそこからつなげるETLの処理もデータの注入っていうところもしてないから
+
+---
+
+そうですね、最終的なゴールは玉沢さんと調整したというところなので、適用の段階は問題ないかなと提案いただいたアプローチのうちの1番、UI先行でいいかなと思います。
+
+---
+
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Analysis:
+Let me chronologically analyze the conversation:
+
+1. The conversation started as a continuation from a previous session where a UI redesign plan was implemented for iOS app (spot-diggz). The plan covered #227 (map fullscreen + tab restructuring) and #228 (spot detail CTA redesign).
+
+2. The previous session had already:
+   - Implemented the UI redesign (Steps 1-4 of the plan)
+   - Run 4 parallel AIDD persona reviews (UX, Security, Cost, Code)
+   - The user asked for remaining tasks to be organized
+
+3. In this session, I:
+   - Summarized all 4 review results (UX: 2 P0/5 P1/6 P2, Security: 3 P0/4 P1/3 P2, Cost: 2 P0/4 P1/4 P2, Code: 3 P0/6 P1/7 P2)
+   - Created 25+ GitHub Issues organized by priority
+   - Presented a roadmap with recommended order
+
+4. User asked to implement P0 fixes using a team of 5 sub-agents working collaboratively.
+
+5. I created a team "p0-fix-team" with 5 tasks:
+   - Task #1: security-instagram (SdzInstagramLauncher URL injection + location search)
+   - Task #2: security-cta (officialUrl scheme + Deep Link validation)
+   - Task #3: UX fixes (bottom sheet animation + Task lifecycle) - blocked by Task #4
+   - Task #4: perf-specialist (LocationManager shared + cache)
+   - Task #5: code-quality (prepareForReuse + iOS 18 guard)
+
+6. Agents were spawned with worktree isolation, but changes ended up in the main working directory. All 4 parallel tasks completed successfully.
+
+7. I then implemented Task #3 manually (bottom sheet animation delay + Task lifecycle management).
+
+8. Build succeeded, /verify passed all checks.
+
+9. User then raised concern about approvalStatus showing in the UI - it doesn't make sense for users in the new Tier 1/Tier 2 data architecture. User agreed with UI-first approach to remove it.
+
+10. I began removing approvalStatus-related code from SpotDetailView.swift and was mid-edit when the summary was requested.
+
+Key files modified in this session:
+- SpotDetailView.swift - removing approvalStatus UI elements (in progress)
+- HomeView.swift - bottom sheet animation fix
+- All the P0 fixes from agents were already applied
+
+Current state: I was in the middle of removing approvalStatus-related properties and methods from SpotDetailView.swift. I had:
+- Removed `approvalMessage`, `isRequestingApproval`, `approvalTask` state properties
+- Removed "公開ステータス" text display
+- Removed approval-related items from owner section
+- Still need to: remove `approvalStatusText`, `approvalStatusColor`, `canRequestApproval` computed properties and `requestApproval()` method
+
+Summary:
+1. Primary Request and Intent:
+   - The user initially requested implementation of P0 fixes identified by 4 AIDD persona reviews (UX, Security, Cost, Code) using a team of 5 sub-agents that would discuss and collaborate before implementing.
+   - After P0 implementation, the user reviewed the UI and raised a concern about `approvalStatus` (公開ステータス: 承認済/審査中 etc.) still being displayed in the UI. Per the Tier 1/Tier 2 data architecture design, approval status is irrelevant since Tier 1 data is pre-curated master data and Tier 2 is personal/local. The user agreed to a "UI-first" approach: remove approvalStatus from the UI now, implement the BigQuery/Firestore data pipeline later.
+   - The user wants to eventually commit and create a PR for the `feature/227-map-fullscreen-redesign` branch.
+
+2. Key Technical Concepts:
+   - Team-based agent workflow with `TeamCreate`, task dependencies, and worktree isolation
+   - Tier 1 (BigQuery master data) vs Tier 2 (SwiftData/CloudKit user data) architecture
+   - `approvalStatus` removal from UI (承認済/審査中/差戻し/未申請 are irrelevant in new architecture)
+   - `@EnvironmentObject` for shared `SdzLocationManager` (replacing 3 separate `@StateObject` instances)
+   - `SdzSpotCache` Actor with TTL for API response caching
+   - `URLComponents` + `URLQueryItem` for safe URL construction (replacing `addingPercentEncoding`)
+   - `prepareForReuse()` for MKAnnotationView subclasses
+   - `#available(iOS 18.0, *)` guard for `MKReverseGeocodingRequest` with `CLGeocoder` fallback
+   - Bottom sheet animation conflict resolution via `DispatchQueue.main.asyncAfter`
+   - Task lifecycle management with `@State` properties and `.onDisappear` cancellation
+   - URL scheme whitelist validation (`https`/`http` only) for `officialUrl`
+
+3. Files and Code Sections:
+   - `iOS/spot-diggz/Presentation/Screens/SpotDetailView.swift`
+     - Currently being modified to remove all approvalStatus-related UI
+     - Removed: `approvalMessage`, `isRequestingApproval`, `approvalTask` state properties
+     - Removed: "公開ステータス" text display and color
+     - Removed: approval button and message from `ownerSection`
+     - Still needs removal: `approvalStatusText`, `approvalStatusColor`, `canRequestApproval` computed properties (lines 354-390) and `requestApproval()` method (lines ~463-515)
+     - Also modified earlier for Task lifecycle: added `refreshTask` state, `.onDisappear { refreshTask?.cancel() }`, changed `Task {` to `refreshTask = Task {` in `refreshSpotDetail()`
+
+   - `iOS/spot-diggz/Presentation/Screens/HomeView.swift`
+     - Bottom sheet animation fix: added 0.35s delay between `selectedSpot = nil` and `detailSpot = target`
+     ```swift
+     onTapDetail: {
+         let target = spot
+         selectedSpot = nil
+         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+             detailSpot = target
+         }
+     },
+     ```
+     - Changed `@StateObject private var locationManager` → `@EnvironmentObject var locationManager: SdzLocationManager`
+     - `fetchSpots` gained `forceRefresh` parameter and `SdzSpotCache` integration
+
+   - `iOS/spot-diggz/Presentation/Screens/RootTabView.swift`
+     - Added `@StateObject private var locationManager = SdzLocationManager()`
+     - Added `.environmentObject(locationManager)` to TabView
+     - Preview updated with `.environmentObject(SdzLocationManager())`
+
+   - `iOS/spot-diggz/Presentation/Screens/SpotListView.swift`
+     - Changed `@StateObject` → `@EnvironmentObject` for locationManager
+     - Added `SdzSpotCache` integration in `reloadSpots()`
+     - `.refreshable` invalidates cache before reload
+     - Added `init?(placemark: CLPlacemark)` to `SdzSpotAddressSummary` for iOS <18 fallback
+     - `reverseGeocode()` now has `#available(iOS 18.0, *)` guard with `CLGeocoder` fallback
+
+   - `iOS/spot-diggz/Presentation/Components/SdzInstagramLauncher.swift`
+     - Rewritten to use `URLComponents` + `URLQueryItem` (URL injection fix)
+     - Changed from `instagram://tag` to Google search (`site:instagram.com {spotName}`)
+     - Added `sdzMaxSpotNameLength = 200`
+
+   - `iOS/spot-diggz/Presentation/Components/SdzSpotDetailCTAView.swift`
+     - Added `sdzIsAllowedUrl()` for scheme whitelist validation (https/http only)
+     - `hasOfficialUrl` and `officialSiteCTA` both check `sdzIsAllowedUrl`
+
+   - `iOS/spot-diggz/SdzAppState.swift`
+     - Added `sdzIsValidCoordinate(lat:lng:)` — validates -90..90 and -180..180
+     - Added `sdzTrimmedName(_:)` — trims to 500 chars
+     - Applied in `applyShareSelectionToPost()` and `applyShareSelectionToMap()`
+
+   - `iOS/spot-diggz/Presentation/Components/SdzFullScreenMapView.swift`
+     - Added `prepareForReuse()` to `SdzSpotAnnotationView` (lines 420-427): resets image, hosting controller, backgroundColor, annotation
+     - Added `prepareForReuse()` to `SdzClusterAnnotationView` (lines 470-477): same pattern
+
+   - `iOS/spot-diggz/Data/Repositories/SdzSpotCache.swift` (new file)
+     - Actor-based thread-safe cache with `static let shared` singleton
+     - TTL: 5 minutes (300 seconds)
+     - Methods: `cachedSpots(for:)`, `store(spots:for:)`, `invalidate()`
+
+   - `iOS/spot-diggz/Domain/Entities/SdzSpotSearchQuery.swift`
+     - Added `Hashable` conformance (needed as Dictionary key for SdzSpotCache)
+
+4. Errors and fixes:
+   - Worktree isolation issue: Agents were spawned with `isolation: "worktree"` but when checking for worktree branches/directories, they were not found. However, all agent changes were actually present in the main working directory. The worktree mechanism apparently applied changes back to the main directory.
+   - SourceKit diagnostics throughout: Constant false-positive diagnostics about "Cannot find type X in scope" for types like `SdzSpot`, `SdzLocationManager`, `UIView`, `UIColor` etc. These are all caused by SourceKit running outside Xcode's full project context. Confirmed not real issues as `xcodebuild` succeeds.
+   - Button initializer diagnostic (Line 110 SdzSpotDetailCTAView): SourceKit flagged "Incorrect argument label (have 'action:_:', expected 'role:action:')" but security-cta agent confirmed this is correct trailing closure syntax for `Button(action:label:)`. No fix needed.
+
+5. Problem Solving:
+   - Created and managed a 5-agent team (p0-fix-team) to parallelize P0 fixes across different files
+   - Set up task dependencies (Task #3 blocked by Task #4) to avoid file conflicts on HomeView/SpotDetailView
+   - Successfully built iOS project after all changes
+   - Passed full /verify CI checks (Rust fmt/clippy/test, React lint/type-check/test/build, iOS build)
+   - Investigated and confirmed Tier 1/Tier 2 data architecture implications for approvalStatus removal
+
+6. All user messages:
+   - "ありがとうございます。では、プライオリティゼロから実装をお願いします。ちなみにこの並列動作、エージェントモードでやってほしいんですけど、エージェントモード、5人のメンバー、今回サブエージェントで設定してると思うんですけど、そのメンバーで相談の上実装するようにやってくれませんか?" — Requested P0 implementation using a team of 5 sub-agents that discuss before implementing.
+   - (Multiple teammate messages from agents reporting task completion — security-instagram, security-cta, code-quality, perf-specialist)
+   - "ありがとうございます。この後の実装のスケジュールみたいなところをお聞きしたいんですけど..." — Long message about: UI looks mostly good, but concerned about approvalStatus display in SpotDetailView. Tier 1/Tier 2 architecture means approval concept is irrelevant. BigQuery pipeline not yet built. Wants to know what needs to happen next.
+   - "そうですね、最終的なゴールは玉沢さんと調整したというところなので、適用の段階は問題ないかなと提案いただいたアプローチのうちの1番、UI先行でいいかなと思います。" — Agreed with UI-first approach to remove approvalStatus from UI now.
+
+7. Pending Tasks:
+   - Complete removal of `approvalStatusText`, `approvalStatusColor`, `canRequestApproval` computed properties from SpotDetailView.swift (lines 354-390 area)
+   - Remove `requestApproval()` method from SpotDetailView.swift (around line 463-515 area)
+   - Rebuild and verify after approvalStatus removal
+   - Commit all P0 changes + approvalStatus removal
+   - Create PR to master (user hasn't explicitly confirmed yet)
+   - Existing open issues for future work: #216 (BigQuery), #217 (Firestore IAM), #218 (Cloud Functions ETL), #219 (API write endpoint hibernation), #220 (SwiftData/CloudKit Tier 2)
+
+8. Current Work:
+   I was in the middle of removing `approvalStatus`-related code from `SpotDetailView.swift`. I had successfully:
+   - Removed state properties (`approvalMessage`, `isRequestingApproval`, `approvalTask`)
+   - Removed the "公開ステータス" text display from `basicInfoSection`
+   - Removed approval button and message from `ownerSection`
+   - Removed `approvalTask?.cancel()` from `.onDisappear`
+   
+   I still need to remove (from the file as read at lines 354-390+):
+   - `approvalStatusText` computed property (lines 354-365)
+   - `approvalStatusColor` computed property (lines 367-378)
+   - `canRequestApproval` computed property (lines 380-390)
+   - `requestApproval()` method (approximately lines 463-515 which includes the `approvalTask = Task { ... }` block with `SdzUpdateSpotInput` and API call)
+
+9. Optional Next Step:
+   Continue removing the remaining approvalStatus-related computed properties and methods from SpotDetailView.swift. Specifically, remove `approvalStatusText`, `approvalStatusColor`, `canRequestApproval`, and `requestApproval()`. Then rebuild, verify, and report completion to the user.
+   
+   The user's most recent explicit request was: "そうですね、最終的なゴールは玉沢さんと調整したというところなので、適用の段階は問題ないかなと提案いただいたアプローチのうちの1番、UI先行でいいかなと思います。" — confirming the UI-first approach to remove approvalStatus.
+   
+   I was mid-edit on SpotDetailView.swift, having just read lines 340-439 to locate the remaining properties to remove.
+
+If you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/kohei/.claude/projects/-Users-kohei-workspace-uechikohei-spot-diggz/014e6ad3-a39d-4179-81c1-5660fb76a8a2.jsonl
+Please continue the conversation from where we left off without asking the user any further questions. Continue with the last task that you were asked to work on.
+
+---
+
+Base directory for this skill: /Users/kohei/workspace/uechikohei/spot-diggz/.claude/skills/verify
+
+CI相当のチェックをローカルで全て実行し、結果を報告してください。
+
+実行順序:
+
+1. Rust API チェック
+   ```
+   cd web/api
+   cargo fmt -- --check
+   cargo clippy -- -D warnings
+   cargo test --verbose
+   ```
+2. React UI チェック
+   ```
+   cd web/ui
+   npm run lint
+   npm run type-check
+   npm test -- --coverage --watch=false
+   npm run build
+   ```
+3. Terraform チェック（web/resources/ に変更がある場合のみ）
+   ```
+   cd web/resources
+   terraform fmt -check -recursive
+   ```
+
+結果サマリ:
+
+- 全PASS → 「CI Ready」と表示
+- 失敗あり → 失敗箇所と修正案を提示
+
+---
+
+ありがとうございます。あとSPOTの詳細のカードの情報なんですけど、多分玉名さん整理した設計になっているかなと思うんですけど、あのですね、多分セクションの入力、ストリートの情報とか荒さ、ひび割れ、難易度のとこなんですけど、多分今前回言ってたその5段階で分かりにくいのでなんか3段階に指定みたいな言ってたと思うんですけど、3段階にしてくれますか。難易度、ひび割れ、荒さのところですね。路面はコンクリート、アスファルト、その他その他ていうかなと思うんですけど、まあでもその他って書いたらセレクトボックスでテキストが入力できるので自由度が上がってて非常にいいかなと思ったんでそれでいいと思います。あと位置情報なんですけど、これってとか選択したらピンを落として登録ボタンを押す位置情報、緯度、経度が表示されるって感じですね。この緯度と経度ってUI的に利用者が見るべきですかね。見なくても表示しなくてもいいのかなと思って。もちろんスポットの詳細カードには出ないんでそこはいいんですけど、登録する時にピンを落として登録をする時に位置情報、緯度、経度って出るんですけど位置情報のところ、緯度、経度じゃなくてなんか住所とかそういうのにしてあげた方がいいのかなと思うんですけどどうだろうこれはストリートとスポット種別どちらもそうなってますねなんかスケートパーク情報登録する時のなんかスケートパークを登録する時の情報がちょっと量が多くてこれも分かりにくいのでここ玉名さんとまた議論したいですね。スケートパークの情報を第三者がそもそもスケートパークの情報を入力するっていうのがイメージわかんなくて多分スケートパーク最新の情報であればそうですけど多分僕の方でマスターデータとして質のいいものを登録するようにはすると思うので個人がサブ機能として補完的に使うという意味で公式サイト、営業時間タイプ、24時間営業、平日何時開始、アクセス情報、電話番号とかそんなメモしますかねっていうところがちょっと微妙なんで分かりにくいかなと思ってて。ちょっとそうですね、この新規登録の投稿画面投稿のフォームと特性とかなんですけどここはちょっと玉川さんの議論をしてユーザーが使うべきものだけに絞りたいなと思いますね。
+
+---
+
+はい、ちょっとたまなさんのレビューをしてほしいです。
+
+---
+
+Base directory for this skill: /Users/kohei/workspace/uechikohei/spot-diggz/.claude/skills/ux-review
+
+# UI/UXレビュー — 玉縄・雪乃によるプロダクト品質レビュー
+
+## このスキルの目的
+
+UI実装・画面設計・ユーザー体験をレビューし、プロダクトとしての品質を高める。
+UXの理想とコストの現実のバランスを、2名の建設的な対立で最適解に導く。
+
+## 参加メンバーと役割
+
+| メンバー | 役割 | 観点 |
+|:--|:--|:--|
+| 玉縄 | **リード** | UX品質・PMF・アクセシビリティ・ユーザー動線 |
+| 雪ノ下雪乃 | レビュワー（コスト牽制） | UI実装のコスト影響・パフォーマンス・実装効率 |
+
+### キャラクター定義
+
+- 玉縄: [personas/tamanawa.md](../personas/tamanawa.md)
+- 雪乃: [personas/yukino.md](../personas/yukino.md)
+
+## レビューの進め方
+
+### Step 1: 対象の確認（玉縄）
+
+玉縄がレビュー対象のUIを確認し、ユーザーストーリーの文脈を把握する。
+
+「OK、まずはユーザージャーニーのコンテキストを整理しよう。このフィーチャーのバリュープロポジションを確認させてほしい。」
+
+- レビュー対象の画面・コンポーネントを特定する
+- 対象ユーザーとユースケースを確認する
+- 既存のUI/UXパターンとの一貫性を確認する
+
+### Step 2: 各メンバーによるレビュー
+
+**玉縄（UX品質）:**
+- ユーザー動線は自然か（認知負荷が高すぎないか）
+- 情報階層は適切か（重要な情報が目立つか）
+- フィードバック（ローディング、エラー、成功）は十分か
+- アクセシビリティ（コントラスト、フォントサイズ、タッチターゲット）
+- レスポンシブ対応（モバイル/タブレット/デスクトップ）
+- エンプティステート・エッジケースのハンドリング
+
+**雪乃（コスト・パフォーマンス牽制）:**
+- そのUX改善にかかる実装コストは妥当か
+- 画像・アニメーション等のアセットがパフォーマンスに与える影響
+- 不要に複雑なUIコンポーネントはないか
+- サードパーティライブラリの追加は本当に必要か（バンドルサイズ影響）
+
+### Step 3: 掛け合い（犬猿の仲）
+
+玉縄と雪乃は対立しやすいが、お互いの指摘は本質を突いている。
+
+**玉縄:** 「ここはアニメーションを入れてインタラクションのクオリティをブラッシュアップしていこう。ユーザーのエンゲージメントに直結するんだよね。」
+**雪乃:** 「そのアニメーションライブラリを追加するとバンドルサイズが40KB増えるわ。月間転送コストに換算すると……。本当に必要かしら？」
+**玉縄:** 「うーん、じゃあCSS Transitionでミニマムなアプローチにする？ それならコストゼロでバリューは出せると思うんだよね。」
+**雪乃:** 「それなら問題ないわ。」
+
+### Step 4: 結論の整理（玉縄）
+
+玉縄がレビュー結果を整理する。
+
+```
+## UXレビュー結果
+
+### 改善提案
+| 優先度 | 提案内容 | UX効果 | コスト影響 |
+|:--|:--|:--|:--|
+
+### 良い点
+- 評価ポイント
+```
+
+## 出力フォーマット
+
+レビュー完了時、以下の形式で議事録を出力する：
+
+```markdown
+# [UXレビュー] {対象画面・機能}
+
+**日時:** {日付}
+**参加者:** 玉縄、雪乃
+**起票者:** ユーザー
+
+## 結論
+（UX品質の総合評価）
+
+## 改善提案
+| 優先度 | 提案 | UX効果 | コスト影響 |
+|:--|:--|:--|:--|
+| High | 内容 | 効果 | 影響 |
+
+## 良い点
+- 評価ポイント（評価者）
+
+## コスト影響サマリ
+（雪乃の試算。影響なしの場合も明記）
+
+<details>
+<summary>💬 レビュー会話ログ</summary>
+
+**玉縄:** 「ここのユーザーフローはブラッシュアップの余地があるんだよね。」
+**雪乃:** 「その改善にいくらかかるか、計算させてもらうわ。」
+
+</details>
+```
+
+## 注意事項
+
+- 玉縄のカタカナ横文字は多いが、指摘内容自体は的確。日本語に置き換えず玉縄らしく出力する
+- 雪乃はUX改善を否定するのではなく、コスト対効果を数字で示して判断材料を提供する
+- 二人が対立しても最終的には建設的な妥協点に落ち着く
+- セキュリティに関わるUI（ログイン画面、個人情報表示等）は「ヒュルケンの確認が必要」と言及
+- 技術的に複雑な実装が必要な場合は「八幡の意見を聞くべき」と言及
+
+---
+
+ありがとうございます。実装においては多分八幡さんの意見も取り入れて、ディスカッションのコンセンサスが得られたら実装するっていうところにしてほしいです。この実装の時点でセキュリティ観点のレビューもレビュアー担当者として入れて、セキュアなソースコードとか機能、ライブラリの使い方、再利用性とかその辺りも検討しながら議論の上実装をするという方針でお願いします。
+
+---
+
+レビュー・実装・ディスカッションありがとうございます。これから動作確認してみますね。一旦ここまでのコミットをしておいてもらえますか。このコミットをしたら、Entire CLIによってこれまでのClaude Codeとのセッション履歴は残る認識でいるんですが、プッシュするまでGitHubのリポジトリのブランチに反映されないとしても、履歴としては残る認識であってますか。一度ちょっとPC再起動しようと思っていて

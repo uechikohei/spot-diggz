@@ -1,0 +1,48 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "4d015efe6a67",
+  "session_id": "014e6ad3-a39d-4179-81c1-5660fb76a8a2",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-03T00:08:13.84595Z",
+  "branch": "feature/227-map-fullscreen-redesign",
+  "checkpoints_count": 14,
+  "files_touched": [
+    "iOS/spot-diggz/Data/Repositories/SdzLocationManager.swift",
+    "iOS/spot-diggz/Data/Repositories/SdzSpotCache.swift",
+    "iOS/spot-diggz/Domain/Entities/SdzSpotSearchQuery.swift",
+    "iOS/spot-diggz/Presentation/Components/SdzDistanceCalculator.swift",
+    "iOS/spot-diggz/Presentation/Components/SdzFullScreenMapView.swift",
+    "iOS/spot-diggz/Presentation/Components/SdzInstagramLauncher.swift",
+    "iOS/spot-diggz/Presentation/Components/SdzMapOverlayView.swift",
+    "iOS/spot-diggz/Presentation/Components/SdzSpotBottomSheetView.swift",
+    "iOS/spot-diggz/Presentation/Components/SdzSpotDetailCTAView.swift",
+    "iOS/spot-diggz/Presentation/Components/SdzSpotMiniCardView.swift",
+    "iOS/spot-diggz/Presentation/DesignSystem/Components/SdzSearchBar.swift",
+    "iOS/spot-diggz/Presentation/Screens/EditSpotView.swift",
+    "iOS/spot-diggz/Presentation/Screens/HomeView.swift",
+    "iOS/spot-diggz/Presentation/Screens/MapScreen.swift",
+    "iOS/spot-diggz/Presentation/Screens/PostView.swift",
+    "iOS/spot-diggz/Presentation/Screens/RootTabView.swift",
+    "iOS/spot-diggz/Presentation/Screens/SpotDetailView.swift",
+    "iOS/spot-diggz/Presentation/Screens/SpotListView.swift",
+    "iOS/spot-diggz/SdzAppState.swift"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "12c119026806",
+  "token_usage": {
+    "input_tokens": 2232,
+    "cache_creation_tokens": 580586,
+    "cache_read_tokens": 17645069,
+    "output_tokens": 105717,
+    "api_call_count": 160
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-03T00:08:12.884558Z",
+    "agent_lines": 1433,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 1433,
+    "agent_percentage": 100
+  }
+}

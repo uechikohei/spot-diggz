@@ -1,0 +1,44 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "4d015efe6a67",
+  "strategy": "manual-commit",
+  "branch": "feature/227-map-fullscreen-redesign",
+  "checkpoints_count": 14,
+  "files_touched": [
+    "iOS/spot-diggz/Data/Repositories/SdzLocationManager.swift",
+    "iOS/spot-diggz/Data/Repositories/SdzSpotCache.swift",
+    "iOS/spot-diggz/Domain/Entities/SdzSpotSearchQuery.swift",
+    "iOS/spot-diggz/Presentation/Components/SdzDistanceCalculator.swift",
+    "iOS/spot-diggz/Presentation/Components/SdzFullScreenMapView.swift",
+    "iOS/spot-diggz/Presentation/Components/SdzInstagramLauncher.swift",
+    "iOS/spot-diggz/Presentation/Components/SdzMapOverlayView.swift",
+    "iOS/spot-diggz/Presentation/Components/SdzSpotBottomSheetView.swift",
+    "iOS/spot-diggz/Presentation/Components/SdzSpotDetailCTAView.swift",
+    "iOS/spot-diggz/Presentation/Components/SdzSpotMiniCardView.swift",
+    "iOS/spot-diggz/Presentation/DesignSystem/Components/SdzSearchBar.swift",
+    "iOS/spot-diggz/Presentation/Screens/EditSpotView.swift",
+    "iOS/spot-diggz/Presentation/Screens/HomeView.swift",
+    "iOS/spot-diggz/Presentation/Screens/MapScreen.swift",
+    "iOS/spot-diggz/Presentation/Screens/PostView.swift",
+    "iOS/spot-diggz/Presentation/Screens/RootTabView.swift",
+    "iOS/spot-diggz/Presentation/Screens/SpotDetailView.swift",
+    "iOS/spot-diggz/Presentation/Screens/SpotListView.swift",
+    "iOS/spot-diggz/SdzAppState.swift"
+  ],
+  "sessions": [
+    {
+      "metadata": "/4d/015efe6a67/0/metadata.json",
+      "transcript": "/4d/015efe6a67/0/full.jsonl",
+      "context": "/4d/015efe6a67/0/context.md",
+      "content_hash": "/4d/015efe6a67/0/content_hash.txt",
+      "prompt": "/4d/015efe6a67/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 2232,
+    "cache_creation_tokens": 580586,
+    "cache_read_tokens": 17645069,
+    "output_tokens": 105717,
+    "api_call_count": 160
+  }
+}
