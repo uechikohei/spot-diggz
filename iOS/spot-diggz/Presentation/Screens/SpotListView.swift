@@ -36,11 +36,33 @@ private struct SdzSpotAddressSummary: Sendable {
         self.compactAddress = address.shortAddress ?? address.fullAddress ?? ""
         self.searchableAddressText = (address.fullAddress ?? "").lowercased()
     }
+
+    init?(placemark: CLPlacemark) {
+        self.countryName = placemark.country
+        self.countryCode = placemark.isoCountryCode
+        self.adminArea = placemark.administrativeArea
+        let locality = placemark.locality ?? ""
+        let subLocality = placemark.subLocality ?? ""
+        let thoroughfare = placemark.thoroughfare ?? ""
+        let subThoroughfare = placemark.subThoroughfare ?? ""
+        let compact = [locality, subLocality].filter { !$0.isEmpty }.joined(separator: " ")
+        self.compactAddress = compact
+        let full = [
+            placemark.country,
+            placemark.administrativeArea,
+            locality,
+            subLocality,
+            thoroughfare,
+            subThoroughfare
+        ].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " ")
+        self.searchableAddressText = full.lowercased()
+    }
 }
 
 /// Displays all registered spots in a list format with location filters.
 struct SpotListView: View {
     @EnvironmentObject var appState: SdzAppState
+    @EnvironmentObject var locationManager: SdzLocationManager
 
     @State private var spots: [SdzSpot] = []
     @State private var addressBySpotId: [String: SdzSpotAddressSummary] = [:]
@@ -60,9 +82,11 @@ struct SpotListView: View {
             }
             .navigationTitle("一覧")
             .refreshable {
+                await SdzSpotCache.shared.invalidate()
                 await reloadSpots()
             }
             .task {
+                locationManager.requestCurrentLocation()
                 if spots.isEmpty {
                     await reloadSpots()
                 }
@@ -117,30 +141,58 @@ struct SpotListView: View {
                     }
                     .buttonStyle(.bordered)
                 }
-            } else if filteredSpots.isEmpty {
+            } else if sortedFilteredSpots.isEmpty {
                 Text("条件に一致するスポットがありません。")
                     .foregroundColor(.secondary)
             } else {
-                ForEach(filteredSpots) { spot in
+                ForEach(sortedFilteredSpots) { spot in
                     NavigationLink(destination: SpotDetailView(spot: spot)) {
                         VStack(alignment: .leading, spacing: 6) {
                             SpotCardView(spot: spot)
-                            if let address = addressBySpotId[spot.spotId]?.compactAddress, !address.isEmpty {
-                                Text(address)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                    .lineLimit(1)
-                            } else if let location = spot.location {
-                                Text("lat: \(location.lat), lng: \(location.lng)")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                    .lineLimit(1)
+                            HStack(spacing: 4) {
+                                if let distanceText = distanceText(for: spot) {
+                                    Text(distanceText)
+                                        .font(.caption)
+                                        .foregroundColor(.sdzStreet)
+                                        .lineLimit(1)
+                                }
+                                if let address = addressBySpotId[spot.spotId]?.compactAddress, !address.isEmpty {
+                                    Text(address)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .lineLimit(1)
+                                } else if let location = spot.location {
+                                    Text("lat: \(location.lat), lng: \(location.lng)")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .lineLimit(1)
+                                }
                             }
                         }
                     }
                 }
             }
         }
+    }
+
+    private var sortedFilteredSpots: [SdzSpot] {
+        let filtered = filteredSpots
+        guard locationManager.currentCoordinate != nil else {
+            return filtered
+        }
+        return filtered.sorted { lhs, rhs in
+            let lhsDistance = lhs.location.flatMap { locationManager.distanceTo($0) } ?? .infinity
+            let rhsDistance = rhs.location.flatMap { locationManager.distanceTo($0) } ?? .infinity
+            return lhsDistance < rhsDistance
+        }
+    }
+
+    private func distanceText(for spot: SdzSpot) -> String? {
+        guard let location = spot.location,
+              let meters = locationManager.distanceTo(location) else {
+            return nil
+        }
+        return SdzDistanceCalculator.formattedDistance(meters: meters)
     }
 
     private var filteredSpots: [SdzSpot] {
@@ -211,9 +263,22 @@ struct SpotListView: View {
             errorMessage = nil
         }
 
+        if let cached = await SdzSpotCache.shared.cachedSpots(for: nil) {
+            let sorted = cached.sorted { $0.updatedAt > $1.updatedAt }
+            await MainActor.run {
+                spots = sorted
+                isLoading = false
+                let ids = Set(sorted.map(\.spotId))
+                addressBySpotId = addressBySpotId.filter { ids.contains($0.key) }
+                startReverseGeocoding(for: sorted)
+            }
+            return
+        }
+
         let apiClient = SdzApiClient(environment: appState.environment, idToken: appState.idToken)
         do {
             let fetched = try await apiClient.fetchSpots(includeAuth: true)
+            await SdzSpotCache.shared.store(spots: fetched, for: nil)
             let sorted = fetched.sorted { $0.updatedAt > $1.updatedAt }
             await MainActor.run {
                 spots = sorted
@@ -260,16 +325,26 @@ struct SpotListView: View {
     }
 
     private func reverseGeocode(location: SdzSpotLocation) async -> SdzSpotAddressSummary? {
-        let coordinate = CLLocation(latitude: location.lat, longitude: location.lng)
-        guard let request = MKReverseGeocodingRequest(location: coordinate) else {
-            return nil
-        }
-        do {
-            let mapItems = try await request.mapItems
-            guard let first = mapItems.first else { return nil }
-            return SdzSpotAddressSummary(mapItem: first)
-        } catch {
-            return nil
+        let clLocation = CLLocation(latitude: location.lat, longitude: location.lng)
+        if #available(iOS 18.0, *) {
+            guard let request = MKReverseGeocodingRequest(location: clLocation) else {
+                return nil
+            }
+            do {
+                let mapItems = try await request.mapItems
+                guard let first = mapItems.first else { return nil }
+                return SdzSpotAddressSummary(mapItem: first)
+            } catch {
+                return nil
+            }
+        } else {
+            do {
+                let placemarks = try await CLGeocoder().reverseGeocodeLocation(clLocation)
+                guard let first = placemarks.first else { return nil }
+                return SdzSpotAddressSummary(placemark: first)
+            } catch {
+                return nil
+            }
         }
     }
 }
@@ -279,6 +354,7 @@ struct SpotListView_Previews: PreviewProvider {
     static var previews: some View {
         SpotListView()
             .environmentObject(SdzAppState())
+            .environmentObject(SdzLocationManager())
     }
 }
 #endif

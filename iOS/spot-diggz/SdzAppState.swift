@@ -2,8 +2,9 @@ import Foundation
 import Combine
 
 enum SdzTab: Hashable {
-    case spots
+    case map
     case list
+    case myList
     case settings
 }
 
@@ -37,7 +38,7 @@ final class SdzAppState: ObservableObject {
     @Published var profileImageData: Data?
 
     /// Currently selected tab.
-    @Published var selectedTab: SdzTab = .spots
+    @Published var selectedTab: SdzTab = .map
     @Published var isPostComposerPresented: Bool = false
 
     /// Indicates whether the post or edit screen is currently visible.
@@ -123,7 +124,7 @@ final class SdzAppState: ObservableObject {
         case "officialUrl":
             if let url = payload.url, !url.isEmpty {
                 pendingOfficialUrl = url
-                selectedTab = .spots
+                selectedTab = .map
                 isPostComposerPresented = true
             }
         case "location":
@@ -147,34 +148,50 @@ final class SdzAppState: ObservableObject {
     }
 
     func applyShareSelectionToPost() {
-        guard let location = pendingShareSelectionLocation else {
+        guard let location = pendingShareSelectionLocation,
+              sdzIsValidCoordinate(lat: location.lat, lng: location.lng) else {
+            clearShareSelection()
             return
         }
         pendingSharedLocation = location
-        pendingSharedLocationName = pendingShareSelectionName
+        pendingSharedLocationName = sdzTrimmedName(pendingShareSelectionName)
         pendingShareSelectionLocation = nil
         pendingShareSelectionName = nil
         isShareSelectionPromptVisible = false
-        selectedTab = .spots
+        selectedTab = .map
         isPostComposerPresented = true
     }
 
     func applyShareSelectionToMap() {
-        guard let location = pendingShareSelectionLocation else {
+        guard let location = pendingShareSelectionLocation,
+              sdzIsValidCoordinate(lat: location.lat, lng: location.lng) else {
+            clearShareSelection()
             return
         }
         pendingMapFocusLocation = location
-        pendingMapFocusName = pendingShareSelectionName
+        pendingMapFocusName = sdzTrimmedName(pendingShareSelectionName)
         pendingShareSelectionLocation = nil
         pendingShareSelectionName = nil
         isShareSelectionPromptVisible = false
-        selectedTab = .spots
+        selectedTab = .map
     }
 
     func clearShareSelection() {
         pendingShareSelectionLocation = nil
         pendingShareSelectionName = nil
         isShareSelectionPromptVisible = false
+    }
+
+    private func sdzIsValidCoordinate(lat: Double, lng: Double) -> Bool {
+        (-90...90).contains(lat) && (-180...180).contains(lng)
+    }
+
+    private func sdzTrimmedName(_ name: String?) -> String? {
+        guard let name else { return nil }
+        if name.count > 500 {
+            return String(name.prefix(500))
+        }
+        return name
     }
 
     func restoreSession() async {
@@ -238,7 +255,7 @@ final class SdzAppState: ObservableObject {
                 return false
             }
             pendingOfficialUrl = value
-            selectedTab = .spots
+            selectedTab = .map
             isPostComposerPresented = true
             clearSharedPayload()
             return true
@@ -292,14 +309,14 @@ final class SdzAppState: ObservableObject {
         case .map:
             pendingMapFocusLocation = location
             pendingMapFocusName = name
-            selectedTab = .spots
+            selectedTab = .map
         case .edit:
             pendingSharedLocationForEdit = location
             pendingSharedLocationNameForEdit = name
         case .post:
             pendingSharedLocation = location
             pendingSharedLocationName = name
-            selectedTab = .spots
+            selectedTab = .map
             isPostComposerPresented = true
         case .none:
             pendingShareSelectionLocation = location

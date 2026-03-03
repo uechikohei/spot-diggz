@@ -1,6 +1,6 @@
 import Foundation
 
-struct SdzSpotSearchQuery {
+struct SdzSpotSearchQuery: Hashable {
     let text: String?
     let spotType: String?
     let tags: [String]

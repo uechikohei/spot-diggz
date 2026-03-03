@@ -106,7 +106,7 @@ struct EditSpotView: View {
         let parseLevel: (String?) -> Int? = { value in
             guard let trimmed = value?.trimmingCharacters(in: .whitespacesAndNewlines),
                   let level = Int(trimmed),
-                  (1...5).contains(level) else {
+                  (1...3).contains(level) else {
                 return nil
             }
             return level
@@ -206,75 +206,9 @@ struct EditSpotView: View {
                         }
                         .buttonStyle(.bordered)
                     }
-                    Picker("営業時間タイプ", selection: $parkScheduleType) {
-                        ForEach(SdzSpotBusinessScheduleType.allCases) { scheduleType in
-                            Text(scheduleType.label).tag(scheduleType)
-                        }
-                    }
-                    .pickerStyle(.menu)
-
-                    if parkScheduleType == .irregular || parkScheduleType == .schoolOnly || parkScheduleType == .manual {
-                        TextField("営業時間の補足 (例: 不定休/スクール専用/手動入力)", text: $parkScheduleNote)
-                        Text("詳細は公式サイトや現地案内をご確認ください。")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    } else {
-                        Toggle("24時間営業", isOn: $parkIs24Hours)
-                        if !parkIs24Hours {
-                            switch parkScheduleType {
-                            case .regular:
-                                DatePicker(
-                                    "平日 開始",
-                                    selection: $parkWeekdayStart,
-                                    displayedComponents: .hourAndMinute
-                                )
-                                DatePicker(
-                                    "平日 終了",
-                                    selection: $parkWeekdayEnd,
-                                    displayedComponents: .hourAndMinute
-                                )
-                                Toggle("週末も同じ", isOn: $parkSameAsWeekday)
-                                if !parkSameAsWeekday {
-                                    DatePicker(
-                                        "週末 開始",
-                                        selection: $parkWeekendStart,
-                                        displayedComponents: .hourAndMinute
-                                    )
-                                    DatePicker(
-                                        "週末 終了",
-                                        selection: $parkWeekendEnd,
-                                        displayedComponents: .hourAndMinute
-                                    )
-                                }
-                            case .weekdayOnly:
-                                DatePicker(
-                                    "平日 開始",
-                                    selection: $parkWeekdayStart,
-                                    displayedComponents: .hourAndMinute
-                                )
-                                DatePicker(
-                                    "平日 終了",
-                                    selection: $parkWeekdayEnd,
-                                    displayedComponents: .hourAndMinute
-                                )
-                            case .weekendOnly:
-                                DatePicker(
-                                    "週末 開始",
-                                    selection: $parkWeekendStart,
-                                    displayedComponents: .hourAndMinute
-                                )
-                                DatePicker(
-                                    "週末 終了",
-                                    selection: $parkWeekendEnd,
-                                    displayedComponents: .hourAndMinute
-                                )
-                            case .irregular, .schoolOnly, .manual:
-                                EmptyView()
-                            }
-                        }
-                    }
-                    TextField("アクセス情報", text: $parkAccessInfo)
-                    TextField("電話番号", text: $parkPhoneNumber)
+                    Text("営業時間・アクセス等の詳細情報は管理者が登録します。")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
             }
 
@@ -296,17 +230,20 @@ struct EditSpotView: View {
                 ratingPicker(
                     title: "粗さ",
                     selection: $streetRoughnessLevel,
-                    helpText: "1: スムーズ / 3: 気にならない / 5: 悪い"
+                    options: [("スムーズ", 1), ("普通", 2), ("悪い", 3)],
+                    helpText: "路面の滑らかさ"
                 )
                 ratingPicker(
                     title: "ひび割れ",
                     selection: $streetCrackLevel,
-                    helpText: "1: ほぼない / 3: たまにある / 5: 多い"
+                    options: [("ほぼない", 1), ("少しある", 2), ("多い", 3)],
+                    helpText: "路面のひび割れ具合"
                 )
                 ratingPicker(
                     title: "難易度",
                     selection: $streetDifficultyLevel,
-                    helpText: "1: 初心者には難しい / 3: 幅広く楽しめる / 5: 上級者向け"
+                    options: [("初心者向け", 1), ("幅広く楽しめる", 2), ("上級者向け", 3)],
+                    helpText: "スポットの難易度"
                 )
                 TextField("備考（補足など）", text: $streetNotes, axis: .vertical)
                 VStack(alignment: .leading, spacing: 8) {
@@ -562,23 +499,22 @@ struct EditSpotView: View {
 
     private func buildParkAttributes() -> SdzSpotParkAttributes? {
         let officialUrl = parkOfficialUrl.trimmingCharacters(in: .whitespacesAndNewlines)
-        let accessInfo = parkAccessInfo.trimmingCharacters(in: .whitespacesAndNewlines)
-        let phoneNumber = parkPhoneNumber.trimmingCharacters(in: .whitespacesAndNewlines)
-        let businessHours = buildBusinessHours()
+        let cleanedUrl = (officialUrl.isEmpty || !officialUrl.sdzIsAllowedUrl) ? nil : officialUrl
 
-        let cleanedUrl = officialUrl.isEmpty ? nil : officialUrl
-        let cleanedAccess = accessInfo.isEmpty ? nil : accessInfo
-        let cleanedPhone = phoneNumber.isEmpty ? nil : phoneNumber
+        let existingAttributes = spot.parkAttributes
+        let businessHours = existingAttributes?.businessHours
+        let accessInfo = existingAttributes?.accessInfo
+        let phoneNumber = existingAttributes?.phoneNumber
 
-        if cleanedUrl == nil && cleanedAccess == nil && cleanedPhone == nil && businessHours == nil {
+        if cleanedUrl == nil && accessInfo == nil && phoneNumber == nil && businessHours == nil {
             return nil
         }
 
         return SdzSpotParkAttributes(
             officialUrl: cleanedUrl,
             businessHours: businessHours,
-            accessInfo: cleanedAccess,
-            phoneNumber: cleanedPhone
+            accessInfo: accessInfo,
+            phoneNumber: phoneNumber
         )
     }
 
@@ -776,22 +712,22 @@ struct EditSpotView: View {
     }
 
     private func stringLevel(from level: Int?) -> String {
-        guard let level else {
+        guard let level, (1...3).contains(level) else {
             return ""
         }
         return String(level)
     }
 
     @ViewBuilder
-    private func ratingPicker(title: String, selection: Binding<Int?>, helpText: String) -> some View {
+    private func ratingPicker(title: String, selection: Binding<Int?>, options: [(String, Int)], helpText: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(title)
                 Spacer()
                 Picker(title, selection: selection) {
                     Text("未入力").tag(Optional<Int>.none)
-                    ForEach(1...5, id: \.self) { value in
-                        Text("\(value)").tag(Int?.some(value))
+                    ForEach(options, id: \.1) { label, value in
+                        Text(label).tag(Int?.some(value))
                     }
                 }
                 .labelsHidden()

@@ -1,10 +1,16 @@
 import SwiftUI
 
+enum SdzSearchBarStyle {
+    case standard
+    case floating
+}
+
 /// A design system search bar with magnifying glass icon.
 struct SdzSearchBar: View {
     let placeholder: String
     @Binding var text: String
     var tintColor: Color = .sdzStreet
+    var style: SdzSearchBarStyle = .standard
 
     var body: some View {
         HStack(spacing: SdzSpacing.sm + 2) {
@@ -18,11 +24,11 @@ struct SdzSearchBar: View {
         .padding(.vertical, SdzSpacing.md)
         .background(
             RoundedRectangle(cornerRadius: SdzRadius.md, style: .continuous)
-                .fill(Color(.systemBackground))
+                .fill(style == .floating ? AnyShapeStyle(.ultraThinMaterial) : AnyShapeStyle(Color(.systemBackground)))
         )
         .overlay(
             RoundedRectangle(cornerRadius: SdzRadius.md, style: .continuous)
-                .stroke(tintColor.opacity(0.35), lineWidth: 1.5)
+                .stroke(tintColor.opacity(style == .floating ? 0.2 : 0.35), lineWidth: 1.5)
         )
         .sdzShadow(.md)
         .frame(maxWidth: .infinity, alignment: .leading)

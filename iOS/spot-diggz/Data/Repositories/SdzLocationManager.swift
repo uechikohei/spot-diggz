@@ -61,4 +61,11 @@ final class SdzLocationManager: NSObject, ObservableObject, CLLocationManagerDel
         }
         lastErrorMessage = error.localizedDescription
     }
+
+    func distanceTo(_ location: SdzSpotLocation) -> CLLocationDistance? {
+        guard let coordinate = currentCoordinate else {
+            return nil
+        }
+        return SdzDistanceCalculator.distance(from: coordinate, to: location)
+    }
 }

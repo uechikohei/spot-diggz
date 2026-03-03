@@ -3,26 +3,33 @@ import SwiftUI
 /// A tab bar hosting the primary sections of the app.
 struct RootTabView: View {
     @EnvironmentObject var appState: SdzAppState
+    @StateObject private var locationManager = SdzLocationManager()
 
     var body: some View {
         TabView(selection: $appState.selectedTab) {
 
             HomeView()
                 .tabItem {
-                    Label("スポット", systemImage: "map")
+                    Label("マップ", systemImage: "map")
                 }
-                .tag(SdzTab.spots)
+                .tag(SdzTab.map)
             SpotListView()
                 .tabItem {
                     Label("一覧", systemImage: "list.bullet.rectangle")
                 }
                 .tag(SdzTab.list)
+            MyListView()
+                .tabItem {
+                    Label("マイリスト", systemImage: "heart")
+                }
+                .tag(SdzTab.myList)
             ProfileView()
                 .tabItem {
                     Label("設定", systemImage: "gearshape")
                 }
                 .tag(SdzTab.settings)
         }
+        .environmentObject(locationManager)
         .tint(Color.sdzStreet)
         .sheet(isPresented: $appState.isPostComposerPresented) {
             PostView()
@@ -56,6 +63,7 @@ struct RootTabView_Previews: PreviewProvider {
     static var previews: some View {
         RootTabView()
             .environmentObject(SdzAppState())
+            .environmentObject(SdzLocationManager())
     }
 }
 #endif

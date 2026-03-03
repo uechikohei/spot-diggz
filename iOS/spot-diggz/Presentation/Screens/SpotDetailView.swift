@@ -4,86 +4,49 @@ import MapKit
 /// A screen displaying detailed information about a specific spot.
 struct SpotDetailView: View {
     @EnvironmentObject var appState: SdzAppState
+    @EnvironmentObject var locationManager: SdzLocationManager
     @State private var spot: SdzSpot
 
-    @State private var approvalMessage: String?
-    @State private var isRequestingApproval: Bool = false
-    @State private var showNavigationDialog: Bool = false
     @State private var showImageViewer: Bool = false
     @State private var selectedImageIndex: Int = 0
+    @State private var refreshTask: Task<Void, Never>?
 
     init(spot: SdzSpot) {
         _spot = State(initialValue: spot)
     }
 
+    private var distanceText: String? {
+        guard let location = spot.location,
+              let meters = locationManager.distanceTo(location) else {
+            return nil
+        }
+        return SdzDistanceCalculator.formattedDistance(meters: meters)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
+                // 1. 画像カルーセル
                 if !spot.images.isEmpty {
-                    TabView(selection: $selectedImageIndex) {
-                        ForEach(spot.images.indices, id: \.self) { index in
-                            let urlString = spot.images[index]
-                            Group {
-                                if let url = URL(string: urlString) {
-                                    AsyncImage(url: url) { phase in
-                                        switch phase {
-                                        case .empty:
-                                            ProgressView()
-                                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                        case .success(let image):
-                                            image
-                                                .resizable()
-                                                .scaledToFill()
-                                        case .failure:
-                                            Color.gray.opacity(0.2)
-                                        @unknown default:
-                                            Color.gray.opacity(0.2)
-                                        }
-                                    }
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        selectedImageIndex = index
-                                        showImageViewer = true
-                                    }
-                                } else {
-                                    Color.gray.opacity(0.2)
-                                }
-                            }
-                            .tag(index)
-                        }
-                    }
-                    .frame(height: 220)
-                    .tabViewStyle(.page)
-                    .clipShape(RoundedRectangle(cornerRadius: SdzRadius.md, style: .continuous))
+                    imageCarousel
                 }
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(spot.name)
-                        .font(.title2)
-                        .bold()
-                    HStack(spacing: 8) {
-                        Text("公開ステータス: \(approvalStatusText)")
-                            .font(.caption)
-                            .foregroundColor(approvalStatusColor)
-                        if !spot.tags.isEmpty {
-                            Text(spot.tags.joined(separator: ", "))
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                        }
-                        Spacer()
+                // 2. 基本情報
+                basicInfoSection
+
+                // 3. Instagram CTA + 公式サイト + ナビ CTA
+                SdzSpotDetailCTAView(
+                    spot: spot,
+                    distance: distanceText
+                )
+
+                // 4. パーク固有情報 or ストリート固有情報
+                if spot.sdzIsPark {
+                    if let parkAttributes = spot.parkAttributes {
+                        parkDetailSection(parkAttributes)
                     }
                 }
 
-                if let description = spot.description, !description.isEmpty {
-                    Text(description)
-                        .font(.body)
-                }
-
-                locationSection
-
-                if let parkAttributes = spot.parkAttributes {
-                    parkDetailSection(parkAttributes)
-                }
                 let streetAttributes = spot.streetAttributes ?? SdzStreetAttributes(
                     surfaceMaterial: nil,
                     surfaceCondition: nil,
@@ -94,10 +57,18 @@ struct SpotDetailView: View {
                 let streetTitle = spot.parkAttributes == nil ? "ストリート情報" : "路面・セクション"
                 streetDetailSection(streetAttributes, title: streetTitle)
 
-                metadataSection
+                // 5. タグ
+                if !spot.tags.isEmpty {
+                    tagSection
+                }
 
-                actionSection
+                // 6. メタデータ（折りたたみ）
+                DisclosureGroup("その他の情報") {
+                    metadataContent
+                }
+                .font(.subheadline)
 
+                // 7. オーナーセクション
                 if isOwnedByCurrentUser {
                     ownerSection
                 }
@@ -107,45 +78,123 @@ struct SpotDetailView: View {
         }
         .navigationTitle("スポット詳細")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    Task {
+                        await appState.toggleFavorite(spot)
+                    }
+                }) {
+                    Image(systemName: isFavorite ? "heart.fill" : "heart")
+                        .foregroundColor(isFavorite ? .red : .secondary)
+                }
+            }
+        }
         .fullScreenCover(isPresented: $showImageViewer) {
             SdzImageGalleryView(
                 imageUrls: spot.images,
                 initialIndex: selectedImageIndex
             )
         }
-        .confirmationDialog("ナビを開く", isPresented: $showNavigationDialog, titleVisibility: .visible) {
-            Button("Google Mapsで開く") {
-                openGoogleMaps()
-            }
-            Button("Apple Mapsで開く") {
-                openAppleMaps()
-            }
-        }
         .onAppear {
+            locationManager.requestCurrentLocation()
             refreshSpotDetail()
         }
+        .onDisappear {
+            refreshTask?.cancel()
+        }
     }
 
-    private var locationSection: some View {
+    // MARK: - Image Carousel
+
+    private var imageCarousel: some View {
+        TabView(selection: $selectedImageIndex) {
+            ForEach(spot.images.indices, id: \.self) { index in
+                let urlString = spot.images[index]
+                Group {
+                    if let url = URL(string: urlString) {
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .empty:
+                                ProgressView()
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                            case .failure:
+                                Color.gray.opacity(0.2)
+                            @unknown default:
+                                Color.gray.opacity(0.2)
+                            }
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            selectedImageIndex = index
+                            showImageViewer = true
+                        }
+                    } else {
+                        Color.gray.opacity(0.2)
+                    }
+                }
+                .tag(index)
+            }
+        }
+        .frame(height: 280)
+        .tabViewStyle(.page)
+        .clipShape(RoundedRectangle(cornerRadius: SdzRadius.md, style: .continuous))
+    }
+
+    // MARK: - Basic Info
+
+    private var basicInfoSection: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("位置情報")
-                .font(.headline)
-            if let location = spot.location {
-                Text("緯度: \(String(format: "%.5f", location.lat))  経度: \(String(format: "%.5f", location.lng))")
-                    .font(.caption)
+            Text(spot.name)
+                .font(.title2)
+                .bold()
+            HStack(spacing: 8) {
+                Text(spot.sdzTypeLabel)
+                    .font(.subheadline)
                     .foregroundColor(.secondary)
-            } else {
-                Text("未設定")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                if let distanceText {
+                    Text("・\(distanceText)")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+            }
+            if let description = spot.description, !description.isEmpty {
+                Text(description)
+                    .font(.body)
+                    .padding(.top, 4)
             }
         }
     }
 
-    private var metadataSection: some View {
+    // MARK: - Tags
+
+    private var tagSection: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("その他")
+            Text("タグ")
                 .font(.headline)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(spot.tags, id: \.self) { tag in
+                        Text(tag)
+                            .font(.caption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.sdzStreet.opacity(0.1))
+                            .clipShape(Capsule())
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Metadata (collapsed)
+
+    private var metadataContent: some View {
+        VStack(alignment: .leading, spacing: 6) {
             Text("画像: \(spot.images.count) 枚")
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -156,46 +205,13 @@ struct SpotDetailView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
+        .padding(.top, 4)
     }
 
-    private var actionSection: some View {
-        VStack(spacing: 8) {
-            Button(action: {
-                Task {
-                    await appState.toggleFavorite(spot)
-                }
-            }) {
-                Label(
-                    isFavorite ? "お気に入り解除" : "お気に入りに追加",
-                    systemImage: isFavorite ? "heart.fill" : "heart"
-                )
-                .frame(maxWidth: .infinity)
-            }
-            Button(action: {
-                showNavigationDialog = true
-            }) {
-                Label("ナビ", systemImage: "car")
-                    .frame(maxWidth: .infinity)
-            }
-            .disabled(spot.location == nil)
-        }
-        .buttonStyle(.bordered)
-    }
+    // MARK: - Owner Section
 
     private var ownerSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            if let approvalMessage = approvalMessage {
-                Text(approvalMessage)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            if canRequestApproval {
-                Button(isRequestingApproval ? "申請中..." : "承認を申請") {
-                    requestApproval()
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(isRequestingApproval)
-            }
             NavigationLink("投稿を編集") {
                 EditSpotView(spot: spot) { updated in
                     self.spot = updated
@@ -205,54 +221,7 @@ struct SpotDetailView: View {
         .padding(.top, 4)
     }
 
-    private var isFavorite: Bool {
-        appState.isFavorite(spot)
-    }
-
-    private var isOwnedByCurrentUser: Bool {
-        guard let currentUserId = appState.authUserId else {
-            return false
-        }
-        return spot.userId == currentUserId
-    }
-
-    private var approvalStatusText: String {
-        switch spot.approvalStatus {
-        case .approved:
-            return "承認済"
-        case .pending:
-            return "審査中"
-        case .rejected:
-            return "差戻し"
-        case .none:
-            return "未申請"
-        }
-    }
-
-    private var approvalStatusColor: Color {
-        switch spot.approvalStatus {
-        case .approved:
-            return .sdzSuccess
-        case .pending:
-            return .sdzWarning
-        case .rejected:
-            return .sdzError
-        case .none:
-            return .sdzTextTertiary
-        }
-    }
-
-    private var canRequestApproval: Bool {
-        guard isOwnedByCurrentUser else {
-            return false
-        }
-        switch spot.approvalStatus {
-        case .none, .rejected:
-            return true
-        default:
-            return false
-        }
-    }
+    // MARK: - Park / Street Sections
 
     @ViewBuilder
     private func parkDetailSection(_ attributes: SdzSpotParkAttributes) -> some View {
@@ -284,16 +253,6 @@ struct SpotDetailView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-            }
-            if let officialUrl = attributes.officialUrl,
-               !officialUrl.isEmpty,
-               let url = URL(string: officialUrl) {
-                Link("公式サイトを開く", destination: url)
-                    .font(.caption)
-            } else {
-                Text("公式サイト: 入力されていません")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
             }
         }
         .padding(.top, 12)
@@ -379,6 +338,19 @@ struct SpotDetailView: View {
         .padding(.top, 12)
     }
 
+    // MARK: - Helpers
+
+    private var isFavorite: Bool {
+        appState.isFavorite(spot)
+    }
+
+    private var isOwnedByCurrentUser: Bool {
+        guard let currentUserId = appState.authUserId else {
+            return false
+        }
+        return spot.userId == currentUserId
+    }
+
     private func businessHoursLines(_ hours: SdzSpotBusinessHours) -> [String] {
         let scheduleType = hours.scheduleType ?? .regular
         var lines: [String] = []
@@ -451,68 +423,11 @@ struct SpotDetailView: View {
         return parts.isEmpty ? "詳細なし" : parts.joined(separator: " / ")
     }
 
-    private func requestApproval() {
-        guard appState.idToken != nil else {
-            approvalMessage = "ログインが必要です。"
-            return
-        }
-        let apiClient = SdzApiClient(environment: appState.environment, idToken: appState.idToken)
-        isRequestingApproval = true
-        approvalMessage = nil
-        Task {
-            do {
-                let input = SdzUpdateSpotInput(
-                    name: spot.name,
-                    description: nil,
-                    location: nil,
-                    tags: nil,
-                    images: nil,
-                    approvalStatus: .pending,
-                    parkAttributes: nil,
-                    streetAttributes: nil
-                )
-                let updated = try await apiClient.updateSpot(id: spot.spotId, input: input)
-                await MainActor.run {
-                    self.spot = updated
-                    self.isRequestingApproval = false
-                    self.approvalMessage = "承認申請を送信しました。"
-                }
-            } catch {
-                let message = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
-                await MainActor.run {
-                    self.isRequestingApproval = false
-                    self.approvalMessage = message
-                }
-            }
-        }
-    }
-
-    private var spotCoordinate: CLLocationCoordinate2D? {
-        guard let location = spot.location else {
-            return nil
-        }
-        return CLLocationCoordinate2D(latitude: location.lat, longitude: location.lng)
-    }
-
-    private func openGoogleMaps() {
-        guard let coordinate = spotCoordinate else {
-            return
-        }
-        SdzMapNavigator.openGoogleMaps(destination: coordinate, mode: .drive)
-    }
-
-    private func openAppleMaps() {
-        guard let coordinate = spotCoordinate else {
-            return
-        }
-        SdzMapNavigator.openAppleMaps(destination: coordinate, mode: .drive)
-    }
-
     private var ratingLegend: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text("粗さ: 1=スムーズ / 3=気にならない / 5=悪い")
-            Text("ひび割れ: 1=ほぼない / 3=たまにある / 5=多い")
-            Text("難易度: 1=初心者には難しい / 3=幅広く楽しめる / 5=上級者向け")
+            Text("粗さ: 1=スムーズ / 2=普通 / 3=悪い")
+            Text("ひび割れ: 1=ほぼない / 2=少しある / 3=多い")
+            Text("難易度: 1=初心者向け / 2=幅広く楽しめる / 3=上級者向け")
         }
         .font(.caption2)
         .foregroundColor(.secondary)
@@ -526,8 +441,9 @@ struct SpotDetailView: View {
     }
 
     private func refreshSpotDetail() {
+        refreshTask?.cancel()
         let apiClient = SdzApiClient(environment: appState.environment, idToken: appState.idToken)
-        Task {
+        refreshTask = Task {
             do {
                 let updated = try await apiClient.fetchSpotDetail(
                     id: spot.spotId,
@@ -606,6 +522,7 @@ struct SpotDetailView_Previews: PreviewProvider {
         NavigationView {
             SpotDetailView(spot: SdzSpot.sample(id: "preview", name: "プレビュー"))
                 .environmentObject(SdzAppState())
+                .environmentObject(SdzLocationManager())
         }
     }
 }
