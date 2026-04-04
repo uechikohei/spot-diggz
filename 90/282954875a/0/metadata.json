@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "90282954875a",
+  "session_id": "79df6f53-5cb9-4f95-8414-220c2ae53874",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-04T09:07:30.602845Z",
+  "branch": "hotfix/security-vulnerability-batch-fix",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "web/api/Dockerfile"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "e19b376b1ee7",
+  "token_usage": {
+    "input_tokens": 39,
+    "cache_creation_tokens": 108407,
+    "cache_read_tokens": 1126496,
+    "output_tokens": 12785,
+    "api_call_count": 28
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-04T09:07:30.553679Z",
+    "agent_lines": 0,
+    "human_added": 1,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 1,
+    "agent_percentage": 0
+  }
+}

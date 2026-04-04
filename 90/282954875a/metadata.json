@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "90282954875a",
+  "strategy": "manual-commit",
+  "branch": "hotfix/security-vulnerability-batch-fix",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "web/api/Dockerfile"
+  ],
+  "sessions": [
+    {
+      "metadata": "/90/282954875a/0/metadata.json",
+      "transcript": "/90/282954875a/0/full.jsonl",
+      "context": "/90/282954875a/0/context.md",
+      "content_hash": "/90/282954875a/0/content_hash.txt",
+      "prompt": "/90/282954875a/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 39,
+    "cache_creation_tokens": 108407,
+    "cache_read_tokens": 1126496,
+    "output_tokens": 12785,
+    "api_call_count": 28
+  }
+}
