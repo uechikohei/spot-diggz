@@ -1,0 +1,31 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "ab85b3c0f06f",
+  "session_id": "79df6f53-5cb9-4f95-8414-220c2ae53874",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-04T23:30:41.801331Z",
+  "branch": "feature/213-firebase-sdk-12",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "web/ui/package-lock.json",
+    "web/ui/package.json"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "ed5e5db3942a",
+  "token_usage": {
+    "input_tokens": 100,
+    "cache_creation_tokens": 258429,
+    "cache_read_tokens": 7217372,
+    "output_tokens": 30579,
+    "api_call_count": 87
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-04T23:30:41.653791Z",
+    "agent_lines": 0,
+    "human_added": 4,
+    "human_modified": 243,
+    "human_removed": 0,
+    "total_committed": 4,
+    "agent_percentage": 0
+  }
+}

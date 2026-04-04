@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "ab85b3c0f06f",
+  "strategy": "manual-commit",
+  "branch": "feature/213-firebase-sdk-12",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "web/ui/package-lock.json",
+    "web/ui/package.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/ab/85b3c0f06f/0/metadata.json",
+      "transcript": "/ab/85b3c0f06f/0/full.jsonl",
+      "context": "/ab/85b3c0f06f/0/context.md",
+      "content_hash": "/ab/85b3c0f06f/0/content_hash.txt",
+      "prompt": "/ab/85b3c0f06f/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 100,
+    "cache_creation_tokens": 258429,
+    "cache_read_tokens": 7217372,
+    "output_tokens": 30579,
+    "api_call_count": 87
+  }
+}
