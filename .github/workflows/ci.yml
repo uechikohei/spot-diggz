@@ -49,7 +49,12 @@ jobs:
         
       - name: 🧪 Run unit tests
         run: cargo test --verbose
-        
+
+      - name: 🛡️ Audit Rust dependencies
+        run: |
+          cargo install cargo-audit --locked || true
+          cargo audit
+
       - name: 🏗️ Build release binary
         run: cargo build --release --verbose
 
@@ -98,7 +103,11 @@ jobs:
       - name: 🧪 Run unit tests
         if: steps.lockfile.outputs.exists == 'yes'
         run: npm test -- --coverage --watch=false
-        
+
+      - name: 🛡️ Audit npm dependencies
+        if: steps.lockfile.outputs.exists == 'yes'
+        run: npm audit --audit-level=high
+
       - name: 🏗️ Build production bundle
         if: steps.lockfile.outputs.exists == 'yes'
         run: npm run build

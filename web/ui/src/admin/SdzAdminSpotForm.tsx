@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/useAuth';
 import type { SdzSpot } from '../types/spot';
@@ -8,6 +8,7 @@ import {
   sdzAdminGetUploadUrl,
   sdzAdminUploadImage,
 } from '../lib/SdzAdminApi';
+import { SdzAdminMapPicker } from './SdzAdminMapPicker';
 
 const sdzApiUrl = import.meta.env.VITE_SDZ_API_URL || 'http://localhost:8080';
 
@@ -44,6 +45,11 @@ export function SdzAdminSpotForm() {
   const [sdzTags, setSdzTags] = useState('');
   const [sdzImages, setSdzImages] = useState<string[]>([]);
   const [sdzUploading, setSdzUploading] = useState(false);
+
+  const handleLocationChange = useCallback((lat: string, lng: string) => {
+    setSdzLat(lat);
+    setSdzLng(lng);
+  }, []);
   const [sdzSubmitting, setSdzSubmitting] = useState(false);
   const [sdzError, setSdzError] = useState<string | null>(null);
   const [sdzSuccess, setSdzSuccess] = useState<string | null>(null);
@@ -129,9 +135,11 @@ export function SdzAdminSpotForm() {
         .map((s) => s.trim())
         .filter(Boolean);
 
+    const parsedLat = parseFloat(sdzLat);
+    const parsedLng = parseFloat(sdzLng);
     const location =
-      sdzLat && sdzLng
-        ? { lat: parseFloat(sdzLat), lng: parseFloat(sdzLng) }
+      sdzLat && sdzLng && Number.isFinite(parsedLat) && Number.isFinite(parsedLng)
+        ? { lat: parsedLat, lng: parsedLng }
         : undefined;
 
     try {
@@ -234,30 +242,38 @@ export function SdzAdminSpotForm() {
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            <div>
-              <label htmlFor="sdz-lat">緯度</label>
-              <input
-                id="sdz-lat"
-                type="number"
-                step="any"
-                value={sdzLat}
-                onChange={(e) => setSdzLat(e.target.value)}
-                placeholder="35.6812"
-                style={{ width: '100%' }}
-              />
-            </div>
-            <div>
-              <label htmlFor="sdz-lng">経度</label>
-              <input
-                id="sdz-lng"
-                type="number"
-                step="any"
-                value={sdzLng}
-                onChange={(e) => setSdzLng(e.target.value)}
-                placeholder="139.7671"
-                style={{ width: '100%' }}
-              />
+          <div>
+            <label>位置情報</label>
+            <SdzAdminMapPicker
+              lat={sdzLat}
+              lng={sdzLng}
+              onLocationChange={handleLocationChange}
+            />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
+              <div>
+                <label htmlFor="sdz-lat">緯度</label>
+                <input
+                  id="sdz-lat"
+                  type="number"
+                  step="any"
+                  value={sdzLat}
+                  onChange={(e) => setSdzLat(e.target.value)}
+                  placeholder="35.6812"
+                  style={{ width: '100%' }}
+                />
+              </div>
+              <div>
+                <label htmlFor="sdz-lng">経度</label>
+                <input
+                  id="sdz-lng"
+                  type="number"
+                  step="any"
+                  value={sdzLng}
+                  onChange={(e) => setSdzLng(e.target.value)}
+                  placeholder="139.7671"
+                  style={{ width: '100%' }}
+                />
+              </div>
             </div>
           </div>
 

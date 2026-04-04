@@ -2,7 +2,10 @@ use std::sync::Arc;
 
 use crate::{
     application::use_cases::spot_repository::SdzSpotRepository,
-    domain::models::{sdz_validate_urls, SdzSpot, SdzSpotLocation, SdzSpotType, SdzSpotValidationError},
+    domain::models::{
+        sdz_validate_spot, sdz_validate_urls, SdzSpot, SdzSpotLocation, SdzSpotType,
+        SdzSpotValidationError,
+    },
     presentation::error::SdzApiError,
 };
 
@@ -95,6 +98,13 @@ fn merge_spot(
     if let Some(sections) = input.sections {
         spot.sdz_sections = sections;
     }
+
+    sdz_validate_spot(
+        &spot.name,
+        spot.location.as_ref(),
+        &spot.tags,
+        &spot.images,
+    )?;
 
     let offset = chrono::FixedOffset::east_opt(9 * 3600).expect("valid offset");
     spot.updated_at = chrono::Utc::now().with_timezone(&offset);

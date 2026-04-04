@@ -89,7 +89,7 @@ impl SdzSpot {
         images: Vec<String>,
         sdz_user_id: String,
     ) -> Result<Self, SdzSpotValidationError> {
-        validate_spot(&name, location.as_ref(), &tags, &images)?;
+        sdz_validate_spot(&name, location.as_ref(), &tags, &images)?;
         Ok(Self {
             sdz_spot_id,
             name,
@@ -125,7 +125,7 @@ impl SdzSpot {
         sdz_business_hours: Option<String>,
         sdz_sections: Vec<String>,
     ) -> Result<Self, SdzSpotValidationError> {
-        validate_spot(&name, location.as_ref(), &tags, &images)?;
+        sdz_validate_spot(&name, location.as_ref(), &tags, &images)?;
         sdz_validate_urls(sdz_instagram_url.as_deref(), sdz_official_url.as_deref())?;
         Ok(Self {
             sdz_spot_id,
@@ -148,7 +148,7 @@ impl SdzSpot {
     }
 }
 
-fn validate_spot(
+pub fn sdz_validate_spot(
     name: &str,
     location: Option<&SdzSpotLocation>,
     tags: &[String],
@@ -179,9 +179,9 @@ pub fn sdz_validate_urls(
     official_url: Option<&str>,
 ) -> Result<(), SdzSpotValidationError> {
     if let Some(url) = instagram_url {
-        if !url.is_empty() && !url.starts_with("https://") {
+        if !url.is_empty() && !url.starts_with("https://") && !url.starts_with("http://") {
             return Err(SdzSpotValidationError::InvalidUrl(
-                "instagramUrl must start with https://".into(),
+                "instagramUrl must start with http:// or https://".into(),
             ));
         }
     }
