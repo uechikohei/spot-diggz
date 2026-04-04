@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "815ee55838af",
+  "strategy": "manual-commit",
+  "branch": "hotfix/security-vulnerability-batch-fix",
+  "checkpoints_count": 14,
+  "files_touched": [
+    "web/api/src/application/use_cases/update_spot_use_case.rs",
+    "web/api/src/domain/models.rs",
+    "web/ui/src/admin/SdzAdminSpotForm.tsx"
+  ],
+  "sessions": [
+    {
+      "metadata": "/81/5ee55838af/0/metadata.json",
+      "transcript": "/81/5ee55838af/0/full.jsonl",
+      "context": "/81/5ee55838af/0/context.md",
+      "content_hash": "/81/5ee55838af/0/content_hash.txt",
+      "prompt": "/81/5ee55838af/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 266,
+    "cache_creation_tokens": 602528,
+    "cache_read_tokens": 20669596,
+    "output_tokens": 64843,
+    "api_call_count": 144
+  }
+}
