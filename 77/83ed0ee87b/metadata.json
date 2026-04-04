@@ -1,0 +1,19 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "7783ed0ee87b",
+  "strategy": "manual-commit",
+  "branch": "hotfix/security-vulnerability-batch-fix",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "web/api/src/domain/models.rs"
+  ],
+  "sessions": [
+    {
+      "metadata": "/77/83ed0ee87b/0/metadata.json",
+      "transcript": "/77/83ed0ee87b/0/full.jsonl",
+      "context": "",
+      "content_hash": "/77/83ed0ee87b/0/content_hash.txt",
+      "prompt": ""
+    }
+  ]
+}

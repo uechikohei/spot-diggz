@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "7783ed0ee87b",
+  "session_id": "79df6f53-5cb9-4f95-8414-220c2ae53874",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-04T09:07:41.448072Z",
+  "branch": "hotfix/security-vulnerability-batch-fix",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "web/api/src/domain/models.rs"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "e19b376b1ee7",
+  "initial_attribution": {
+    "calculated_at": "2026-04-04T09:07:41.447921Z",
+    "agent_lines": 82,
+    "human_added": 571,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 653,
+    "agent_percentage": 12.557427258805513
+  }
+}
