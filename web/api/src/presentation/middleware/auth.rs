@@ -125,6 +125,7 @@ async fn verify_firebase_token(token: &str) -> Result<FirebaseClaims, SdzApiErro
     let issuer = format!("https://securetoken.google.com/{}", project_id);
 
     let mut validation = Validation::new(Algorithm::RS256);
+    validation.set_required_spec_claims(&["exp", "iss", "aud"]);
     validation.set_issuer(&[issuer]);
     validation.set_audience(&[project_id]);
     validation.validate_exp = true;
