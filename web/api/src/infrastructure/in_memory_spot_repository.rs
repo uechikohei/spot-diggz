@@ -34,4 +34,13 @@ impl SdzSpotRepository for SdzInMemorySpotRepository {
         list.truncate(limit);
         Ok(list)
     }
+
+    async fn count_image_spots_by_user(&self, user_id: &str) -> Result<usize, SdzApiError> {
+        let store = self.store.read().await;
+        let count = store
+            .values()
+            .filter(|spot| spot.sdz_user_id == user_id && !spot.images.is_empty())
+            .count();
+        Ok(count)
+    }
 }

@@ -11,6 +11,8 @@ use crate::{
 
 pub struct SdzCreateSpotUseCase;
 
+const SDZ_MAX_IMAGE_SPOTS_PER_USER: usize = 10;
+
 impl SdzCreateSpotUseCase {
     pub fn new() -> Self {
         Self
@@ -22,16 +24,46 @@ impl SdzCreateSpotUseCase {
         auth_user: SdzAuthUser,
         input: CreateSpotInput,
     ) -> Result<SdzSpot, SdzApiError> {
+        let CreateSpotInput {
+            name,
+            description,
+            location,
+            tags,
+            images,
+            park_attributes,
+            street_attributes,
+            instagram_tag,
+            instagram_location_url,
+            instagram_profile_url,
+        } = input;
+        let images = images.unwrap_or_default();
+
+        if !images.is_empty() {
+            let count = repo
+                .count_image_spots_by_user(&auth_user.sdz_user_id)
+                .await?;
+            if count >= SDZ_MAX_IMAGE_SPOTS_PER_USER {
+                return Err(SdzApiError::Forbidden(
+                    "image spot limit reached (max 10)".into(),
+                ));
+            }
+        }
+
         let spot = SdzSpot::new_with_id(
             Uuid::new_v4().to_string(),
-            input.name,
-            input.description,
-            input.location.map(|loc| SdzSpotLocation {
+            name,
+            description,
+            location.map(|loc| SdzSpotLocation {
                 lat: loc.lat,
                 lng: loc.lng,
             }),
-            input.tags.unwrap_or_default(),
-            input.images.unwrap_or_default(),
+            tags.unwrap_or_default(),
+            images,
+            park_attributes,
+            street_attributes,
+            instagram_tag,
+            instagram_location_url,
+            instagram_profile_url,
             auth_user.sdz_user_id,
         )
         .map_err(map_validation_error)?;
@@ -49,6 +81,16 @@ pub struct CreateSpotInput {
     pub location: Option<CreateSpotLocation>,
     pub tags: Option<Vec<String>>,
     pub images: Option<Vec<String>>,
+    #[serde(rename = "parkAttributes")]
+    pub park_attributes: Option<crate::domain::models::SdzSpotParkAttributes>,
+    #[serde(rename = "streetAttributes")]
+    pub street_attributes: Option<crate::domain::models::SdzStreetAttributes>,
+    #[serde(rename = "instagramTag")]
+    pub instagram_tag: Option<String>,
+    #[serde(rename = "instagramLocationUrl")]
+    pub instagram_location_url: Option<String>,
+    #[serde(rename = "instagramProfileUrl")]
+    pub instagram_profile_url: Option<String>,
 }
 
 #[derive(Debug, Clone, serde::Deserialize)]
@@ -64,10 +106,7 @@ fn map_validation_error(err: SdzSpotValidationError) -> SdzApiError {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        domain::models::SdzSpotTrustLevel,
-        infrastructure::in_memory_spot_repository::SdzInMemorySpotRepository,
-    };
+    use crate::infrastructure::in_memory_spot_repository::SdzInMemorySpotRepository;
 
     fn build_input() -> CreateSpotInput {
         CreateSpotInput {
@@ -79,6 +118,11 @@ mod tests {
             }),
             tags: Some(vec!["park".into()]),
             images: Some(vec![]),
+            park_attributes: None,
+            street_attributes: None,
+            instagram_tag: None,
+            instagram_location_url: None,
+            instagram_profile_url: None,
         }
     }
 
@@ -88,7 +132,9 @@ mod tests {
         let auth = SdzAuthUser {
             sdz_user_id: "user-1".into(),
         };
-        let input = build_input();
+        let mut input = build_input();
+        input.instagram_location_url =
+            Some("https://www.instagram.com/explore/locations/271647589/".to_string());
         let use_case = SdzCreateSpotUseCase::new();
 
         let result = use_case.execute(repo.clone(), auth, input).await.unwrap();
@@ -97,11 +143,11 @@ mod tests {
         assert_eq!(result.sdz_user_id, "user-1");
         assert!(!result.sdz_spot_id.is_empty());
         assert_eq!(result.tags.len(), 1);
-        assert!(matches!(
-            result.sdz_trust_level,
-            SdzSpotTrustLevel::Unverified
-        ));
-        assert!(result.sdz_trust_sources.is_empty());
+        assert!(result.sdz_approval_status.is_none());
+        assert_eq!(
+            result.sdz_instagram_location_url.as_deref(),
+            Some("https://www.instagram.com/explore/locations/271647589/")
+        );
         assert!(repo
             .find_by_id(&result.sdz_spot_id)
             .await
@@ -125,6 +171,80 @@ mod tests {
         let err = use_case.execute(repo, auth, input).await.unwrap_err();
         match err {
             SdzApiError::BadRequest(msg) => assert!(msg.contains("lat")),
+            _ => panic!("expected bad request"),
+        }
+    }
+
+    #[tokio::test]
+    async fn create_spot_rejects_image_limit() {
+        let repo = Arc::new(SdzInMemorySpotRepository::default());
+        let auth = SdzAuthUser {
+            sdz_user_id: "user-1".into(),
+        };
+        let use_case = SdzCreateSpotUseCase::new();
+
+        for index in 0..SDZ_MAX_IMAGE_SPOTS_PER_USER {
+            let spot = SdzSpot::new_with_id(
+                format!("seed-{}", index),
+                "seed".into(),
+                None,
+                None,
+                vec![],
+                vec!["img".into()],
+                None,
+                None,
+                None,
+                None,
+                None,
+                auth.sdz_user_id.clone(),
+            )
+            .unwrap();
+            repo.create(spot).await.unwrap();
+        }
+
+        let input = CreateSpotInput {
+            name: "limit".into(),
+            description: None,
+            location: None,
+            tags: None,
+            images: Some(vec!["img".into()]),
+            park_attributes: None,
+            street_attributes: None,
+            instagram_tag: None,
+            instagram_location_url: None,
+            instagram_profile_url: None,
+        };
+        let err = use_case.execute(repo, auth, input).await.unwrap_err();
+        match err {
+            SdzApiError::Forbidden(msg) => assert!(msg.contains("image spot limit")),
+            _ => panic!("expected forbidden"),
+        }
+    }
+
+    #[tokio::test]
+    async fn create_spot_rejects_too_many_images() {
+        let repo = Arc::new(SdzInMemorySpotRepository::default());
+        let auth = SdzAuthUser {
+            sdz_user_id: "user-1".into(),
+        };
+        let use_case = SdzCreateSpotUseCase::new();
+
+        let input = CreateSpotInput {
+            name: "too-many".into(),
+            description: None,
+            location: None,
+            tags: None,
+            images: Some(vec!["a".into(), "b".into(), "c".into(), "d".into()]),
+            park_attributes: None,
+            street_attributes: None,
+            instagram_tag: None,
+            instagram_location_url: None,
+            instagram_profile_url: None,
+        };
+
+        let err = use_case.execute(repo, auth, input).await.unwrap_err();
+        match err {
+            SdzApiError::BadRequest(msg) => assert!(msg.contains("images must be <=")),
             _ => panic!("expected bad request"),
         }
     }

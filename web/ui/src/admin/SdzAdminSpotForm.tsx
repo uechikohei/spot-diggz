@@ -188,7 +188,11 @@ export function SdzAdminSpotForm() {
     <div className="sdz-card">
       <h3>{isEdit ? 'スポット編集' : 'スポット新規作成'}</h3>
 
-      {sdzError && <div className="sdz-error" style={{ marginBottom: 12 }}>{sdzError}</div>}
+      {sdzError && (
+        <div className="sdz-error" style={{ marginBottom: 12 }}>
+          {sdzError}
+        </div>
+      )}
       {sdzSuccess && <div style={{ color: '#4caf50', marginBottom: 12 }}>{sdzSuccess}</div>}
 
       <form onSubmit={handleSubmit}>
@@ -244,11 +248,7 @@ export function SdzAdminSpotForm() {
 
           <div>
             <label>位置情報</label>
-            <SdzAdminMapPicker
-              lat={sdzLat}
-              lng={sdzLng}
-              onLocationChange={handleLocationChange}
-            />
+            <SdzAdminMapPicker lat={sdzLat} lng={sdzLng} onLocationChange={handleLocationChange} />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
               <div>
                 <label htmlFor="sdz-lat">緯度</label>

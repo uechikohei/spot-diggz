@@ -2,11 +2,9 @@ use std::sync::Arc;
 
 use crate::{
     application::use_cases::spot_repository::SdzSpotRepository,
-    domain::models::{
-        sdz_validate_spot, sdz_validate_urls, SdzSpot, SdzSpotLocation, SdzSpotType,
-        SdzSpotValidationError,
-    },
+    domain::models::{SdzSpot, SdzSpotApprovalStatus, SdzSpotLocation, SdzSpotValidationError},
     presentation::error::SdzApiError,
+    presentation::middleware::auth::SdzAuthUser,
 };
 
 pub struct SdzUpdateSpotUseCase;
@@ -19,6 +17,7 @@ impl SdzUpdateSpotUseCase {
     pub async fn execute(
         &self,
         repo: Arc<dyn SdzSpotRepository>,
+        auth_user: SdzAuthUser,
         spot_id: String,
         input: UpdateSpotInput,
     ) -> Result<SdzSpot, SdzApiError> {
@@ -27,28 +26,93 @@ impl SdzUpdateSpotUseCase {
             .await?
             .ok_or(SdzApiError::NotFound)?;
 
-        let updated = merge_spot(existing, input).map_err(map_validation_error)?;
-        repo.update(updated.clone()).await?;
+        if existing.sdz_user_id != auth_user.sdz_user_id {
+            return Err(SdzApiError::Forbidden("spot owner mismatch".to_string()));
+        }
+
+        let location = input
+            .location
+            .map(|loc| SdzSpotLocation {
+                lat: loc.lat,
+                lng: loc.lng,
+            })
+            .or(existing.location.clone());
+        let tags = input.tags.unwrap_or_else(|| existing.tags.clone());
+        let images = input.images.unwrap_or_else(|| existing.images.clone());
+        let description = if input.description.is_some() {
+            input.description
+        } else {
+            existing.description.clone()
+        };
+        let park_attributes = if input.park_attributes.is_some() {
+            input.park_attributes
+        } else {
+            existing.sdz_park_attributes.clone()
+        };
+        let street_attributes = if input.street_attributes.is_some() {
+            input.street_attributes
+        } else {
+            existing.sdz_street_attributes.clone()
+        };
+        let instagram_tag = if input.instagram_tag.is_some() {
+            input.instagram_tag
+        } else {
+            existing.sdz_instagram_tag.clone()
+        };
+        let instagram_location_url = if input.instagram_location_url.is_some() {
+            input.instagram_location_url
+        } else {
+            existing.sdz_instagram_location_url.clone()
+        };
+        let instagram_profile_url = if input.instagram_profile_url.is_some() {
+            input.instagram_profile_url
+        } else {
+            existing.sdz_instagram_profile_url.clone()
+        };
+        let approval_status =
+            resolve_approval_status(existing.sdz_approval_status.clone(), input.approval_status)?;
+
+        let updated = existing
+            .update(
+                input.name,
+                description,
+                location,
+                tags,
+                images,
+                approval_status,
+                park_attributes,
+                street_attributes,
+                instagram_tag,
+                instagram_location_url,
+                instagram_profile_url,
+            )
+            .map_err(map_validation_error)?;
+
+        repo.create(updated.clone()).await?;
+
         Ok(updated)
     }
 }
 
 #[derive(Debug, Clone, serde::Deserialize)]
 pub struct UpdateSpotInput {
-    pub name: Option<String>,
+    pub name: String,
     pub description: Option<String>,
     pub location: Option<UpdateSpotLocation>,
     pub tags: Option<Vec<String>>,
     pub images: Option<Vec<String>>,
-    #[serde(rename = "spotType")]
-    pub spot_type: Option<String>,
-    #[serde(rename = "instagramUrl")]
-    pub instagram_url: Option<String>,
-    #[serde(rename = "officialUrl")]
-    pub official_url: Option<String>,
-    #[serde(rename = "businessHours")]
-    pub business_hours: Option<String>,
-    pub sections: Option<Vec<String>>,
+    #[serde(rename = "approvalStatus")]
+    pub approval_status: Option<SdzSpotApprovalStatus>,
+    #[serde(rename = "parkAttributes")]
+    pub park_attributes: Option<crate::domain::models::SdzSpotParkAttributes>,
+    #[serde(rename = "streetAttributes")]
+    pub street_attributes: Option<crate::domain::models::SdzStreetAttributes>,
+    #[serde(rename = "instagramTag")]
+    pub instagram_tag: Option<String>,
+    #[serde(rename = "instagramLocationUrl")]
+    pub instagram_location_url: Option<String>,
+    #[serde(rename = "instagramProfileUrl")]
+    pub instagram_profile_url: Option<String>,
 }
 
 #[derive(Debug, Clone, serde::Deserialize)]
@@ -57,141 +121,262 @@ pub struct UpdateSpotLocation {
     pub lng: f64,
 }
 
-fn merge_spot(
-    mut spot: SdzSpot,
-    input: UpdateSpotInput,
-) -> Result<SdzSpot, SdzSpotValidationError> {
-    if let Some(name) = input.name {
-        spot.name = name;
-    }
-    if let Some(desc) = input.description {
-        spot.description = Some(desc);
-    }
-    if let Some(loc) = input.location {
-        spot.location = Some(SdzSpotLocation {
-            lat: loc.lat,
-            lng: loc.lng,
-        });
-    }
-    if let Some(tags) = input.tags {
-        spot.tags = tags;
-    }
-    if let Some(images) = input.images {
-        spot.images = images;
-    }
-    if let Some(spot_type) = input.spot_type {
-        spot.sdz_spot_type = parse_spot_type_input(&spot_type);
-    }
-    if let Some(url) = input.instagram_url {
-        spot.sdz_instagram_url = if url.is_empty() { None } else { Some(url) };
-    }
-    if let Some(url) = input.official_url {
-        spot.sdz_official_url = if url.is_empty() { None } else { Some(url) };
-    }
-    sdz_validate_urls(
-        spot.sdz_instagram_url.as_deref(),
-        spot.sdz_official_url.as_deref(),
-    )?;
-    if let Some(hours) = input.business_hours {
-        spot.sdz_business_hours = if hours.is_empty() { None } else { Some(hours) };
-    }
-    if let Some(sections) = input.sections {
-        spot.sdz_sections = sections;
-    }
-
-    sdz_validate_spot(
-        &spot.name,
-        spot.location.as_ref(),
-        &spot.tags,
-        &spot.images,
-    )?;
-
-    let offset = chrono::FixedOffset::east_opt(9 * 3600).expect("valid offset");
-    spot.updated_at = chrono::Utc::now().with_timezone(&offset);
-
-    Ok(spot)
-}
-
-fn parse_spot_type_input(value: &str) -> Option<SdzSpotType> {
-    match value {
-        "park" => Some(SdzSpotType::Park),
-        "street" => Some(SdzSpotType::Street),
-        _ => None,
-    }
-}
-
 fn map_validation_error(err: SdzSpotValidationError) -> SdzApiError {
     SdzApiError::BadRequest(err.to_string())
+}
+
+fn resolve_approval_status(
+    current: Option<SdzSpotApprovalStatus>,
+    requested: Option<SdzSpotApprovalStatus>,
+) -> Result<Option<SdzSpotApprovalStatus>, SdzApiError> {
+    match requested {
+        None => Ok(current),
+        Some(SdzSpotApprovalStatus::Pending) => match current {
+            None | Some(SdzSpotApprovalStatus::Rejected) => {
+                Ok(Some(SdzSpotApprovalStatus::Pending))
+            }
+            Some(SdzSpotApprovalStatus::Pending) | Some(SdzSpotApprovalStatus::Approved) => Err(
+                SdzApiError::Forbidden("approval status update not allowed".to_string()),
+            ),
+        },
+        Some(_) => Err(SdzApiError::Forbidden(
+            "approval status update not allowed".to_string(),
+        )),
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::infrastructure::in_memory_spot_repository::SdzInMemorySpotRepository;
+    use crate::{
+        domain::models::{SdzSpot, SdzSpotApprovalStatus, SdzStreetAttributes},
+        infrastructure::in_memory_spot_repository::SdzInMemorySpotRepository,
+    };
 
-    async fn seed_spot(repo: &Arc<dyn SdzSpotRepository>) -> SdzSpot {
-        let spot = SdzSpot::new_with_id(
-            "spot-1".into(),
-            "test park".into(),
-            Some("desc".into()),
-            None,
-            vec!["park".into()],
+    fn build_spot(user_id: &str) -> SdzSpot {
+        SdzSpot::new_with_id(
+            "spot-1".to_string(),
+            "origin".to_string(),
+            Some("desc".to_string()),
+            Some(SdzSpotLocation {
+                lat: 35.0,
+                lng: 139.0,
+            }),
+            vec!["park".to_string()],
             vec![],
-            "user-1".into(),
+            None,
+            None,
+            None,
+            None,
+            None,
+            user_id.to_string(),
         )
-        .unwrap();
-        repo.create(spot).await.unwrap()
+        .expect("valid spot")
+    }
+
+    fn build_input() -> UpdateSpotInput {
+        UpdateSpotInput {
+            name: "updated".to_string(),
+            description: Some("new desc".to_string()),
+            location: Some(UpdateSpotLocation {
+                lat: 35.1,
+                lng: 139.1,
+            }),
+            tags: Some(vec!["street".to_string()]),
+            images: Some(vec![]),
+            approval_status: None,
+            park_attributes: None,
+            street_attributes: None,
+            instagram_tag: None,
+            instagram_location_url: None,
+            instagram_profile_url: None,
+        }
+    }
+
+    fn build_street_attributes() -> SdzStreetAttributes {
+        SdzStreetAttributes {
+            surface_material: Some("asphalt".to_string()),
+            surface_condition: None,
+            sections: None,
+            difficulty: Some("beginner".to_string()),
+            notes: None,
+        }
     }
 
     #[tokio::test]
-    async fn update_spot_name() {
-        let repo: Arc<dyn SdzSpotRepository> = Arc::new(SdzInMemorySpotRepository::default());
-        seed_spot(&repo).await;
+    async fn update_spot_success() {
+        let repo = Arc::new(SdzInMemorySpotRepository::default());
+        let spot = build_spot("user-1");
+        repo.create(spot.clone()).await.unwrap();
+        let auth = SdzAuthUser {
+            sdz_user_id: "user-1".into(),
+        };
+        let mut input = build_input();
+        input.instagram_location_url =
+            Some("https://www.instagram.com/explore/locations/271647589/".to_string());
 
         let use_case = SdzUpdateSpotUseCase::new();
-        let input = UpdateSpotInput {
-            name: Some("updated name".into()),
-            description: None,
-            location: None,
-            tags: None,
-            images: None,
-            spot_type: None,
-            instagram_url: None,
-            official_url: None,
-            business_hours: None,
-            sections: None,
-        };
-
         let result = use_case
-            .execute(repo.clone(), "spot-1".into(), input)
+            .execute(repo.clone(), auth, spot.sdz_spot_id.clone(), input)
             .await
             .unwrap();
-        assert_eq!(result.name, "updated name");
-        assert_eq!(result.description, Some("desc".into()));
+
+        assert_eq!(result.sdz_spot_id, spot.sdz_spot_id);
+        assert_eq!(result.name, "updated");
+        assert_eq!(result.sdz_user_id, "user-1");
+        assert!(result.sdz_approval_status.is_none());
+        assert_eq!(
+            result.sdz_instagram_location_url.as_deref(),
+            Some("https://www.instagram.com/explore/locations/271647589/")
+        );
+    }
+
+    #[tokio::test]
+    async fn update_spot_can_request_approval_when_empty() {
+        let repo = Arc::new(SdzInMemorySpotRepository::default());
+        let spot = build_spot("user-1");
+        repo.create(spot.clone()).await.unwrap();
+        let auth = SdzAuthUser {
+            sdz_user_id: "user-1".into(),
+        };
+
+        let mut input = build_input();
+        input.approval_status = Some(SdzSpotApprovalStatus::Pending);
+
+        let use_case = SdzUpdateSpotUseCase::new();
+        let result = use_case
+            .execute(repo, auth, spot.sdz_spot_id.clone(), input)
+            .await
+            .unwrap();
+
+        assert!(matches!(
+            result.sdz_approval_status,
+            Some(SdzSpotApprovalStatus::Pending)
+        ));
+    }
+
+    #[tokio::test]
+    async fn update_spot_rejects_too_many_images() {
+        let repo = Arc::new(SdzInMemorySpotRepository::default());
+        let spot = build_spot("user-1");
+        repo.create(spot.clone()).await.unwrap();
+        let auth = SdzAuthUser {
+            sdz_user_id: "user-1".into(),
+        };
+
+        let mut input = build_input();
+        input.images = Some(vec!["a".into(), "b".into(), "c".into(), "d".into()]);
+
+        let use_case = SdzUpdateSpotUseCase::new();
+        let err = use_case
+            .execute(repo, auth, spot.sdz_spot_id.clone(), input)
+            .await
+            .unwrap_err();
+
+        match err {
+            SdzApiError::BadRequest(msg) => assert!(msg.contains("images must be <=")),
+            _ => panic!("expected bad request"),
+        }
+    }
+
+    #[tokio::test]
+    async fn update_spot_persists_street_attributes() {
+        let repo = Arc::new(SdzInMemorySpotRepository::default());
+        let spot = build_spot("user-1");
+        repo.create(spot.clone()).await.unwrap();
+        let auth = SdzAuthUser {
+            sdz_user_id: "user-1".into(),
+        };
+
+        let mut input = build_input();
+        input.street_attributes = Some(build_street_attributes());
+
+        let use_case = SdzUpdateSpotUseCase::new();
+        let result = use_case
+            .execute(repo.clone(), auth, spot.sdz_spot_id.clone(), input)
+            .await
+            .unwrap();
+
+        let attrs = result
+            .sdz_street_attributes
+            .expect("street attributes should be set");
+        assert_eq!(attrs.surface_material.as_deref(), Some("asphalt"));
+
+        let persisted = repo
+            .find_by_id(&spot.sdz_spot_id)
+            .await
+            .unwrap()
+            .expect("spot should exist");
+        assert_eq!(
+            persisted
+                .sdz_street_attributes
+                .and_then(|data| data.surface_material),
+            Some("asphalt".to_string())
+        );
+    }
+
+    #[tokio::test]
+    async fn update_spot_rejects_illegal_approval_status() {
+        let repo = Arc::new(SdzInMemorySpotRepository::default());
+        let mut spot = build_spot("user-1");
+        spot.sdz_approval_status = Some(SdzSpotApprovalStatus::Approved);
+        repo.create(spot.clone()).await.unwrap();
+        let auth = SdzAuthUser {
+            sdz_user_id: "user-1".into(),
+        };
+
+        let mut input = build_input();
+        input.approval_status = Some(SdzSpotApprovalStatus::Pending);
+
+        let use_case = SdzUpdateSpotUseCase::new();
+        let err = use_case
+            .execute(repo, auth, spot.sdz_spot_id.clone(), input)
+            .await
+            .unwrap_err();
+
+        match err {
+            SdzApiError::Forbidden(_) => {}
+            _ => panic!("expected forbidden"),
+        }
+    }
+
+    #[tokio::test]
+    async fn update_spot_forbidden_when_owner_mismatch() {
+        let repo = Arc::new(SdzInMemorySpotRepository::default());
+        let spot = build_spot("user-1");
+        repo.create(spot.clone()).await.unwrap();
+        let auth = SdzAuthUser {
+            sdz_user_id: "user-2".into(),
+        };
+
+        let use_case = SdzUpdateSpotUseCase::new();
+        let err = use_case
+            .execute(repo, auth, spot.sdz_spot_id, build_input())
+            .await
+            .unwrap_err();
+
+        match err {
+            SdzApiError::Forbidden(_) => {}
+            _ => panic!("expected forbidden"),
+        }
     }
 
     #[tokio::test]
     async fn update_spot_not_found() {
-        let repo: Arc<dyn SdzSpotRepository> = Arc::new(SdzInMemorySpotRepository::default());
-
-        let use_case = SdzUpdateSpotUseCase::new();
-        let input = UpdateSpotInput {
-            name: Some("name".into()),
-            description: None,
-            location: None,
-            tags: None,
-            images: None,
-            spot_type: None,
-            instagram_url: None,
-            official_url: None,
-            business_hours: None,
-            sections: None,
+        let repo = Arc::new(SdzInMemorySpotRepository::default());
+        let auth = SdzAuthUser {
+            sdz_user_id: "user-1".into(),
         };
 
+        let use_case = SdzUpdateSpotUseCase::new();
         let err = use_case
-            .execute(repo, "nonexistent".into(), input)
+            .execute(repo, auth, "missing".into(), build_input())
             .await
             .unwrap_err();
-        assert!(matches!(err, SdzApiError::NotFound));
+
+        match err {
+            SdzApiError::NotFound => {}
+            _ => panic!("expected not found"),
+        }
     }
 }
