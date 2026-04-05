@@ -248,6 +248,7 @@ jobs:
       SDZ_VITE_FIREBASE_API_KEY: ${{ secrets.SDZ_DEV_FIREBASE_API_KEY }}
       SDZ_VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.SDZ_DEV_FIREBASE_AUTH_DOMAIN }}
       SDZ_VITE_FIREBASE_PROJECT_ID: ${{ secrets.SDZ_DEV_FIREBASE_PROJECT_ID }}
+      SDZ_VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.SDZ_DEV_GOOGLE_MAPS_API_KEY }}
       SDZ_WIF_PROVIDER: projects/1053202159855/locations/global/workloadIdentityPools/sdz-dev-wifpoolgh/providers/sdz-dev-wifprovgh
       SDZ_WIF_SERVICE_ACCOUNT: sdz-dev-sadeploy@sdz-dev.iam.gserviceaccount.com
       SDZ_DEPLOY_SA_RESOURCE: projects/sdz-dev/serviceAccounts/sdz-dev-sadeploy@sdz-dev.iam.gserviceaccount.com
@@ -289,7 +290,7 @@ jobs:
             --config web/resources/cloudbuild/cloudbuild_ui.yaml \
             --gcs-source-staging-dir=gs://${SDZ_GCP_PROJECT_ID}_cloudbuild/source \
             --verbosity=debug \
-            --substitutions _UI_BUCKET="${SDZ_UI_BUCKET}",_DEPLOY_SA_RESOURCE="${SDZ_DEPLOY_SA_RESOURCE}",_VITE_SDZ_API_URL="${SDZ_VITE_SDZ_API_URL}",_VITE_FIREBASE_API_KEY="${SDZ_VITE_FIREBASE_API_KEY}",_VITE_FIREBASE_AUTH_DOMAIN="${SDZ_VITE_FIREBASE_AUTH_DOMAIN}",_VITE_FIREBASE_PROJECT_ID="${SDZ_VITE_FIREBASE_PROJECT_ID}"
+            --substitutions _UI_BUCKET="${SDZ_UI_BUCKET}",_DEPLOY_SA_RESOURCE="${SDZ_DEPLOY_SA_RESOURCE}",_VITE_SDZ_API_URL="${SDZ_VITE_SDZ_API_URL}",_VITE_FIREBASE_API_KEY="${SDZ_VITE_FIREBASE_API_KEY}",_VITE_FIREBASE_AUTH_DOMAIN="${SDZ_VITE_FIREBASE_AUTH_DOMAIN}",_VITE_FIREBASE_PROJECT_ID="${SDZ_VITE_FIREBASE_PROJECT_ID}",_VITE_GOOGLE_MAPS_API_KEY="${SDZ_VITE_GOOGLE_MAPS_API_KEY}"
 
   # ステージング環境デプロイ（手動承認）
   deploy-staging:
