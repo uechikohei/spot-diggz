@@ -1,11 +1,15 @@
 const sdzApiUrl = import.meta.env.VITE_SDZ_API_URL || 'http://localhost:8080';
 
+import type { SdzSpotParkAttributes, SdzStreetAttributes } from '../types/spot';
+
 export interface SdzSpotPayload {
   name: string;
   description?: string;
   location?: { lat: number; lng: number };
   tags: string[];
   images: string[];
+  parkAttributes?: SdzSpotParkAttributes;
+  streetAttributes?: SdzStreetAttributes;
   instagramTag?: string;
   instagramLocationUrl?: string;
   instagramProfileUrl?: string;
@@ -13,8 +17,6 @@ export interface SdzSpotPayload {
   googleMapsUrl?: string;
   address?: string;
   phoneNumber?: string;
-  officialUrl?: string;
-  businessHours?: string;
   googleRating?: number;
   googleRatingCount?: number;
   googleTypes?: string[];

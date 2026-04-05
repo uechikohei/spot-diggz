@@ -3,15 +3,13 @@ export interface SdzSpotLocation {
   lng: number;
 }
 
-export type SdzSpotType = 'park' | 'street';
-
 export interface SdzSpotTimeRange {
   startMinutes: number;
   endMinutes: number;
 }
 
 export interface SdzSpotBusinessHours {
-  scheduleType?: 'Regular' | 'WeekdayOnly' | 'WeekendOnly' | 'Irregular' | 'SchoolOnly' | 'Manual';
+  scheduleType?: string;
   is24Hours: boolean;
   sameAsWeekday: boolean;
   weekday?: SdzSpotTimeRange;
@@ -47,6 +45,21 @@ export interface SdzStreetAttributes {
   notes?: string;
 }
 
+export interface SdzPlaceResult {
+  placeId: string;
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+  googleMapsUrl?: string;
+  phoneNumber?: string;
+  website?: string;
+  rating?: number;
+  ratingCount?: number;
+  types?: string[];
+  businessHours?: string[];
+}
+
 export interface SdzSpot {
   spotId: string;
   name: string;
@@ -70,20 +83,4 @@ export interface SdzSpot {
   userId: string;
   createdAt: string;
   updatedAt: string;
-}
-
-// Google Places Autocomplete から取得した情報
-export interface SdzPlaceResult {
-  placeId: string;
-  name: string;
-  address: string;
-  lat: number;
-  lng: number;
-  googleMapsUrl?: string;
-  phoneNumber?: string;
-  website?: string;
-  rating?: number;
-  ratingCount?: number;
-  types?: string[];
-  businessHours?: string[];
 }

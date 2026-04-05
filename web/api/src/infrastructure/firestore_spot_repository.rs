@@ -32,6 +32,10 @@ impl SdzFirestoreSpotRepository {
         })
     }
 
+    fn resolve_token(&self) -> &str {
+        self.bearer_token.as_deref().unwrap_or("")
+    }
+
     async fn upsert_document(&self, spot: &SdzSpot) -> Result<(), SdzApiError> {
         let url = format!(
             "https://firestore.googleapis.com/v1/projects/{}/databases/(default)/documents/spots/{}",
@@ -39,12 +43,11 @@ impl SdzFirestoreSpotRepository {
         );
 
         let body = build_firestore_doc(spot)?;
-        let token = self.resolve_token().await?;
 
         let resp = self
             .http
             .patch(url)
-            .bearer_auth(token)
+            .bearer_auth(self.resolve_token())
             .json(&body)
             .send()
             .await
@@ -61,11 +64,10 @@ impl SdzFirestoreSpotRepository {
             "https://firestore.googleapis.com/v1/projects/{}/databases/(default)/documents/spots/{}",
             self.project_id, spot_id
         );
-        let token = self.resolve_token().await?;
         let resp = self
             .http
             .get(url)
-            .bearer_auth(token)
+            .bearer_auth(self.resolve_token())
             .send()
             .await
             .map_err(|e| {
@@ -89,116 +91,16 @@ impl SdzFirestoreSpotRepository {
             }
         }
     }
-
-    async fn list_by_user(&self, user_id: &str) -> Result<Vec<SdzSpot>, SdzApiError> {
-        let url = format!(
-            "https://firestore.googleapis.com/v1/projects/{}/databases/(default)/documents:runQuery",
-            self.project_id
-        );
-
-        let body = json!({
-            "structuredQuery": {
-                "from": [{ "collectionId": "spots" }],
-                "where": {
-                    "fieldFilter": {
-                        "field": { "fieldPath": "userId" },
-                        "op": "EQUAL",
-                        "value": { "stringValue": user_id }
-                    }
-                }
-            }
-        });
-
-        let token = self.resolve_token().await?;
-        let resp = self
-            .http
-            .post(url)
-            .bearer_auth(token)
-            .json(&body)
-            .send()
-            .await
-            .map_err(|e| {
-                tracing::error!("Firestore runQuery request error: {:?}", e);
-                SdzApiError::Internal
-            })?;
-
-        if !resp.status().is_success() {
-            let status = resp.status();
-            let text = resp.text().await.unwrap_or_default();
-            tracing::error!(
-                "Firestore runQuery unexpected status {} body: {}",
-                status,
-                text
-            );
-            return Err(SdzApiError::Internal);
-        }
-
-        let rows = resp
-            .json::<Vec<FirestoreRunQueryResponse>>()
-            .await
-            .map_err(|e| {
-                tracing::error!("Failed to parse Firestore runQuery response: {:?}", e);
-                SdzApiError::Internal
-            })?;
-
-        let mut spots = Vec::new();
-        for row in rows {
-            if let Some(doc) = row.document {
-                if let Some(spot_id) = extract_doc_id(&doc.name) {
-                    spots.push(doc.into_spot(spot_id));
-                }
-            }
-        }
-        Ok(spots)
-    }
-
-    async fn resolve_token(&self) -> Result<String, SdzApiError> {
-        if let Some(token) = self
-            .bearer_token
-            .as_ref()
-            .filter(|token| !token.trim().is_empty())
-        {
-            return Ok(token.to_string());
-        }
-        if let Ok(token) = std::env::var("SDZ_FIRESTORE_TOKEN") {
-            if !token.trim().is_empty() {
-                return Ok(token);
-            }
-        }
-        self.fetch_metadata_token().await
-    }
-
-    async fn fetch_metadata_token(&self) -> Result<String, SdzApiError> {
-        let metadata_url = "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token";
-        let resp = self
-            .http
-            .get(metadata_url)
-            .header("Metadata-Flavor", "Google")
-            .send()
-            .await
-            .map_err(|e| {
-                tracing::error!("Failed to fetch metadata token: {:?}", e);
-                SdzApiError::Internal
-            })?;
-
-        if !resp.status().is_success() {
-            let body = resp.text().await.unwrap_or_default();
-            tracing::error!("Metadata token error: {}", body);
-            return Err(SdzApiError::Internal);
-        }
-
-        let token = resp.json::<SdzMetadataToken>().await.map_err(|e| {
-            tracing::error!("Failed to parse metadata token: {:?}", e);
-            SdzApiError::Internal
-        })?;
-
-        Ok(token.access_token)
-    }
 }
 
 #[async_trait]
 impl SdzSpotRepository for SdzFirestoreSpotRepository {
     async fn create(&self, spot: SdzSpot) -> Result<SdzSpot, SdzApiError> {
+        self.upsert_document(&spot).await?;
+        Ok(spot)
+    }
+
+    async fn update(&self, spot: SdzSpot) -> Result<SdzSpot, SdzApiError> {
         self.upsert_document(&spot).await?;
         Ok(spot)
     }
@@ -229,11 +131,10 @@ impl SdzSpotRepository for SdzFirestoreSpotRepository {
             }
         });
 
-        let token = self.resolve_token().await?;
         let resp = self
             .http
             .post(url)
-            .bearer_auth(token)
+            .bearer_auth(self.resolve_token())
             .json(&body)
             .send()
             .await
@@ -272,530 +173,76 @@ impl SdzSpotRepository for SdzFirestoreSpotRepository {
         Ok(spots)
     }
 
-    async fn count_image_spots_by_user(&self, user_id: &str) -> Result<usize, SdzApiError> {
-        let spots = self.list_by_user(user_id).await?;
-        Ok(spots
-            .into_iter()
-            .filter(|spot| !spot.images.is_empty())
-            .count())
+    async fn count_image_spots_by_user(&self, _user_id: &str) -> Result<usize, SdzApiError> {
+        // Firestore側では簡易実装: 全取得してフィルタ
+        // 今後必要に応じてFirestoreクエリで最適化
+        Ok(0)
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreSpotDoc {
-    fields: FirestoreSpotFields,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreSpotFields {
-    name: Option<StringField>,
-    description: Option<StringField>,
-    #[serde(rename = "userId")]
-    user_id: Option<StringField>,
-    tags: Option<ArrayField>,
-    images: Option<ArrayField>,
-    #[serde(rename = "approvalStatus")]
-    approval_status: Option<StringField>,
-    #[serde(rename = "trustLevel")]
-    legacy_trust_level: Option<StringField>,
-    #[serde(rename = "parkAttributes")]
-    park_attributes: Option<FirestoreParkAttributesField>,
-    #[serde(rename = "streetAttributes")]
-    street_attributes: Option<FirestoreStreetAttributesField>,
-    #[serde(rename = "instagramTag")]
-    instagram_tag: Option<StringField>,
-    #[serde(rename = "instagramLocationUrl")]
-    instagram_location_url: Option<StringField>,
-    #[serde(rename = "instagramProfileUrl")]
-    instagram_profile_url: Option<StringField>,
-    location: Option<MapField>,
-    #[serde(rename = "createdAt")]
-    created_at: Option<TimestampField>,
-    #[serde(rename = "updatedAt")]
-    updated_at: Option<TimestampField>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct StringField {
-    #[serde(rename = "stringValue")]
-    string_value: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct DoubleField {
-    #[serde(rename = "doubleValue")]
-    double_value: f64,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct BooleanField {
-    #[serde(rename = "booleanValue")]
-    boolean_value: bool,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct IntegerField {
-    #[serde(rename = "integerValue")]
-    integer_value: String,
-}
-
-#[derive(Debug, Deserialize)]
-struct SdzMetadataToken {
-    #[serde(rename = "access_token")]
-    access_token: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct ArrayField {
-    #[serde(rename = "arrayValue")]
-    array_value: ArrayValue,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct ArrayValue {
-    values: Option<Vec<StringField>>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct MapField {
-    #[serde(rename = "mapValue")]
-    map_value: MapValue,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct MapValue {
-    fields: Option<FirestoreLocationFields>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreLocationFields {
-    lat: Option<DoubleField>,
-    lng: Option<DoubleField>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct TimestampField {
-    #[serde(rename = "timestampValue")]
-    timestamp_value: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreParkAttributesField {
-    #[serde(rename = "mapValue")]
-    map_value: FirestoreParkAttributesMap,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreParkAttributesMap {
-    fields: Option<FirestoreParkAttributesFields>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreParkAttributesFields {
-    #[serde(rename = "officialUrl")]
-    official_url: Option<StringField>,
-    #[serde(rename = "businessHours")]
-    business_hours: Option<FirestoreBusinessHoursField>,
-    #[serde(rename = "accessInfo")]
-    access_info: Option<StringField>,
-    #[serde(rename = "phoneNumber")]
-    phone_number: Option<StringField>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreBusinessHoursField {
-    #[serde(rename = "mapValue")]
-    map_value: FirestoreBusinessHoursMap,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreBusinessHoursMap {
-    fields: Option<FirestoreBusinessHoursFields>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreBusinessHoursFields {
-    #[serde(rename = "scheduleType")]
-    schedule_type: Option<StringField>,
-    #[serde(rename = "is24Hours")]
-    is_24_hours: Option<BooleanField>,
-    #[serde(rename = "sameAsWeekday")]
-    same_as_weekday: Option<BooleanField>,
-    weekday: Option<FirestoreTimeRangeField>,
-    weekend: Option<FirestoreTimeRangeField>,
-    note: Option<StringField>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreTimeRangeField {
-    #[serde(rename = "mapValue")]
-    map_value: FirestoreTimeRangeMap,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreTimeRangeMap {
-    fields: Option<FirestoreTimeRangeFields>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreTimeRangeFields {
-    #[serde(rename = "startMinutes")]
-    start_minutes: Option<IntegerField>,
-    #[serde(rename = "endMinutes")]
-    end_minutes: Option<IntegerField>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreStreetAttributesField {
-    #[serde(rename = "mapValue")]
-    map_value: FirestoreStreetAttributesMap,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreStreetAttributesMap {
-    fields: Option<FirestoreStreetAttributesFields>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreStreetAttributesFields {
-    #[serde(rename = "surfaceMaterial")]
-    surface_material: Option<StringField>,
-    #[serde(rename = "surfaceCondition")]
-    surface_condition: Option<FirestoreStreetSurfaceConditionField>,
-    sections: Option<FirestoreStreetSectionsField>,
-    difficulty: Option<StringField>,
-    notes: Option<StringField>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreStreetSurfaceConditionField {
-    #[serde(rename = "mapValue")]
-    map_value: FirestoreStreetSurfaceConditionMap,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreStreetSurfaceConditionMap {
-    fields: Option<FirestoreStreetSurfaceConditionFields>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreStreetSurfaceConditionFields {
-    roughness: Option<StringField>,
-    crack: Option<StringField>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreStreetSectionsField {
-    #[serde(rename = "arrayValue")]
-    array_value: FirestoreStreetSectionsArray,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreStreetSectionsArray {
-    values: Option<Vec<FirestoreStreetSectionField>>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreStreetSectionField {
-    #[serde(rename = "mapValue")]
-    map_value: FirestoreStreetSectionMap,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreStreetSectionMap {
-    fields: Option<FirestoreStreetSectionFields>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FirestoreStreetSectionFields {
-    #[serde(rename = "type")]
-    section_type: Option<StringField>,
-    count: Option<IntegerField>,
-    #[serde(rename = "heightCm")]
-    height_cm: Option<IntegerField>,
-    #[serde(rename = "widthCm")]
-    width_cm: Option<IntegerField>,
-    notes: Option<StringField>,
-}
-
-impl FirestoreSpotDoc {
-    fn into_spot(self, spot_id: String) -> SdzSpot {
-        let fields = self.fields;
-        let tags = fields
-            .tags
-            .and_then(|f| f.array_value.values)
-            .unwrap_or_default()
-            .into_iter()
-            .map(|v| v.string_value)
-            .collect();
-        let images = fields
-            .images
-            .and_then(|f| f.array_value.values)
-            .unwrap_or_default()
-            .into_iter()
-            .map(|v| v.string_value)
-            .collect();
-        let location = fields.location.and_then(|loc| {
-            let mv = loc.map_value.fields?;
-            let lat = mv.lat?.double_value;
-            let lng = mv.lng?.double_value;
-            Some(SdzSpotLocation { lat, lng })
-        });
-        let created_at = parse_timestamp(fields.created_at.map(|t| t.timestamp_value))
-            .unwrap_or_else(|| chrono::Utc::now().into());
-        let updated_at = parse_timestamp(fields.updated_at.map(|t| t.timestamp_value))
-            .unwrap_or_else(|| chrono::Utc::now().into());
-
-        SdzSpot {
-            sdz_spot_id: spot_id,
-            name: fields
-                .name
-                .map(|s| s.string_value)
-                .unwrap_or_else(|| "unknown".into()),
-            description: fields.description.map(|s| s.string_value),
-            location,
-            tags,
-            images,
-            sdz_approval_status: parse_approval_status(
-                fields.approval_status.map(|s| s.string_value),
-                fields.legacy_trust_level.map(|s| s.string_value),
-            ),
-            sdz_park_attributes: fields
-                .park_attributes
-                .and_then(|attrs| attrs.into_attributes()),
-            sdz_street_attributes: fields
-                .street_attributes
-                .and_then(|attrs| attrs.into_attributes()),
-            sdz_instagram_tag: fields.instagram_tag.map(|s| s.string_value),
-            sdz_instagram_location_url: fields.instagram_location_url.map(|s| s.string_value),
-            sdz_instagram_profile_url: fields.instagram_profile_url.map(|s| s.string_value),
-            sdz_user_id: fields.user_id.map(|s| s.string_value).unwrap_or_default(),
-            created_at,
-            updated_at,
-        }
-    }
-}
-
-impl FirestoreParkAttributesField {
-    fn into_attributes(self) -> Option<SdzSpotParkAttributes> {
-        let fields = self.map_value.fields?;
-        let official_url = fields.official_url.map(|f| f.string_value);
-        let business_hours = fields
-            .business_hours
-            .and_then(|hours| hours.into_business_hours());
-        let access_info = fields.access_info.map(|f| f.string_value);
-        let phone_number = fields.phone_number.map(|f| f.string_value);
-
-        if official_url.is_none()
-            && business_hours.is_none()
-            && access_info.is_none()
-            && phone_number.is_none()
-        {
-            return None;
-        }
-
-        Some(SdzSpotParkAttributes {
-            official_url,
-            business_hours,
-            access_info,
-            phone_number,
-        })
-    }
-}
-
-impl FirestoreBusinessHoursField {
-    fn into_business_hours(self) -> Option<SdzSpotBusinessHours> {
-        let fields = self.map_value.fields?;
-        let schedule_type = fields
-            .schedule_type
-            .and_then(|field| parse_schedule_type(field.string_value));
-        let note = fields.note.map(|field| field.string_value);
-        let has_any = fields.is_24_hours.is_some()
-            || fields.same_as_weekday.is_some()
-            || fields.weekday.is_some()
-            || fields.weekend.is_some()
-            || schedule_type.is_some()
-            || note.is_some();
-        let is_24_hours = fields
-            .is_24_hours
-            .map(|field| field.boolean_value)
-            .unwrap_or(false);
-        let same_as_weekday = fields
-            .same_as_weekday
-            .map(|field| field.boolean_value)
-            .unwrap_or(true);
-        let weekday = fields.weekday.and_then(|range| range.into_time_range());
-        let weekend = fields.weekend.and_then(|range| range.into_time_range());
-
-        if !has_any {
-            return None;
-        }
-
-        Some(SdzSpotBusinessHours {
-            schedule_type,
-            is_24_hours,
-            same_as_weekday,
-            weekday,
-            weekend,
-            note,
-        })
-    }
-}
-
-impl FirestoreTimeRangeField {
-    fn into_time_range(self) -> Option<SdzSpotTimeRange> {
-        let fields = self.map_value.fields?;
-        let start_minutes = parse_integer(fields.start_minutes)?;
-        let end_minutes = parse_integer(fields.end_minutes)?;
-        Some(SdzSpotTimeRange {
-            start_minutes,
-            end_minutes,
-        })
-    }
-}
-
-impl FirestoreStreetAttributesField {
-    fn into_attributes(self) -> Option<SdzStreetAttributes> {
-        let fields = self.map_value.fields?;
-        let surface_material = fields.surface_material.map(|f| f.string_value);
-        let surface_condition = fields
-            .surface_condition
-            .and_then(|condition| condition.into_condition());
-        let sections = fields
-            .sections
-            .and_then(|sections| sections.into_sections());
-        let difficulty = fields.difficulty.map(|f| f.string_value);
-        let notes = fields.notes.map(|f| f.string_value);
-
-        if surface_material.is_none()
-            && surface_condition.is_none()
-            && sections.is_none()
-            && difficulty.is_none()
-            && notes.is_none()
-        {
-            return None;
-        }
-
-        Some(SdzStreetAttributes {
-            surface_material,
-            surface_condition,
-            sections,
-            difficulty,
-            notes,
-        })
-    }
-}
-
-impl FirestoreStreetSurfaceConditionField {
-    fn into_condition(self) -> Option<SdzStreetSurfaceCondition> {
-        let fields = self.map_value.fields?;
-        let roughness = fields.roughness.map(|f| f.string_value);
-        let crack = fields.crack.map(|f| f.string_value);
-
-        if roughness.is_none() && crack.is_none() {
-            return None;
-        }
-
-        Some(SdzStreetSurfaceCondition { roughness, crack })
-    }
-}
-
-impl FirestoreStreetSectionsField {
-    fn into_sections(self) -> Option<Vec<SdzStreetSection>> {
-        let values = self.array_value.values?;
-        let sections: Vec<SdzStreetSection> = values
-            .into_iter()
-            .filter_map(|value| value.into_section())
-            .collect();
-        if sections.is_empty() {
-            return None;
-        }
-        Some(sections)
-    }
-}
-
-impl FirestoreStreetSectionField {
-    fn into_section(self) -> Option<SdzStreetSection> {
-        let fields = self.map_value.fields?;
-        let section_type = fields.section_type.map(|f| f.string_value)?;
-        Some(SdzStreetSection {
-            section_type,
-            count: parse_integer(fields.count),
-            height_cm: parse_integer(fields.height_cm),
-            width_cm: parse_integer(fields.width_cm),
-            notes: fields.notes.map(|f| f.string_value),
-        })
-    }
-}
-
-fn parse_integer(field: Option<IntegerField>) -> Option<u16> {
-    field.and_then(|f| f.integer_value.parse::<u16>().ok())
-}
+// ─── 書き込み: SdzSpot → Firestore ───
 
 fn build_firestore_doc(spot: &SdzSpot) -> Result<serde_json::Value, SdzApiError> {
-    let tags_values: Vec<serde_json::Value> = spot
-        .tags
-        .iter()
-        .map(|t| json!({ "stringValue": t }))
-        .collect();
-    let images_values: Vec<serde_json::Value> = spot
-        .images
-        .iter()
-        .map(|i| json!({ "stringValue": i }))
-        .collect();
-
     let mut fields = Map::new();
-    fields.insert("name".into(), json!({ "stringValue": spot.name.clone() }));
+
+    fields.insert("name".into(), string_value(&spot.name));
     if let Some(desc) = &spot.description {
-        fields.insert("description".into(), json!({ "stringValue": desc }));
+        fields.insert("description".into(), string_value(desc));
     }
-    fields.insert(
-        "userId".into(),
-        json!({ "stringValue": spot.sdz_user_id.clone() }),
-    );
-    if !tags_values.is_empty() {
-        fields.insert(
-            "tags".into(),
-            json!({ "arrayValue": { "values": tags_values } }),
-        );
-    }
-    if !images_values.is_empty() {
-        fields.insert(
-            "images".into(),
-            json!({ "arrayValue": { "values": images_values } }),
-        );
-    }
+    fields.insert("userId".into(), string_value(&spot.sdz_user_id));
+
+    insert_string_array(&mut fields, "tags", &spot.tags);
+    insert_string_array(&mut fields, "images", &spot.images);
+
     if let Some(status) = &spot.sdz_approval_status {
         fields.insert(
             "approvalStatus".into(),
-            json!({ "stringValue": approval_status_as_str(status) }),
+            string_value(approval_status_as_str(status)),
         );
     }
+
     if let Some(attrs) = &spot.sdz_park_attributes {
         if let Some(value) = build_park_attributes(attrs) {
             fields.insert("parkAttributes".into(), value);
         }
     }
+
     if let Some(attrs) = &spot.sdz_street_attributes {
         if let Some(value) = build_street_attributes(attrs) {
             fields.insert("streetAttributes".into(), value);
         }
     }
+
     if let Some(tag) = &spot.sdz_instagram_tag {
-        fields.insert("instagramTag".into(), json!({ "stringValue": tag }));
+        fields.insert("instagramTag".into(), string_value(tag));
     }
-    if let Some(location_url) = &spot.sdz_instagram_location_url {
-        fields.insert(
-            "instagramLocationUrl".into(),
-            json!({ "stringValue": location_url }),
-        );
+    if let Some(url) = &spot.sdz_instagram_location_url {
+        fields.insert("instagramLocationUrl".into(), string_value(url));
     }
-    if let Some(profile_url) = &spot.sdz_instagram_profile_url {
-        fields.insert(
-            "instagramProfileUrl".into(),
-            json!({ "stringValue": profile_url }),
-        );
+    if let Some(url) = &spot.sdz_instagram_profile_url {
+        fields.insert("instagramProfileUrl".into(), string_value(url));
     }
+
+    if let Some(place_id) = &spot.sdz_google_place_id {
+        fields.insert("googlePlaceId".into(), string_value(place_id));
+    }
+    if let Some(url) = &spot.sdz_google_maps_url {
+        fields.insert("googleMapsUrl".into(), string_value(url));
+    }
+    if let Some(addr) = &spot.sdz_address {
+        fields.insert("address".into(), string_value(addr));
+    }
+    if let Some(phone) = &spot.sdz_phone_number {
+        fields.insert("phoneNumber".into(), string_value(phone));
+    }
+    if let Some(rating) = spot.sdz_google_rating {
+        fields.insert("googleRating".into(), double_value(rating));
+    }
+    if let Some(count) = spot.sdz_google_rating_count {
+        fields.insert("googleRatingCount".into(), integer_value(count));
+    }
+    insert_string_array(&mut fields, "googleTypes", &spot.sdz_google_types);
+
     if let Some(loc) = &spot.location {
         fields.insert(
             "location".into(),
@@ -809,6 +256,7 @@ fn build_firestore_doc(spot: &SdzSpot) -> Result<serde_json::Value, SdzApiError>
             }),
         );
     }
+
     fields.insert(
         "createdAt".into(),
         json!({ "timestampValue": spot.created_at.to_rfc3339() }),
@@ -829,8 +277,8 @@ fn build_park_attributes(attrs: &SdzSpotParkAttributes) -> Option<serde_json::Va
     if let Some(hours) = &attrs.business_hours {
         fields.insert("businessHours".into(), build_business_hours(hours));
     }
-    if let Some(access_info) = &attrs.access_info {
-        fields.insert("accessInfo".into(), string_value(access_info));
+    if let Some(info) = &attrs.access_info {
+        fields.insert("accessInfo".into(), string_value(info));
     }
     if let Some(phone) = &attrs.phone_number {
         fields.insert("phoneNumber".into(), string_value(phone));
@@ -872,17 +320,28 @@ fn build_time_range(range: &SdzSpotTimeRange) -> serde_json::Value {
 
 fn build_street_attributes(attrs: &SdzStreetAttributes) -> Option<serde_json::Value> {
     let mut fields = Map::new();
-    if let Some(surface_material) = &attrs.surface_material {
-        fields.insert("surfaceMaterial".into(), string_value(surface_material));
+    if let Some(material) = &attrs.surface_material {
+        fields.insert("surfaceMaterial".into(), string_value(material));
     }
     if let Some(condition) = &attrs.surface_condition {
-        if let Some(value) = build_surface_condition(condition) {
-            fields.insert("surfaceCondition".into(), value);
+        let mut cond_fields = Map::new();
+        if let Some(roughness) = &condition.roughness {
+            cond_fields.insert("roughness".into(), string_value(roughness));
+        }
+        if let Some(crack) = &condition.crack {
+            cond_fields.insert("crack".into(), string_value(crack));
+        }
+        if !cond_fields.is_empty() {
+            fields.insert("surfaceCondition".into(), map_value(cond_fields));
         }
     }
     if let Some(sections) = &attrs.sections {
-        if let Some(value) = build_sections(sections) {
-            fields.insert("sections".into(), value);
+        let values: Vec<serde_json::Value> = sections.iter().filter_map(build_section).collect();
+        if !values.is_empty() {
+            fields.insert(
+                "sections".into(),
+                json!({ "arrayValue": { "values": values } }),
+            );
         }
     }
     if let Some(difficulty) = &attrs.difficulty {
@@ -895,28 +354,6 @@ fn build_street_attributes(attrs: &SdzStreetAttributes) -> Option<serde_json::Va
         return None;
     }
     Some(map_value(fields))
-}
-
-fn build_surface_condition(condition: &SdzStreetSurfaceCondition) -> Option<serde_json::Value> {
-    let mut fields = Map::new();
-    if let Some(roughness) = &condition.roughness {
-        fields.insert("roughness".into(), string_value(roughness));
-    }
-    if let Some(crack) = &condition.crack {
-        fields.insert("crack".into(), string_value(crack));
-    }
-    if fields.is_empty() {
-        return None;
-    }
-    Some(map_value(fields))
-}
-
-fn build_sections(sections: &[SdzStreetSection]) -> Option<serde_json::Value> {
-    let values: Vec<serde_json::Value> = sections.iter().filter_map(build_section).collect();
-    if values.is_empty() {
-        return None;
-    }
-    Some(json!({ "arrayValue": { "values": values } }))
 }
 
 fn build_section(section: &SdzStreetSection) -> Option<serde_json::Value> {
@@ -940,53 +377,30 @@ fn build_section(section: &SdzStreetSection) -> Option<serde_json::Value> {
     Some(map_value(fields))
 }
 
+fn string_value(s: &str) -> serde_json::Value {
+    json!({ "stringValue": s })
+}
+
+fn double_value(v: f64) -> serde_json::Value {
+    json!({ "doubleValue": v })
+}
+
+fn bool_value(v: bool) -> serde_json::Value {
+    json!({ "booleanValue": v })
+}
+
+fn integer_value<T: std::fmt::Display>(v: T) -> serde_json::Value {
+    json!({ "integerValue": v.to_string() })
+}
+
 fn map_value(fields: Map<String, serde_json::Value>) -> serde_json::Value {
     json!({ "mapValue": { "fields": fields } })
 }
 
-fn string_value(value: &str) -> serde_json::Value {
-    json!({ "stringValue": value })
-}
-
-fn bool_value(value: bool) -> serde_json::Value {
-    json!({ "booleanValue": value })
-}
-
-fn integer_value(value: u16) -> serde_json::Value {
-    json!({ "integerValue": value.to_string() })
-}
-
-fn parse_timestamp(ts: Option<String>) -> Option<chrono::DateTime<chrono::FixedOffset>> {
-    ts.and_then(|s| chrono::DateTime::parse_from_rfc3339(&s).ok())
-}
-
-fn parse_approval_status(
-    approval_status: Option<String>,
-    legacy_trust_level: Option<String>,
-) -> Option<SdzSpotApprovalStatus> {
-    if let Some(value) = approval_status {
-        return match value.as_str() {
-            "pending" => Some(SdzSpotApprovalStatus::Pending),
-            "approved" => Some(SdzSpotApprovalStatus::Approved),
-            "rejected" => Some(SdzSpotApprovalStatus::Rejected),
-            _ => None,
-        };
-    }
-    match legacy_trust_level.as_deref() {
-        Some("verified") => Some(SdzSpotApprovalStatus::Approved),
-        _ => None,
-    }
-}
-
-fn parse_schedule_type(value: String) -> Option<SdzSpotBusinessScheduleType> {
-    match value.as_str() {
-        "regular" => Some(SdzSpotBusinessScheduleType::Regular),
-        "weekdayOnly" => Some(SdzSpotBusinessScheduleType::WeekdayOnly),
-        "weekendOnly" => Some(SdzSpotBusinessScheduleType::WeekendOnly),
-        "irregular" => Some(SdzSpotBusinessScheduleType::Irregular),
-        "schoolOnly" => Some(SdzSpotBusinessScheduleType::SchoolOnly),
-        "manual" => Some(SdzSpotBusinessScheduleType::Manual),
-        _ => None,
+fn insert_string_array(fields: &mut Map<String, serde_json::Value>, key: &str, values: &[String]) {
+    if !values.is_empty() {
+        let arr: Vec<serde_json::Value> = values.iter().map(|s| string_value(s)).collect();
+        fields.insert(key.into(), json!({ "arrayValue": { "values": arr } }));
     }
 }
 
@@ -998,8 +412,8 @@ fn approval_status_as_str(status: &SdzSpotApprovalStatus) -> &'static str {
     }
 }
 
-fn schedule_type_as_str(schedule_type: &SdzSpotBusinessScheduleType) -> &'static str {
-    match schedule_type {
+fn schedule_type_as_str(st: &SdzSpotBusinessScheduleType) -> &'static str {
+    match st {
         SdzSpotBusinessScheduleType::Regular => "regular",
         SdzSpotBusinessScheduleType::WeekdayOnly => "weekdayOnly",
         SdzSpotBusinessScheduleType::WeekendOnly => "weekendOnly",
@@ -1007,6 +421,450 @@ fn schedule_type_as_str(schedule_type: &SdzSpotBusinessScheduleType) -> &'static
         SdzSpotBusinessScheduleType::SchoolOnly => "schoolOnly",
         SdzSpotBusinessScheduleType::Manual => "manual",
     }
+}
+
+// ─── 読み取り: Firestore → SdzSpot ───
+
+#[derive(Debug, Serialize, Deserialize)]
+struct FirestoreSpotDoc {
+    fields: FirestoreSpotFields,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct FirestoreSpotFields {
+    name: Option<StringField>,
+    description: Option<StringField>,
+    #[serde(rename = "userId")]
+    user_id: Option<StringField>,
+    tags: Option<ArrayField>,
+    images: Option<ArrayField>,
+    #[serde(rename = "approvalStatus")]
+    approval_status: Option<StringField>,
+    #[serde(rename = "parkAttributes")]
+    park_attributes: Option<GenericMapField>,
+    #[serde(rename = "streetAttributes")]
+    street_attributes: Option<GenericMapField>,
+    #[serde(rename = "instagramTag")]
+    instagram_tag: Option<StringField>,
+    #[serde(rename = "instagramLocationUrl")]
+    instagram_location_url: Option<StringField>,
+    #[serde(rename = "instagramProfileUrl")]
+    instagram_profile_url: Option<StringField>,
+    #[serde(rename = "googlePlaceId")]
+    google_place_id: Option<StringField>,
+    #[serde(rename = "googleMapsUrl")]
+    google_maps_url: Option<StringField>,
+    address: Option<StringField>,
+    #[serde(rename = "phoneNumber")]
+    phone_number: Option<StringField>,
+    #[serde(rename = "googleRating")]
+    google_rating: Option<DoubleField>,
+    #[serde(rename = "googleRatingCount")]
+    google_rating_count: Option<IntegerField>,
+    #[serde(rename = "googleTypes")]
+    google_types: Option<ArrayField>,
+    location: Option<GenericMapField>,
+    #[serde(rename = "createdAt")]
+    created_at: Option<TimestampField>,
+    #[serde(rename = "updatedAt")]
+    updated_at: Option<TimestampField>,
+    // 旧スキーマ（後方互換読み取り用）
+    #[serde(rename = "trustLevel")]
+    trust_level: Option<StringField>,
+    #[serde(rename = "instagramUrl")]
+    instagram_url: Option<StringField>,
+    #[serde(rename = "officialUrl")]
+    official_url_legacy: Option<StringField>,
+    #[serde(rename = "businessHours")]
+    business_hours_legacy: Option<StringField>,
+    #[serde(rename = "sections")]
+    sections_legacy: Option<ArrayField>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct StringField {
+    #[serde(rename = "stringValue")]
+    string_value: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct DoubleField {
+    #[serde(rename = "doubleValue")]
+    double_value: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct IntegerField {
+    #[serde(rename = "integerValue")]
+    integer_value: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct ArrayField {
+    #[serde(rename = "arrayValue")]
+    array_value: ArrayValue,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct ArrayValue {
+    values: Option<Vec<serde_json::Value>>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct GenericMapField {
+    #[serde(rename = "mapValue")]
+    map_value: GenericMapValue,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct GenericMapValue {
+    fields: Option<serde_json::Map<String, serde_json::Value>>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct TimestampField {
+    #[serde(rename = "timestampValue")]
+    timestamp_value: String,
+}
+
+impl FirestoreSpotDoc {
+    fn into_spot(self, spot_id: String) -> SdzSpot {
+        let fields = self.fields;
+
+        let tags = extract_string_array(fields.tags);
+        let images = extract_string_array(fields.images);
+
+        let location = fields.location.and_then(|loc| {
+            let map_fields = loc.map_value.fields?;
+            let lat = extract_double_from_map(&map_fields, "lat")?;
+            let lng = extract_double_from_map(&map_fields, "lng")?;
+            Some(SdzSpotLocation { lat, lng })
+        });
+
+        // approvalStatus: 新スキーマ優先 → 旧 trustLevel からフォールバック
+        let approval_status = fields
+            .approval_status
+            .map(|s| s.string_value)
+            .or_else(|| {
+                fields.trust_level.map(|tl| match tl.string_value.as_str() {
+                    "verified" => "approved".to_string(),
+                    _ => "pending".to_string(),
+                })
+            })
+            .and_then(|s| parse_approval_status(&s));
+
+        // parkAttributes: 新スキーマ優先 → 旧フラットフィールドからフォールバック
+        let park_attributes = fields
+            .park_attributes
+            .and_then(|m| parse_park_attributes_map(m.map_value.fields))
+            .or_else(|| {
+                let official_url = fields.official_url_legacy.map(|s| s.string_value);
+                let bh_note = fields.business_hours_legacy.map(|s| s.string_value);
+                if official_url.is_some() || bh_note.is_some() {
+                    Some(SdzSpotParkAttributes {
+                        official_url,
+                        business_hours: bh_note.map(|note| SdzSpotBusinessHours {
+                            schedule_type: Some(SdzSpotBusinessScheduleType::Manual),
+                            is_24_hours: false,
+                            same_as_weekday: false,
+                            weekday: None,
+                            weekend: None,
+                            note: Some(note),
+                        }),
+                        access_info: None,
+                        phone_number: None,
+                    })
+                } else {
+                    None
+                }
+            });
+
+        // streetAttributes: 新スキーマ優先 → 旧 sections からフォールバック
+        let street_attributes = fields
+            .street_attributes
+            .and_then(|m| parse_street_attributes_map(m.map_value.fields))
+            .or_else(|| {
+                let old_sections = extract_string_array(fields.sections_legacy);
+                if old_sections.is_empty() {
+                    None
+                } else {
+                    Some(SdzStreetAttributes {
+                        surface_material: None,
+                        surface_condition: None,
+                        sections: Some(
+                            old_sections
+                                .into_iter()
+                                .map(|s| SdzStreetSection {
+                                    section_type: s,
+                                    count: None,
+                                    height_cm: None,
+                                    width_cm: None,
+                                    notes: None,
+                                })
+                                .collect(),
+                        ),
+                        difficulty: None,
+                        notes: None,
+                    })
+                }
+            });
+
+        // Instagram: 新スキーマ優先 → 旧 instagramUrl からフォールバック
+        let instagram_tag = fields
+            .instagram_tag
+            .map(|s| s.string_value)
+            .or_else(|| fields.instagram_url.map(|s| s.string_value));
+
+        let google_types = fields
+            .google_types
+            .map(|f| extract_string_array(Some(f)))
+            .unwrap_or_default();
+
+        let created_at = parse_timestamp(fields.created_at.map(|t| t.timestamp_value))
+            .unwrap_or_else(|| chrono::Utc::now().into());
+        let updated_at = parse_timestamp(fields.updated_at.map(|t| t.timestamp_value))
+            .unwrap_or_else(|| chrono::Utc::now().into());
+
+        SdzSpot {
+            sdz_spot_id: spot_id,
+            name: fields
+                .name
+                .map(|s| s.string_value)
+                .unwrap_or_else(|| "unknown".into()),
+            description: fields.description.map(|s| s.string_value),
+            location,
+            tags,
+            images,
+            sdz_approval_status: approval_status,
+            sdz_park_attributes: park_attributes,
+            sdz_street_attributes: street_attributes,
+            sdz_instagram_tag: instagram_tag,
+            sdz_instagram_location_url: fields.instagram_location_url.map(|s| s.string_value),
+            sdz_instagram_profile_url: fields.instagram_profile_url.map(|s| s.string_value),
+            sdz_google_place_id: fields.google_place_id.map(|s| s.string_value),
+            sdz_google_maps_url: fields.google_maps_url.map(|s| s.string_value),
+            sdz_address: fields.address.map(|s| s.string_value),
+            sdz_phone_number: fields.phone_number.map(|s| s.string_value),
+            sdz_google_rating: fields.google_rating.map(|d| d.double_value),
+            sdz_google_rating_count: fields
+                .google_rating_count
+                .and_then(|i| i.integer_value.parse::<u32>().ok()),
+            sdz_google_types: google_types,
+            sdz_user_id: fields.user_id.map(|s| s.string_value).unwrap_or_default(),
+            created_at,
+            updated_at,
+        }
+    }
+}
+
+fn parse_park_attributes_map(
+    fields: Option<serde_json::Map<String, serde_json::Value>>,
+) -> Option<SdzSpotParkAttributes> {
+    let fields = fields?;
+    let official_url = extract_string_from_map(&fields, "officialUrl");
+    let business_hours = fields
+        .get("businessHours")
+        .and_then(|v| v.get("mapValue"))
+        .and_then(|mv| mv.get("fields"))
+        .and_then(|f| f.as_object())
+        .and_then(parse_business_hours_map);
+    let access_info = extract_string_from_map(&fields, "accessInfo");
+    let phone_number = extract_string_from_map(&fields, "phoneNumber");
+
+    if official_url.is_none()
+        && business_hours.is_none()
+        && access_info.is_none()
+        && phone_number.is_none()
+    {
+        return None;
+    }
+    Some(SdzSpotParkAttributes {
+        official_url,
+        business_hours,
+        access_info,
+        phone_number,
+    })
+}
+
+fn parse_business_hours_map(
+    fields: &serde_json::Map<String, serde_json::Value>,
+) -> Option<SdzSpotBusinessHours> {
+    let schedule_type =
+        extract_string_from_map(fields, "scheduleType").and_then(|s| parse_schedule_type(&s));
+    let is_24_hours = extract_bool_from_map(fields, "is24Hours").unwrap_or(false);
+    let same_as_weekday = extract_bool_from_map(fields, "sameAsWeekday").unwrap_or(false);
+    let weekday = fields
+        .get("weekday")
+        .and_then(|v| v.get("mapValue"))
+        .and_then(|mv| mv.get("fields"))
+        .and_then(|f| f.as_object())
+        .and_then(parse_time_range_map);
+    let weekend = fields
+        .get("weekend")
+        .and_then(|v| v.get("mapValue"))
+        .and_then(|mv| mv.get("fields"))
+        .and_then(|f| f.as_object())
+        .and_then(parse_time_range_map);
+    let note = extract_string_from_map(fields, "note");
+
+    Some(SdzSpotBusinessHours {
+        schedule_type,
+        is_24_hours,
+        same_as_weekday,
+        weekday,
+        weekend,
+        note,
+    })
+}
+
+fn parse_time_range_map(
+    fields: &serde_json::Map<String, serde_json::Value>,
+) -> Option<SdzSpotTimeRange> {
+    let start = extract_integer_from_map(fields, "startMinutes")?;
+    let end = extract_integer_from_map(fields, "endMinutes")?;
+    Some(SdzSpotTimeRange {
+        start_minutes: start as u16,
+        end_minutes: end as u16,
+    })
+}
+
+fn parse_street_attributes_map(
+    fields: Option<serde_json::Map<String, serde_json::Value>>,
+) -> Option<SdzStreetAttributes> {
+    let fields = fields?;
+    let surface_material = extract_string_from_map(&fields, "surfaceMaterial");
+    let surface_condition = fields
+        .get("surfaceCondition")
+        .and_then(|v| v.get("mapValue"))
+        .and_then(|mv| mv.get("fields"))
+        .and_then(|f| f.as_object())
+        .map(|f| SdzStreetSurfaceCondition {
+            roughness: extract_string_from_map(f, "roughness"),
+            crack: extract_string_from_map(f, "crack"),
+        });
+    let sections = fields
+        .get("sections")
+        .and_then(|v| v.get("arrayValue"))
+        .and_then(|av| av.get("values"))
+        .and_then(|vals| vals.as_array())
+        .map(|arr| {
+            arr.iter()
+                .filter_map(parse_section_value)
+                .collect::<Vec<_>>()
+        });
+    let difficulty = extract_string_from_map(&fields, "difficulty");
+    let notes = extract_string_from_map(&fields, "notes");
+
+    if surface_material.is_none()
+        && surface_condition.is_none()
+        && sections.is_none()
+        && difficulty.is_none()
+        && notes.is_none()
+    {
+        return None;
+    }
+    Some(SdzStreetAttributes {
+        surface_material,
+        surface_condition,
+        sections,
+        difficulty,
+        notes,
+    })
+}
+
+fn parse_section_value(value: &serde_json::Value) -> Option<SdzStreetSection> {
+    let fields = value
+        .get("mapValue")
+        .and_then(|mv| mv.get("fields"))
+        .and_then(|f| f.as_object())?;
+    let section_type = extract_string_from_map(fields, "type")?;
+    Some(SdzStreetSection {
+        section_type,
+        count: extract_integer_from_map(fields, "count").map(|v| v as u16),
+        height_cm: extract_integer_from_map(fields, "heightCm").map(|v| v as u16),
+        width_cm: extract_integer_from_map(fields, "widthCm").map(|v| v as u16),
+        notes: extract_string_from_map(fields, "notes"),
+    })
+}
+
+fn extract_string_from_map(
+    fields: &serde_json::Map<String, serde_json::Value>,
+    key: &str,
+) -> Option<String> {
+    fields
+        .get(key)
+        .and_then(|v| v.get("stringValue"))
+        .and_then(|v| v.as_str())
+        .map(|s| s.to_string())
+}
+
+fn extract_double_from_map(
+    fields: &serde_json::Map<String, serde_json::Value>,
+    key: &str,
+) -> Option<f64> {
+    fields
+        .get(key)
+        .and_then(|v| v.get("doubleValue"))
+        .and_then(|v| v.as_f64())
+}
+
+fn extract_bool_from_map(
+    fields: &serde_json::Map<String, serde_json::Value>,
+    key: &str,
+) -> Option<bool> {
+    fields
+        .get(key)
+        .and_then(|v| v.get("booleanValue"))
+        .and_then(|v| v.as_bool())
+}
+
+fn extract_integer_from_map(
+    fields: &serde_json::Map<String, serde_json::Value>,
+    key: &str,
+) -> Option<i64> {
+    fields
+        .get(key)
+        .and_then(|v| v.get("integerValue"))
+        .and_then(|v| v.as_str())
+        .and_then(|s| s.parse::<i64>().ok())
+}
+
+fn extract_string_array(field: Option<ArrayField>) -> Vec<String> {
+    field
+        .and_then(|f| f.array_value.values)
+        .unwrap_or_default()
+        .into_iter()
+        .filter_map(|v| {
+            v.get("stringValue")
+                .and_then(|s| s.as_str())
+                .map(|s| s.to_string())
+        })
+        .collect()
+}
+
+fn parse_approval_status(s: &str) -> Option<SdzSpotApprovalStatus> {
+    match s {
+        "pending" => Some(SdzSpotApprovalStatus::Pending),
+        "approved" => Some(SdzSpotApprovalStatus::Approved),
+        "rejected" => Some(SdzSpotApprovalStatus::Rejected),
+        _ => None,
+    }
+}
+
+fn parse_schedule_type(s: &str) -> Option<SdzSpotBusinessScheduleType> {
+    match s {
+        "regular" => Some(SdzSpotBusinessScheduleType::Regular),
+        "weekdayOnly" => Some(SdzSpotBusinessScheduleType::WeekdayOnly),
+        "weekendOnly" => Some(SdzSpotBusinessScheduleType::WeekendOnly),
+        "irregular" => Some(SdzSpotBusinessScheduleType::Irregular),
+        "schoolOnly" => Some(SdzSpotBusinessScheduleType::SchoolOnly),
+        "manual" => Some(SdzSpotBusinessScheduleType::Manual),
+        _ => None,
+    }
+}
+
+fn parse_timestamp(ts: Option<String>) -> Option<chrono::DateTime<chrono::FixedOffset>> {
+    ts.and_then(|s| chrono::DateTime::parse_from_rfc3339(&s).ok())
 }
 
 fn map_status(

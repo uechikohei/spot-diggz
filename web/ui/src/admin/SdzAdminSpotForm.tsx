@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/useAuth';
-import type { SdzPlaceResult, SdzSpot } from '../types/spot';
+import type { SdzSpot, SdzPlaceResult } from '../types/spot';
 import {
   sdzAdminCreateSpot,
   sdzAdminUpdateSpot,
@@ -33,31 +33,25 @@ export function SdzAdminSpotForm() {
   const navigate = useNavigate();
   const { idToken } = useAuth();
 
-  // 基本情報
   const [sdzName, setSdzName] = useState('');
   const [sdzDescription, setSdzDescription] = useState('');
   const [sdzLat, setSdzLat] = useState('');
   const [sdzLng, setSdzLng] = useState('');
+  const [sdzSpotType, setSdzSpotType] = useState('park');
   const [sdzTags, setSdzTags] = useState('');
   const [sdzImages, setSdzImages] = useState<string[]>([]);
-
-  // Instagram
+  const [sdzOfficialUrl, setSdzOfficialUrl] = useState('');
+  const [sdzBusinessHoursNote, setSdzBusinessHoursNote] = useState('');
+  const [sdzAccessInfo, setSdzAccessInfo] = useState('');
   const [sdzInstagramTag, setSdzInstagramTag] = useState('');
   const [sdzInstagramLocationUrl, setSdzInstagramLocationUrl] = useState('');
-  const [sdzInstagramProfileUrl, setSdzInstagramProfileUrl] = useState('');
-
-  // Google Places（自動入力 + 手動編集可）
   const [sdzGooglePlaceId, setSdzGooglePlaceId] = useState('');
   const [sdzGoogleMapsUrl, setSdzGoogleMapsUrl] = useState('');
   const [sdzAddress, setSdzAddress] = useState('');
   const [sdzPhoneNumber, setSdzPhoneNumber] = useState('');
-  const [sdzOfficialUrl, setSdzOfficialUrl] = useState('');
-  const [sdzBusinessHours, setSdzBusinessHours] = useState('');
   const [sdzGoogleRating, setSdzGoogleRating] = useState('');
   const [sdzGoogleRatingCount, setSdzGoogleRatingCount] = useState('');
-  const [sdzGoogleTypes, setSdzGoogleTypes] = useState('');
-
-  // UI状態
+  const [sdzGoogleTypes, setSdzGoogleTypes] = useState<string[]>([]);
   const [sdzUploading, setSdzUploading] = useState(false);
   const [sdzSubmitting, setSdzSubmitting] = useState(false);
   const [sdzError, setSdzError] = useState<string | null>(null);
@@ -69,23 +63,24 @@ export function SdzAdminSpotForm() {
     setSdzLng(lng);
   }, []);
 
-  // Places Autocomplete からの自動入力
-  const handlePlaceSelect = useCallback((place: SdzPlaceResult) => {
-    setSdzName((prev) => prev || place.name);
-    setSdzAddress(place.address);
-    setSdzGooglePlaceId(place.placeId);
-    setSdzGoogleMapsUrl(place.googleMapsUrl ?? '');
-    setSdzPhoneNumber(place.phoneNumber ?? '');
-    setSdzOfficialUrl((prev) => prev || (place.website ?? ''));
-    setSdzGoogleRating(place.rating?.toString() ?? '');
-    setSdzGoogleRatingCount(place.ratingCount?.toString() ?? '');
-    setSdzGoogleTypes(place.types?.join(', ') ?? '');
-    if (place.businessHours?.length) {
-      setSdzBusinessHours(place.businessHours.join(' / '));
-    }
-  }, []);
+  const handlePlaceSelect = useCallback(
+    (place: SdzPlaceResult) => {
+      if (!sdzName && place.name) setSdzName(place.name);
+      if (!sdzOfficialUrl && place.website) setSdzOfficialUrl(place.website);
+      if (place.placeId) setSdzGooglePlaceId(place.placeId);
+      if (place.googleMapsUrl) setSdzGoogleMapsUrl(place.googleMapsUrl);
+      if (place.address) setSdzAddress(place.address);
+      if (place.phoneNumber) setSdzPhoneNumber(place.phoneNumber);
+      if (place.rating != null) setSdzGoogleRating(String(place.rating));
+      if (place.ratingCount != null) setSdzGoogleRatingCount(String(place.ratingCount));
+      if (place.types) setSdzGoogleTypes(place.types);
+      if (place.businessHours?.length) {
+        setSdzBusinessHoursNote(place.businessHours.join('\n'));
+      }
+    },
+    [sdzName, sdzOfficialUrl],
+  );
 
-  // 編集時: 既存データを読み込み
   useEffect(() => {
     if (!isEdit) return;
     setSdzLoadingSpot(true);
@@ -99,20 +94,23 @@ export function SdzAdminSpotForm() {
         setSdzDescription(spot.description ?? '');
         setSdzLat(spot.location?.lat?.toString() ?? '');
         setSdzLng(spot.location?.lng?.toString() ?? '');
+        setSdzSpotType(spot.parkAttributes ? 'park' : spot.streetAttributes ? 'street' : 'park');
         setSdzTags(spot.tags?.join(', ') ?? '');
         setSdzImages(spot.images ?? []);
+        setSdzOfficialUrl(spot.parkAttributes?.officialUrl ?? '');
+        setSdzBusinessHoursNote(spot.parkAttributes?.businessHours?.note ?? '');
+        setSdzAccessInfo(spot.parkAttributes?.accessInfo ?? '');
         setSdzInstagramTag(spot.instagramTag ?? '');
         setSdzInstagramLocationUrl(spot.instagramLocationUrl ?? '');
-        setSdzInstagramProfileUrl(spot.instagramProfileUrl ?? '');
         setSdzGooglePlaceId(spot.googlePlaceId ?? '');
         setSdzGoogleMapsUrl(spot.googleMapsUrl ?? '');
         setSdzAddress(spot.address ?? '');
         setSdzPhoneNumber(spot.phoneNumber ?? '');
-        setSdzOfficialUrl(spot.parkAttributes?.officialUrl ?? '');
-        setSdzBusinessHours('');
-        setSdzGoogleRating(spot.googleRating?.toString() ?? '');
-        setSdzGoogleRatingCount(spot.googleRatingCount?.toString() ?? '');
-        setSdzGoogleTypes(spot.googleTypes?.join(', ') ?? '');
+        setSdzGoogleRating(spot.googleRating != null ? String(spot.googleRating) : '');
+        setSdzGoogleRatingCount(
+          spot.googleRatingCount != null ? String(spot.googleRatingCount) : '',
+        );
+        setSdzGoogleTypes(spot.googleTypes ?? []);
       })
       .catch((err) => setSdzError((err as Error).message))
       .finally(() => setSdzLoadingSpot(false));
@@ -148,24 +146,21 @@ export function SdzAdminSpotForm() {
       setSdzError('認証トークンがありません');
       return;
     }
-
     setSdzSubmitting(true);
     setSdzError(null);
     setSdzSuccess(null);
 
-    // URL検証
-    for (const [label, val] of [
-      ['Instagram Location URL', sdzInstagramLocationUrl],
-      ['Instagram Profile URL', sdzInstagramProfileUrl],
-      ['公式サイトURL', sdzOfficialUrl],
-      ['Google Maps URL', sdzGoogleMapsUrl],
-    ] as const) {
-      const err = sdzValidateUrl(val);
-      if (err) {
-        setSdzError(`${label}: ${err}`);
-        setSdzSubmitting(false);
-        return;
-      }
+    const sdzOfficialUrlError = sdzValidateUrl(sdzOfficialUrl);
+    if (sdzOfficialUrlError) {
+      setSdzError(`公式サイトURL: ${sdzOfficialUrlError}`);
+      setSdzSubmitting(false);
+      return;
+    }
+    const sdzInstagramUrlError = sdzValidateUrl(sdzInstagramLocationUrl);
+    if (sdzInstagramUrlError) {
+      setSdzError(`Instagram URL: ${sdzInstagramUrlError}`);
+      setSdzSubmitting(false);
+      return;
     }
 
     const parseSplit = (value: string) =>
@@ -181,27 +176,43 @@ export function SdzAdminSpotForm() {
         ? { lat: parsedLat, lng: parsedLng }
         : undefined;
 
-    const payload = {
-      name: sdzName,
-      description: sdzDescription || undefined,
-      location,
-      tags: parseSplit(sdzTags),
-      images: sdzImages,
-      instagramTag: sdzInstagramTag || undefined,
-      instagramLocationUrl: sdzInstagramLocationUrl || undefined,
-      instagramProfileUrl: sdzInstagramProfileUrl || undefined,
-      googlePlaceId: sdzGooglePlaceId || undefined,
-      googleMapsUrl: sdzGoogleMapsUrl || undefined,
-      address: sdzAddress || undefined,
-      phoneNumber: sdzPhoneNumber || undefined,
-      officialUrl: sdzOfficialUrl || undefined,
-      businessHours: sdzBusinessHours || undefined,
-      googleRating: sdzGoogleRating ? parseFloat(sdzGoogleRating) : undefined,
-      googleRatingCount: sdzGoogleRatingCount ? parseInt(sdzGoogleRatingCount, 10) : undefined,
-      googleTypes: parseSplit(sdzGoogleTypes),
-    };
+    const hasParkData = sdzOfficialUrl || sdzBusinessHoursNote || sdzAccessInfo || sdzPhoneNumber;
+    const parkAttributes =
+      sdzSpotType === 'park' && hasParkData
+        ? {
+            officialUrl: sdzOfficialUrl || undefined,
+            businessHours: sdzBusinessHoursNote
+              ? {
+                  scheduleType: 'manual' as const,
+                  is24Hours: false,
+                  sameAsWeekday: false,
+                  note: sdzBusinessHoursNote,
+                }
+              : undefined,
+            accessInfo: sdzAccessInfo || undefined,
+            phoneNumber: sdzPhoneNumber || undefined,
+          }
+        : undefined;
 
     try {
+      const payload = {
+        name: sdzName,
+        description: sdzDescription || undefined,
+        location,
+        tags: parseSplit(sdzTags),
+        images: sdzImages,
+        parkAttributes,
+        instagramTag: sdzInstagramTag || undefined,
+        instagramLocationUrl: sdzInstagramLocationUrl || undefined,
+        googlePlaceId: sdzGooglePlaceId || undefined,
+        googleMapsUrl: sdzGoogleMapsUrl || undefined,
+        address: sdzAddress || undefined,
+        phoneNumber: !parkAttributes ? sdzPhoneNumber || undefined : undefined,
+        googleRating: sdzGoogleRating ? parseFloat(sdzGoogleRating) : undefined,
+        googleRatingCount: sdzGoogleRatingCount ? parseInt(sdzGoogleRatingCount) : undefined,
+        googleTypes: sdzGoogleTypes.length > 0 ? sdzGoogleTypes : undefined,
+      };
+
       if (isEdit) {
         await sdzAdminUpdateSpot(idToken, id, payload);
         setSdzSuccess('スポットを更新しました');
@@ -233,10 +244,58 @@ export function SdzAdminSpotForm() {
       {sdzSuccess && <div style={{ color: '#4caf50', marginBottom: 12 }}>{sdzSuccess}</div>}
 
       <form onSubmit={handleSubmit}>
-        <div style={{ display: 'grid', gap: 16 }}>
-          {/* ===== 位置情報・Google Places 検索 ===== */}
-          <fieldset style={{ border: '1px solid #e0e0e0', borderRadius: 8, padding: 16 }}>
-            <legend style={{ fontWeight: 600 }}>📍 位置情報・Google Places 検索</legend>
+        <div style={{ display: 'grid', gap: 12 }}>
+          <div>
+            <label htmlFor="sdz-name">スポット名 *</label>
+            <input
+              id="sdz-name"
+              type="text"
+              value={sdzName}
+              onChange={(e) => setSdzName(e.target.value)}
+              required
+              style={{ width: '100%' }}
+            />
+          </div>
+
+          <div>
+            <label>スポットタイプ</label>
+            <div style={{ display: 'flex', gap: 16 }}>
+              <label>
+                <input
+                  type="radio"
+                  name="spotType"
+                  value="park"
+                  checked={sdzSpotType === 'park'}
+                  onChange={(e) => setSdzSpotType(e.target.value)}
+                />{' '}
+                パーク
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="spotType"
+                  value="street"
+                  checked={sdzSpotType === 'street'}
+                  onChange={(e) => setSdzSpotType(e.target.value)}
+                />{' '}
+                ストリート
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="sdz-description">説明</label>
+            <textarea
+              id="sdz-description"
+              value={sdzDescription}
+              onChange={(e) => setSdzDescription(e.target.value)}
+              rows={3}
+              style={{ width: '100%' }}
+            />
+          </div>
+
+          <div>
+            <label>位置情報・場所検索</label>
             <SdzAdminMapPicker
               lat={sdzLat}
               lng={sdzLng}
@@ -269,217 +328,132 @@ export function SdzAdminSpotForm() {
                 />
               </div>
             </div>
-            <div style={{ marginTop: 8 }}>
-              <label htmlFor="sdz-address">住所</label>
-              <input
-                id="sdz-address"
-                type="text"
-                value={sdzAddress}
-                onChange={(e) => setSdzAddress(e.target.value)}
-                placeholder="Google Places から自動入力"
-                style={{ width: '100%' }}
-              />
-            </div>
-          </fieldset>
+          </div>
 
-          {/* ===== 基本情報 ===== */}
-          <fieldset style={{ border: '1px solid #e0e0e0', borderRadius: 8, padding: 16 }}>
-            <legend style={{ fontWeight: 600 }}>📋 基本情報</legend>
-            <div style={{ display: 'grid', gap: 12 }}>
-              <div>
-                <label htmlFor="sdz-name">スポット名 *</label>
-                <input
-                  id="sdz-name"
-                  type="text"
-                  value={sdzName}
-                  onChange={(e) => setSdzName(e.target.value)}
-                  required
-                  style={{ width: '100%' }}
-                />
-              </div>
-              <div>
-                <label htmlFor="sdz-description">説明</label>
-                <textarea
-                  id="sdz-description"
-                  value={sdzDescription}
-                  onChange={(e) => setSdzDescription(e.target.value)}
-                  rows={3}
-                  style={{ width: '100%' }}
-                />
-              </div>
-              <div>
-                <label htmlFor="sdz-tags">タグ（カンマ区切り）</label>
-                <input
-                  id="sdz-tags"
-                  type="text"
-                  value={sdzTags}
-                  onChange={(e) => setSdzTags(e.target.value)}
-                  placeholder="初心者OK, 照明あり, 駐車場あり"
-                  style={{ width: '100%' }}
-                />
-              </div>
-            </div>
-          </fieldset>
-
-          {/* ===== 施設情報 ===== */}
-          <fieldset style={{ border: '1px solid #e0e0e0', borderRadius: 8, padding: 16 }}>
-            <legend style={{ fontWeight: 600 }}>🏢 施設情報</legend>
-            <div style={{ display: 'grid', gap: 12 }}>
-              <div>
-                <label htmlFor="sdz-official-url">公式サイトURL</label>
-                <input
-                  id="sdz-official-url"
-                  type="url"
-                  value={sdzOfficialUrl}
-                  onChange={(e) => setSdzOfficialUrl(e.target.value)}
-                  placeholder="https://..."
-                  style={{ width: '100%' }}
-                />
-              </div>
-              <div>
-                <label htmlFor="sdz-phone">電話番号</label>
-                <input
-                  id="sdz-phone"
-                  type="tel"
-                  value={sdzPhoneNumber}
-                  onChange={(e) => setSdzPhoneNumber(e.target.value)}
-                  placeholder="03-1234-5678"
-                  style={{ width: '100%' }}
-                />
-              </div>
-              <div>
-                <label htmlFor="sdz-business-hours">営業時間</label>
-                <input
-                  id="sdz-business-hours"
-                  type="text"
-                  value={sdzBusinessHours}
-                  onChange={(e) => setSdzBusinessHours(e.target.value)}
-                  placeholder="月曜日: 9時00分～21時00分 / 火曜日: ..."
-                  style={{ width: '100%' }}
-                />
-              </div>
-            </div>
-          </fieldset>
-
-          {/* ===== Instagram ===== */}
-          <fieldset style={{ border: '1px solid #e0e0e0', borderRadius: 8, padding: 16 }}>
-            <legend style={{ fontWeight: 600 }}>📸 Instagram</legend>
-            <div style={{ display: 'grid', gap: 12 }}>
-              <div>
-                <label htmlFor="sdz-instagram-tag">ハッシュタグ</label>
-                <input
-                  id="sdz-instagram-tag"
-                  type="text"
-                  value={sdzInstagramTag}
-                  onChange={(e) => setSdzInstagramTag(e.target.value)}
-                  placeholder="skateparkname"
-                  style={{ width: '100%' }}
-                />
-              </div>
-              <div>
-                <label htmlFor="sdz-instagram-location-url">Instagram ロケーションURL</label>
-                <input
-                  id="sdz-instagram-location-url"
-                  type="url"
-                  value={sdzInstagramLocationUrl}
-                  onChange={(e) => setSdzInstagramLocationUrl(e.target.value)}
-                  placeholder="https://www.instagram.com/explore/locations/..."
-                  style={{ width: '100%' }}
-                />
-              </div>
-              <div>
-                <label htmlFor="sdz-instagram-profile-url">Instagram プロフィールURL</label>
-                <input
-                  id="sdz-instagram-profile-url"
-                  type="url"
-                  value={sdzInstagramProfileUrl}
-                  onChange={(e) => setSdzInstagramProfileUrl(e.target.value)}
-                  placeholder="https://www.instagram.com/..."
-                  style={{ width: '100%' }}
-                />
-              </div>
-            </div>
-          </fieldset>
-
-          {/* ===== Google Places 情報（自動入力） ===== */}
-          <fieldset style={{ border: '1px solid #e0e0e0', borderRadius: 8, padding: 16 }}>
-            <legend style={{ fontWeight: 600 }}>🗺️ Google Places 情報</legend>
-            <p style={{ fontSize: 12, color: '#888', marginBottom: 8 }}>
-              地図検索で場所を選択すると自動入力されます。登録時点の評価情報です。
-            </p>
-            <div style={{ display: 'grid', gap: 12 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                <div>
-                  <label htmlFor="sdz-google-place-id">Place ID</label>
-                  <input
-                    id="sdz-google-place-id"
-                    type="text"
-                    value={sdzGooglePlaceId}
-                    onChange={(e) => setSdzGooglePlaceId(e.target.value)}
-                    style={{ width: '100%' }}
-                    readOnly
-                  />
-                </div>
-                <div>
-                  <label htmlFor="sdz-google-maps-url">Google Maps URL</label>
-                  <input
-                    id="sdz-google-maps-url"
-                    type="url"
-                    value={sdzGoogleMapsUrl}
-                    onChange={(e) => setSdzGoogleMapsUrl(e.target.value)}
-                    style={{ width: '100%' }}
-                    readOnly
-                  />
+          {sdzGooglePlaceId && (
+            <div style={{ padding: 12, background: '#f5f5f5', borderRadius: 6, fontSize: 13 }}>
+              <strong>Google Places 情報</strong>
+              <div style={{ display: 'grid', gap: 4, marginTop: 6 }}>
+                {sdzAddress && <div>住所: {sdzAddress}</div>}
+                {sdzGoogleMapsUrl && (
+                  <div>
+                    Google Maps:{' '}
+                    <a href={sdzGoogleMapsUrl} target="_blank" rel="noopener noreferrer">
+                      開く
+                    </a>
+                  </div>
+                )}
+                {sdzPhoneNumber && <div>電話: {sdzPhoneNumber}</div>}
+                {sdzGoogleRating && (
+                  <div>
+                    評価: {sdzGoogleRating} ({sdzGoogleRatingCount} 件)
+                  </div>
+                )}
+                {sdzGoogleTypes.length > 0 && (
+                  <div>
+                    タイプ:{' '}
+                    {sdzGoogleTypes.map((t) => (
+                      <span
+                        key={t}
+                        style={{
+                          display: 'inline-block',
+                          background: '#e0e0e0',
+                          borderRadius: 4,
+                          padding: '1px 6px',
+                          marginRight: 4,
+                          fontSize: 11,
+                        }}
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div style={{ fontSize: 11, color: '#999', marginTop: 2 }}>
+                  Place ID: {sdzGooglePlaceId}
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                <div>
-                  <label htmlFor="sdz-google-rating">Google 評価</label>
-                  <input
-                    id="sdz-google-rating"
-                    type="number"
-                    step="0.1"
-                    min="1"
-                    max="5"
-                    value={sdzGoogleRating}
-                    onChange={(e) => setSdzGoogleRating(e.target.value)}
-                    style={{ width: '100%' }}
-                    readOnly
-                  />
-                </div>
-                <div>
-                  <label htmlFor="sdz-google-rating-count">レビュー数</label>
-                  <input
-                    id="sdz-google-rating-count"
-                    type="number"
-                    value={sdzGoogleRatingCount}
-                    onChange={(e) => setSdzGoogleRatingCount(e.target.value)}
-                    style={{ width: '100%' }}
-                    readOnly
-                  />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="sdz-google-types">施設タイプ</label>
-                <input
-                  id="sdz-google-types"
-                  type="text"
-                  value={sdzGoogleTypes}
-                  onChange={(e) => setSdzGoogleTypes(e.target.value)}
-                  style={{ width: '100%' }}
-                  readOnly
-                />
-              </div>
             </div>
-          </fieldset>
+          )}
 
-          {/* ===== 画像 ===== */}
-          <fieldset style={{ border: '1px solid #e0e0e0', borderRadius: 8, padding: 16 }}>
-            <legend style={{ fontWeight: 600 }}>🖼️ 画像 ({sdzImages.length}/10)</legend>
+          <div>
+            <label htmlFor="sdz-official-url">公式サイトURL</label>
+            <input
+              id="sdz-official-url"
+              type="url"
+              value={sdzOfficialUrl}
+              onChange={(e) => setSdzOfficialUrl(e.target.value)}
+              placeholder="https://..."
+              style={{ width: '100%' }}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="sdz-business-hours">営業時間メモ</label>
+            <textarea
+              id="sdz-business-hours"
+              value={sdzBusinessHoursNote}
+              onChange={(e) => setSdzBusinessHoursNote(e.target.value)}
+              rows={3}
+              placeholder={'月曜日: 9:00〜21:00\n火曜日: 9:00〜21:00\n...'}
+              style={{ width: '100%' }}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="sdz-access-info">アクセス情報</label>
+            <input
+              id="sdz-access-info"
+              type="text"
+              value={sdzAccessInfo}
+              onChange={(e) => setSdzAccessInfo(e.target.value)}
+              placeholder="最寄り駅から徒歩10分、無料駐車場あり"
+              style={{ width: '100%' }}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="sdz-instagram-tag">Instagram ハッシュタグ</label>
+            <input
+              id="sdz-instagram-tag"
+              type="text"
+              value={sdzInstagramTag}
+              onChange={(e) => setSdzInstagramTag(e.target.value)}
+              placeholder="#スケートパーク名"
+              style={{ width: '100%' }}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="sdz-instagram-location-url">Instagram 位置情報ページURL</label>
+            <input
+              id="sdz-instagram-location-url"
+              type="url"
+              value={sdzInstagramLocationUrl}
+              onChange={(e) => setSdzInstagramLocationUrl(e.target.value)}
+              placeholder="https://www.instagram.com/explore/locations/..."
+              style={{ width: '100%' }}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="sdz-tags">タグ（カンマ区切り）</label>
+            <input
+              id="sdz-tags"
+              type="text"
+              value={sdzTags}
+              onChange={(e) => setSdzTags(e.target.value)}
+              placeholder="初心者OK, 照明あり, 駐車場あり"
+              style={{ width: '100%' }}
+            />
+          </div>
+
+          <div>
+            <label>画像 ({sdzImages.length}/10)</label>
             {sdzImages.length > 0 && (
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
                 {sdzImages.map((url, i) => (
-                  <div key={`${url}-${i}`} style={{ position: 'relative' }}>
+                  <div key={url} style={{ position: 'relative' }}>
                     <img
                       src={url}
                       alt={`画像${i + 1}`}
@@ -520,9 +494,8 @@ export function SdzAdminSpotForm() {
               />
             )}
             {sdzUploading && <p className="sdz-meta">アップロード中...</p>}
-          </fieldset>
+          </div>
 
-          {/* ===== 送信 ===== */}
           <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
             <button type="submit" disabled={sdzSubmitting || !sdzName}>
               {sdzSubmitting ? '保存中...' : isEdit ? '更新' : '作成'}

@@ -4,7 +4,6 @@ use axum::{
     response::IntoResponse,
     Json,
 };
-use serde::Deserialize;
 
 use crate::{
     application::use_cases::{
@@ -14,23 +13,13 @@ use crate::{
         list_spots_use_case::{SdzListSpotsUseCase, SdzSpotSearchFilter, SdzSpotTypeFilter},
         update_spot_use_case::{SdzUpdateSpotUseCase, UpdateSpotInput},
     },
+    domain::models::SdzSpotApprovalStatus,
     presentation::{
         error::SdzApiError,
-        middleware::{
-            auth::{SdzAuthUser, SdzOptionalAuthUser},
-            client::SdzClientApp,
-        },
+        middleware::{admin::SdzAdminUser, auth::SdzAuthUser, client::SdzClientApp},
         router::SdzAppState,
     },
 };
-
-#[derive(Debug, Deserialize)]
-pub struct SdzSpotListQuery {
-    q: Option<String>,
-    #[serde(rename = "type")]
-    spot_type: Option<String>,
-    tags: Option<String>,
-}
 
 pub async fn handle_create_spot(
     State(state): State<SdzAppState>,
@@ -98,47 +87,41 @@ pub async fn handle_create_upload_url(
 pub async fn handle_get_spot(
     State(state): State<SdzAppState>,
     Path(spot_id): Path<String>,
-    auth_user: SdzOptionalAuthUser,
 ) -> impl IntoResponse {
     let use_case = SdzGetSpotUseCase::new();
     let spot = use_case
-        .execute(state.spot_repo.clone(), spot_id, auth_user.sdz_user_id)
+        .execute(state.spot_repo.clone(), spot_id, None)
         .await?;
     Ok::<_, SdzApiError>((StatusCode::OK, Json(spot)))
 }
 
+#[derive(Debug, serde::Deserialize)]
+pub struct SdzListSpotsQuery {
+    #[serde(rename = "q")]
+    pub query: Option<String>,
+    #[serde(rename = "type")]
+    pub spot_type: Option<String>,
+    pub tags: Option<String>,
+}
+
 pub async fn handle_list_spots(
     State(state): State<SdzAppState>,
-    auth_user: SdzOptionalAuthUser,
-    Query(query): Query<SdzSpotListQuery>,
+    Query(params): Query<SdzListSpotsQuery>,
 ) -> impl IntoResponse {
-    let spot_type = match query.spot_type.as_deref().map(str::trim) {
-        None | Some("") | Some("all") => None,
-        Some(raw) => Some(
-            SdzSpotTypeFilter::parse(raw)
-                .ok_or_else(|| SdzApiError::BadRequest("type must be park or street".into()))?,
-        ),
-    };
-    let tags = query
-        .tags
-        .as_deref()
-        .unwrap_or("")
-        .split(',')
-        .map(str::trim)
-        .filter(|tag| !tag.is_empty())
-        .map(|tag| tag.to_string())
-        .collect::<Vec<_>>();
     let filter = SdzSpotSearchFilter {
-        query: query
-            .q
-            .map(|value| value.trim().to_string())
-            .filter(|q| !q.is_empty()),
-        spot_type,
-        tags,
+        query: params.query,
+        spot_type: params
+            .spot_type
+            .as_deref()
+            .and_then(SdzSpotTypeFilter::parse),
+        tags: params
+            .tags
+            .map(|t| t.split(',').map(|s| s.trim().to_string()).collect())
+            .unwrap_or_default(),
     };
     let use_case = SdzListSpotsUseCase::new();
     let spots = use_case
-        .execute(state.spot_repo.clone(), 50, auth_user.sdz_user_id, filter)
+        .execute(state.spot_repo.clone(), 50, None, filter)
         .await?;
     Ok::<_, SdzApiError>((StatusCode::OK, Json(spots)))
 }
@@ -161,14 +144,107 @@ pub async fn handle_update_spot(
         "update spot requested"
     );
     let use_case = SdzUpdateSpotUseCase::new();
-    let spot = use_case
-        .execute(state.spot_repo.clone(), auth_user, spot_id, payload)
+    let updated = use_case
+        .execute(state.spot_repo.clone(), spot_id, payload)
         .await?;
     tracing::info!(
         event_code = "SDZ-API-2004",
         component = "presentation",
-        spot_id = %spot.sdz_spot_id,
+        spot_id = %updated.sdz_spot_id,
         "spot updated"
     );
-    Ok::<_, SdzApiError>((StatusCode::OK, Json(spot)))
+    Ok::<_, SdzApiError>((StatusCode::OK, Json(updated)))
+}
+
+pub async fn handle_admin_create_spot(
+    State(state): State<SdzAppState>,
+    admin_user: SdzAdminUser,
+    Json(mut payload): Json<CreateSpotInput>,
+) -> impl IntoResponse {
+    tracing::info!(
+        event_code = "SDZ-API-3001",
+        component = "presentation",
+        user_id = %admin_user.sdz_user_id,
+        "admin create spot requested"
+    );
+
+    // 管理者��成のスポットは自動承認
+    payload.approval_status = Some(SdzSpotApprovalStatus::Approved);
+
+    let auth_user = SdzAuthUser {
+        sdz_user_id: admin_user.sdz_user_id,
+    };
+
+    let use_case = SdzCreateSpotUseCase::new();
+    let created = use_case
+        .execute(state.spot_repo.clone(), auth_user, payload)
+        .await?;
+
+    tracing::info!(
+        event_code = "SDZ-API-3002",
+        component = "presentation",
+        spot_id = %created.sdz_spot_id,
+        "admin spot created"
+    );
+    Ok::<_, SdzApiError>((StatusCode::OK, Json(created)))
+}
+
+pub async fn handle_admin_update_spot(
+    State(state): State<SdzAppState>,
+    admin_user: SdzAdminUser,
+    Path(spot_id): Path<String>,
+    Json(payload): Json<UpdateSpotInput>,
+) -> impl IntoResponse {
+    tracing::info!(
+        event_code = "SDZ-API-3003",
+        component = "presentation",
+        user_id = %admin_user.sdz_user_id,
+        spot_id = %spot_id,
+        "admin update spot requested"
+    );
+
+    let use_case = SdzUpdateSpotUseCase::new();
+    let updated = use_case
+        .execute(state.spot_repo.clone(), spot_id, payload)
+        .await?;
+
+    tracing::info!(
+        event_code = "SDZ-API-3004",
+        component = "presentation",
+        spot_id = %updated.sdz_spot_id,
+        "admin spot updated"
+    );
+    Ok::<_, SdzApiError>((StatusCode::OK, Json(updated)))
+}
+
+pub async fn handle_admin_create_upload_url(
+    State(state): State<SdzAppState>,
+    admin_user: SdzAdminUser,
+    Json(payload): Json<SdzGenerateUploadUrlInput>,
+) -> impl IntoResponse {
+    tracing::info!(
+        event_code = "SDZ-API-3101",
+        component = "presentation",
+        user_id = %admin_user.sdz_user_id,
+        content_type = %payload.sdz_content_type,
+        "admin upload url requested"
+    );
+
+    let auth_user = SdzAuthUser {
+        sdz_user_id: admin_user.sdz_user_id,
+    };
+
+    let use_case = SdzGenerateUploadUrlUseCase::new();
+    let result = use_case
+        .execute(state.storage_repo.clone(), auth_user, payload)
+        .await?;
+
+    tracing::info!(
+        event_code = "SDZ-API-3102",
+        component = "presentation",
+        object_name = %result.sdz_object_name,
+        "admin upload url issued"
+    );
+
+    Ok::<_, SdzApiError>((StatusCode::OK, Json(result)))
 }

@@ -49,6 +49,18 @@ pub fn sdz_build_router() -> Router {
             get(spot_handler::handle_get_spot).patch(spot_handler::handle_update_spot),
         )
         .route(
+            "/sdz/admin/spots",
+            axum::routing::post(spot_handler::handle_admin_create_spot),
+        )
+        .route(
+            "/sdz/admin/spots/{spot_id}",
+            axum::routing::patch(spot_handler::handle_admin_update_spot),
+        )
+        .route(
+            "/sdz/admin/spots/upload-url",
+            axum::routing::post(spot_handler::handle_admin_create_upload_url),
+        )
+        .route(
             "/sdz/mylist",
             get(mylist_handler::handle_list_mylist).post(mylist_handler::handle_add_mylist),
         )

@@ -22,6 +22,15 @@ impl SdzSpotRepository for SdzInMemorySpotRepository {
         Ok(spot)
     }
 
+    async fn update(&self, spot: SdzSpot) -> Result<SdzSpot, SdzApiError> {
+        let mut store = self.store.write().await;
+        if !store.contains_key(&spot.sdz_spot_id) {
+            return Err(SdzApiError::NotFound);
+        }
+        store.insert(spot.sdz_spot_id.clone(), spot.clone());
+        Ok(spot)
+    }
+
     async fn find_by_id(&self, spot_id: &str) -> Result<Option<SdzSpot>, SdzApiError> {
         let store = self.store.read().await;
         Ok(store.get(spot_id).cloned())
