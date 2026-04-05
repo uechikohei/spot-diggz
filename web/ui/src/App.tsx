@@ -4,6 +4,10 @@ import { useAuth } from './contexts/useAuth';
 import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import { CircleMarker, MapContainer, TileLayer, Tooltip, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import { SdzAdminGuard } from './admin/SdzAdminGuard';
+import { SdzAdminLayout } from './admin/SdzAdminLayout';
+import { SdzAdminSpotList } from './admin/SdzAdminSpotList';
+import { SdzAdminSpotForm } from './admin/SdzAdminSpotForm';
 
 const apiUrl = import.meta.env.VITE_SDZ_API_URL || 'http://localhost:8080';
 const SDZ_FAVORITES_PAGE_SIZE = 8;
@@ -1216,6 +1220,13 @@ function App() {
             </div>
           }
         />
+        <Route element={<SdzAdminGuard />}>
+          <Route element={<SdzAdminLayout />}>
+            <Route path="/admin" element={<SdzAdminSpotList />} />
+            <Route path="/admin/spots/new" element={<SdzAdminSpotForm />} />
+            <Route path="/admin/spots/:id/edit" element={<SdzAdminSpotForm />} />
+          </Route>
+        </Route>
       </Routes>
     </div>
   );
