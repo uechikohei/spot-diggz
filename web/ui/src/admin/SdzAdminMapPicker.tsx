@@ -37,7 +37,7 @@ function sdzLoadGoogleMapsScript(): Promise<void> {
       return;
     }
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${SDZ_GOOGLE_MAPS_API_KEY}&libraries=places`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${SDZ_GOOGLE_MAPS_API_KEY}&libraries=places&language=ja&region=JP`;
     script.async = true;
     script.onload = () => resolve();
     script.onerror = () => reject(new Error('Google Maps API の読み込みに失敗しました'));
