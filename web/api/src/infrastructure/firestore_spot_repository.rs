@@ -203,6 +203,11 @@ impl SdzSpotRepository for SdzFirestoreSpotRepository {
         Ok(spot)
     }
 
+    async fn update(&self, spot: SdzSpot) -> Result<SdzSpot, SdzApiError> {
+        self.upsert_document(&spot).await?;
+        Ok(spot)
+    }
+
     async fn find_by_id(&self, spot_id: &str) -> Result<Option<SdzSpot>, SdzApiError> {
         let Some(doc) = self.get_document(spot_id).await? else {
             return Ok(None);
