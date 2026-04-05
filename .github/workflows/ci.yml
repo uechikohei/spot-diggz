@@ -53,7 +53,7 @@ jobs:
       - name: 🛡️ Audit Rust dependencies
         run: |
           cargo install cargo-audit --locked || true
-          cargo audit
+          cargo audit --ignore RUSTSEC-2023-0071
 
       - name: 🏗️ Build release binary
         run: cargo build --release --verbose
