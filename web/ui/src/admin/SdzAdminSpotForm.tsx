@@ -43,7 +43,6 @@ export function SdzAdminSpotForm() {
   const [sdzOfficialUrl, setSdzOfficialUrl] = useState('');
   const [sdzBusinessHoursNote, setSdzBusinessHoursNote] = useState('');
   const [sdzAccessInfo, setSdzAccessInfo] = useState('');
-  const [sdzInstagramTag, setSdzInstagramTag] = useState('');
   const [sdzInstagramLocationUrl, setSdzInstagramLocationUrl] = useState('');
   const [sdzGooglePlaceId, setSdzGooglePlaceId] = useState('');
   const [sdzGoogleMapsUrl, setSdzGoogleMapsUrl] = useState('');
@@ -100,7 +99,6 @@ export function SdzAdminSpotForm() {
         setSdzOfficialUrl(spot.parkAttributes?.officialUrl ?? '');
         setSdzBusinessHoursNote(spot.parkAttributes?.businessHours?.note ?? '');
         setSdzAccessInfo(spot.parkAttributes?.accessInfo ?? '');
-        setSdzInstagramTag(spot.instagramTag ?? '');
         setSdzInstagramLocationUrl(spot.instagramLocationUrl ?? '');
         setSdzGooglePlaceId(spot.googlePlaceId ?? '');
         setSdzGoogleMapsUrl(spot.googleMapsUrl ?? '');
@@ -202,7 +200,6 @@ export function SdzAdminSpotForm() {
         tags: parseSplit(sdzTags),
         images: sdzImages,
         parkAttributes,
-        instagramTag: sdzInstagramTag || undefined,
         instagramLocationUrl: sdzInstagramLocationUrl || undefined,
         googlePlaceId: sdzGooglePlaceId || undefined,
         googleMapsUrl: sdzGoogleMapsUrl || undefined,
@@ -302,32 +299,11 @@ export function SdzAdminSpotForm() {
               onLocationChange={handleLocationChange}
               onPlaceSelect={handlePlaceSelect}
             />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
-              <div>
-                <label htmlFor="sdz-lat">緯度</label>
-                <input
-                  id="sdz-lat"
-                  type="number"
-                  step="any"
-                  value={sdzLat}
-                  onChange={(e) => setSdzLat(e.target.value)}
-                  placeholder="35.6812"
-                  style={{ width: '100%' }}
-                />
+            {(sdzLat || sdzLng) && (
+              <div style={{ marginTop: 8, fontSize: 13, color: '#666' }}>
+                📍 緯度: {sdzLat || '—'} / 経度: {sdzLng || '—'}
               </div>
-              <div>
-                <label htmlFor="sdz-lng">経度</label>
-                <input
-                  id="sdz-lng"
-                  type="number"
-                  step="any"
-                  value={sdzLng}
-                  onChange={(e) => setSdzLng(e.target.value)}
-                  placeholder="139.7671"
-                  style={{ width: '100%' }}
-                />
-              </div>
-            </div>
+            )}
           </div>
 
           {sdzGooglePlaceId && (
@@ -408,18 +384,6 @@ export function SdzAdminSpotForm() {
               value={sdzAccessInfo}
               onChange={(e) => setSdzAccessInfo(e.target.value)}
               placeholder="最寄り駅から徒歩10分、無料駐車場あり"
-              style={{ width: '100%' }}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="sdz-instagram-tag">Instagram ハッシュタグ</label>
-            <input
-              id="sdz-instagram-tag"
-              type="text"
-              value={sdzInstagramTag}
-              onChange={(e) => setSdzInstagramTag(e.target.value)}
-              placeholder="#スケートパーク名"
               style={{ width: '100%' }}
             />
           </div>
