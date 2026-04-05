@@ -3,6 +3,8 @@ export interface SdzSpotLocation {
   lng: number;
 }
 
+export type SdzSpotType = 'park' | 'street';
+
 export interface SdzSpot {
   spotId: string;
   name: string;
@@ -12,6 +14,11 @@ export interface SdzSpot {
   images: string[];
   trustLevel: 'verified' | 'unverified';
   trustSources?: string[];
+  spotType?: SdzSpotType;
+  instagramUrl?: string;
+  officialUrl?: string;
+  businessHours?: string;
+  sections?: string[];
   userId: string;
   createdAt: string;
   updatedAt: string;
