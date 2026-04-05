@@ -134,6 +134,20 @@ pub struct SdzSpot {
         skip_serializing_if = "Option::is_none"
     )]
     pub sdz_instagram_profile_url: Option<String>,
+    #[serde(rename = "googlePlaceId", skip_serializing_if = "Option::is_none")]
+    pub sdz_google_place_id: Option<String>,
+    #[serde(rename = "googleMapsUrl", skip_serializing_if = "Option::is_none")]
+    pub sdz_google_maps_url: Option<String>,
+    #[serde(rename = "address", skip_serializing_if = "Option::is_none")]
+    pub sdz_address: Option<String>,
+    #[serde(rename = "phoneNumber", skip_serializing_if = "Option::is_none")]
+    pub sdz_phone_number: Option<String>,
+    #[serde(rename = "googleRating", skip_serializing_if = "Option::is_none")]
+    pub sdz_google_rating: Option<f64>,
+    #[serde(rename = "googleRatingCount", skip_serializing_if = "Option::is_none")]
+    pub sdz_google_rating_count: Option<u32>,
+    #[serde(rename = "googleTypes", default, skip_serializing_if = "Vec::is_empty")]
+    pub sdz_google_types: Vec<String>,
     #[serde(rename = "userId")]
     pub sdz_user_id: String,
     #[serde(rename = "createdAt")]
@@ -147,6 +161,7 @@ pub struct SdzMyListEntry {
     pub sdz_spot_id: String,
     pub created_at: DateTime<FixedOffset>,
 }
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum SdzSpotApprovalStatus {
@@ -155,46 +170,89 @@ pub enum SdzSpotApprovalStatus {
     Rejected,
 }
 
+/// スポット作成用パラメータ
+pub struct SdzCreateSpotParams {
+    pub sdz_spot_id: String,
+    pub name: String,
+    pub description: Option<String>,
+    pub location: Option<SdzSpotLocation>,
+    pub tags: Vec<String>,
+    pub images: Vec<String>,
+    pub sdz_approval_status: Option<SdzSpotApprovalStatus>,
+    pub sdz_park_attributes: Option<SdzSpotParkAttributes>,
+    pub sdz_street_attributes: Option<SdzStreetAttributes>,
+    pub sdz_instagram_tag: Option<String>,
+    pub sdz_instagram_location_url: Option<String>,
+    pub sdz_instagram_profile_url: Option<String>,
+    pub sdz_google_place_id: Option<String>,
+    pub sdz_google_maps_url: Option<String>,
+    pub sdz_address: Option<String>,
+    pub sdz_phone_number: Option<String>,
+    pub sdz_google_rating: Option<f64>,
+    pub sdz_google_rating_count: Option<u32>,
+    pub sdz_google_types: Vec<String>,
+    pub sdz_user_id: String,
+}
+
+/// スポット更新用パラメータ（全フィールド Option で部分更新対応）
+#[derive(Debug, Clone, Default)]
+pub struct SdzUpdateSpotParams {
+    pub name: Option<String>,
+    pub description: Option<String>,
+    pub location: Option<SdzSpotLocation>,
+    pub tags: Option<Vec<String>>,
+    pub images: Option<Vec<String>>,
+    pub sdz_approval_status: Option<SdzSpotApprovalStatus>,
+    pub sdz_park_attributes: Option<SdzSpotParkAttributes>,
+    pub sdz_street_attributes: Option<SdzStreetAttributes>,
+    pub sdz_instagram_tag: Option<String>,
+    pub sdz_instagram_location_url: Option<String>,
+    pub sdz_instagram_profile_url: Option<String>,
+    pub sdz_google_place_id: Option<String>,
+    pub sdz_google_maps_url: Option<String>,
+    pub sdz_address: Option<String>,
+    pub sdz_phone_number: Option<String>,
+    pub sdz_google_rating: Option<f64>,
+    pub sdz_google_rating_count: Option<u32>,
+    pub sdz_google_types: Option<Vec<String>>,
+}
+
 impl SdzSpot {
-    #[allow(clippy::too_many_arguments)]
-    pub fn new_with_id(
-        sdz_spot_id: String,
-        name: String,
-        description: Option<String>,
-        location: Option<SdzSpotLocation>,
-        tags: Vec<String>,
-        images: Vec<String>,
-        park_attributes: Option<SdzSpotParkAttributes>,
-        street_attributes: Option<SdzStreetAttributes>,
-        instagram_tag: Option<String>,
-        instagram_location_url: Option<String>,
-        instagram_profile_url: Option<String>,
-        sdz_user_id: String,
-    ) -> Result<Self, SdzSpotValidationError> {
-        validate_spot(
-            &name,
-            location.as_ref(),
-            &tags,
-            &images,
-            park_attributes.as_ref(),
-            street_attributes.as_ref(),
+    pub fn new_with_id(params: SdzCreateSpotParams) -> Result<Self, SdzSpotValidationError> {
+        sdz_validate_spot(
+            &params.name,
+            params.location.as_ref(),
+            &params.tags,
+            &params.images,
+            params.sdz_park_attributes.as_ref(),
+            params.sdz_street_attributes.as_ref(),
         )?;
+        if let Some(rating) = params.sdz_google_rating {
+            sdz_validate_google_rating(rating)?;
+        }
         Ok(Self {
-            sdz_spot_id,
-            name,
-            description,
-            location,
-            tags,
-            images,
-            sdz_approval_status: None,
-            sdz_park_attributes: park_attributes,
-            sdz_street_attributes: street_attributes,
-            sdz_instagram_tag: instagram_tag,
-            sdz_instagram_location_url: instagram_location_url,
-            sdz_instagram_profile_url: instagram_profile_url,
-            sdz_user_id,
-            created_at: now_jst(),
-            updated_at: now_jst(),
+            sdz_spot_id: params.sdz_spot_id,
+            name: params.name,
+            description: params.description,
+            location: params.location,
+            tags: params.tags,
+            images: params.images,
+            sdz_approval_status: params.sdz_approval_status,
+            sdz_park_attributes: params.sdz_park_attributes,
+            sdz_street_attributes: params.sdz_street_attributes,
+            sdz_instagram_tag: params.sdz_instagram_tag,
+            sdz_instagram_location_url: params.sdz_instagram_location_url,
+            sdz_instagram_profile_url: params.sdz_instagram_profile_url,
+            sdz_google_place_id: params.sdz_google_place_id,
+            sdz_google_maps_url: params.sdz_google_maps_url,
+            sdz_address: params.sdz_address,
+            sdz_phone_number: params.sdz_phone_number,
+            sdz_google_rating: params.sdz_google_rating,
+            sdz_google_rating_count: params.sdz_google_rating_count,
+            sdz_google_types: params.sdz_google_types,
+            sdz_user_id: params.sdz_user_id,
+            created_at: sdz_now_jst(),
+            updated_at: sdz_now_jst(),
         })
     }
 
@@ -205,22 +263,49 @@ impl SdzSpot {
         )
     }
 
-    #[allow(clippy::too_many_arguments)]
-    pub fn update(
-        &self,
-        name: String,
-        description: Option<String>,
-        location: Option<SdzSpotLocation>,
-        tags: Vec<String>,
-        images: Vec<String>,
-        approval_status: Option<SdzSpotApprovalStatus>,
-        park_attributes: Option<SdzSpotParkAttributes>,
-        street_attributes: Option<SdzStreetAttributes>,
-        instagram_tag: Option<String>,
-        instagram_location_url: Option<String>,
-        instagram_profile_url: Option<String>,
-    ) -> Result<Self, SdzSpotValidationError> {
-        validate_spot(
+    pub fn update(&self, params: SdzUpdateSpotParams) -> Result<Self, SdzSpotValidationError> {
+        let name = params.name.unwrap_or_else(|| self.name.clone());
+        let description = params.description.or_else(|| self.description.clone());
+        let location = params.location.or_else(|| self.location.clone());
+        let tags = params.tags.unwrap_or_else(|| self.tags.clone());
+        let images = params.images.unwrap_or_else(|| self.images.clone());
+        let approval_status = params
+            .sdz_approval_status
+            .or_else(|| self.sdz_approval_status.clone());
+        let park_attributes = params
+            .sdz_park_attributes
+            .or_else(|| self.sdz_park_attributes.clone());
+        let street_attributes = params
+            .sdz_street_attributes
+            .or_else(|| self.sdz_street_attributes.clone());
+        let instagram_tag = params
+            .sdz_instagram_tag
+            .or_else(|| self.sdz_instagram_tag.clone());
+        let instagram_location_url = params
+            .sdz_instagram_location_url
+            .or_else(|| self.sdz_instagram_location_url.clone());
+        let instagram_profile_url = params
+            .sdz_instagram_profile_url
+            .or_else(|| self.sdz_instagram_profile_url.clone());
+        let google_place_id = params
+            .sdz_google_place_id
+            .or_else(|| self.sdz_google_place_id.clone());
+        let google_maps_url = params
+            .sdz_google_maps_url
+            .or_else(|| self.sdz_google_maps_url.clone());
+        let address = params.sdz_address.or_else(|| self.sdz_address.clone());
+        let phone_number = params
+            .sdz_phone_number
+            .or_else(|| self.sdz_phone_number.clone());
+        let google_rating = params.sdz_google_rating.or(self.sdz_google_rating);
+        let google_rating_count = params
+            .sdz_google_rating_count
+            .or(self.sdz_google_rating_count);
+        let google_types = params
+            .sdz_google_types
+            .unwrap_or_else(|| self.sdz_google_types.clone());
+
+        sdz_validate_spot(
             &name,
             location.as_ref(),
             &tags,
@@ -228,6 +313,10 @@ impl SdzSpot {
             park_attributes.as_ref(),
             street_attributes.as_ref(),
         )?;
+        if let Some(rating) = google_rating {
+            sdz_validate_google_rating(rating)?;
+        }
+
         Ok(Self {
             sdz_spot_id: self.sdz_spot_id.clone(),
             name,
@@ -241,14 +330,21 @@ impl SdzSpot {
             sdz_instagram_tag: instagram_tag,
             sdz_instagram_location_url: instagram_location_url,
             sdz_instagram_profile_url: instagram_profile_url,
+            sdz_google_place_id: google_place_id,
+            sdz_google_maps_url: google_maps_url,
+            sdz_address: address,
+            sdz_phone_number: phone_number,
+            sdz_google_rating: google_rating,
+            sdz_google_rating_count: google_rating_count,
+            sdz_google_types: google_types,
             sdz_user_id: self.sdz_user_id.clone(),
             created_at: self.created_at,
-            updated_at: now_jst(),
+            updated_at: sdz_now_jst(),
         })
     }
 }
 
-fn validate_spot(
+pub fn sdz_validate_spot(
     name: &str,
     location: Option<&SdzSpotLocation>,
     tags: &[String],
@@ -290,8 +386,14 @@ fn validate_spot(
     Ok(())
 }
 
-fn now_jst() -> DateTime<FixedOffset> {
-    // 日本標準時（UTC+9）でタイムスタンプを付与
+fn sdz_validate_google_rating(rating: f64) -> Result<(), SdzSpotValidationError> {
+    if !(1.0..=5.0).contains(&rating) {
+        return Err(SdzSpotValidationError::InvalidGoogleRating);
+    }
+    Ok(())
+}
+
+pub fn sdz_now_jst() -> DateTime<FixedOffset> {
     let offset = FixedOffset::east_opt(9 * 3600).expect("valid offset");
     chrono::Utc::now().with_timezone(&offset)
 }
@@ -312,6 +414,8 @@ pub enum SdzSpotValidationError {
     InvalidBusinessHours,
     #[error("street section type is required")]
     InvalidStreetSection,
+    #[error("google rating must be between 1.0 and 5.0")]
+    InvalidGoogleRating,
 }
 
 const SDZ_MAX_IMAGES_PER_SPOT: usize = 3;
@@ -388,4 +492,84 @@ fn validate_time_range(range: &SdzSpotTimeRange) -> Result<(), SdzSpotValidation
         return Err(SdzSpotValidationError::InvalidBusinessHours);
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn build_create_params() -> SdzCreateSpotParams {
+        SdzCreateSpotParams {
+            sdz_spot_id: "test-1".into(),
+            name: "test spot".into(),
+            description: Some("desc".into()),
+            location: Some(SdzSpotLocation {
+                lat: 35.0,
+                lng: 139.0,
+            }),
+            tags: vec!["park".into()],
+            images: vec![],
+            sdz_approval_status: None,
+            sdz_park_attributes: None,
+            sdz_street_attributes: None,
+            sdz_instagram_tag: None,
+            sdz_instagram_location_url: None,
+            sdz_instagram_profile_url: None,
+            sdz_google_place_id: None,
+            sdz_google_maps_url: None,
+            sdz_address: None,
+            sdz_phone_number: None,
+            sdz_google_rating: None,
+            sdz_google_rating_count: None,
+            sdz_google_types: vec![],
+            sdz_user_id: "user-1".into(),
+        }
+    }
+
+    #[test]
+    fn create_spot_with_params() {
+        let spot = SdzSpot::new_with_id(build_create_params()).unwrap();
+        assert_eq!(spot.name, "test spot");
+        assert_eq!(spot.sdz_user_id, "user-1");
+        assert!(spot.sdz_google_place_id.is_none());
+        assert!(spot.sdz_google_types.is_empty());
+    }
+
+    #[test]
+    fn create_spot_with_google_places() {
+        let mut params = build_create_params();
+        params.sdz_google_place_id = Some("ChIJ_example".into());
+        params.sdz_google_rating = Some(4.5);
+        params.sdz_google_rating_count = Some(120);
+        params.sdz_google_types = vec!["park".into(), "point_of_interest".into()];
+
+        let spot = SdzSpot::new_with_id(params).unwrap();
+        assert_eq!(spot.sdz_google_place_id, Some("ChIJ_example".into()));
+        assert_eq!(spot.sdz_google_rating, Some(4.5));
+        assert_eq!(spot.sdz_google_rating_count, Some(120));
+        assert_eq!(spot.sdz_google_types.len(), 2);
+    }
+
+    #[test]
+    fn reject_invalid_google_rating() {
+        let mut params = build_create_params();
+        params.sdz_google_rating = Some(5.5);
+        let err = SdzSpot::new_with_id(params).unwrap_err();
+        assert!(err.to_string().contains("google rating"));
+    }
+
+    #[test]
+    fn update_spot_with_params() {
+        let spot = SdzSpot::new_with_id(build_create_params()).unwrap();
+        let updated = spot
+            .update(SdzUpdateSpotParams {
+                name: Some("updated".into()),
+                sdz_google_place_id: Some("ChIJ_new".into()),
+                ..Default::default()
+            })
+            .unwrap();
+        assert_eq!(updated.name, "updated");
+        assert_eq!(updated.sdz_google_place_id, Some("ChIJ_new".into()));
+        assert_eq!(updated.description, Some("desc".into()));
+    }
 }

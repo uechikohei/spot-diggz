@@ -48,7 +48,8 @@ export function SdzAdminSpotList() {
             <div>
               <div style={{ fontWeight: 500 }}>{spot.name}</div>
               <div style={{ fontSize: 12, color: '#888' }}>
-                {spot.spotType ?? '未分類'} ・ {spot.tags.join(', ') || 'タグなし'}
+                {spot.parkAttributes ? 'パーク' : spot.streetAttributes ? 'ストリート' : '未分類'}{' '}
+                ・ {spot.tags.join(', ') || 'タグなし'}
               </div>
             </div>
             <span style={{ fontSize: 12, color: '#999' }}>編集 →</span>

@@ -51,6 +51,7 @@ where
 }
 
 /// 任意の認証ユーザー情報（Authorizationが無ければNone）
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct SdzOptionalAuthUser {
     pub sdz_user_id: Option<String>,

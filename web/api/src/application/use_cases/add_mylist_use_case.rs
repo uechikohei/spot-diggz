@@ -42,7 +42,7 @@ pub struct SdzAddMyListInput {
 mod tests {
     use super::*;
     use crate::{
-        domain::models::{SdzSpot, SdzSpotLocation},
+        domain::models::{SdzCreateSpotParams, SdzSpot, SdzSpotLocation},
         infrastructure::{
             in_memory_mylist_repository::SdzInMemoryMyListRepository,
             in_memory_spot_repository::SdzInMemorySpotRepository,
@@ -50,23 +50,31 @@ mod tests {
     };
 
     fn sample_spot(id: &str, user_id: &str) -> SdzSpot {
-        SdzSpot::new_with_id(
-            id.to_string(),
-            "sample".to_string(),
-            Some("desc".to_string()),
-            Some(SdzSpotLocation {
+        SdzSpot::new_with_id(SdzCreateSpotParams {
+            sdz_spot_id: id.to_string(),
+            name: "sample".to_string(),
+            description: Some("desc".to_string()),
+            location: Some(SdzSpotLocation {
                 lat: 35.0,
                 lng: 139.0,
             }),
-            vec!["park".to_string()],
-            vec![],
-            None,
-            None,
-            None,
-            None,
-            None,
-            user_id.to_string(),
-        )
+            tags: vec!["park".to_string()],
+            images: vec![],
+            sdz_approval_status: None,
+            sdz_park_attributes: None,
+            sdz_street_attributes: None,
+            sdz_instagram_tag: None,
+            sdz_instagram_location_url: None,
+            sdz_instagram_profile_url: None,
+            sdz_google_place_id: None,
+            sdz_google_maps_url: None,
+            sdz_address: None,
+            sdz_phone_number: None,
+            sdz_google_rating: None,
+            sdz_google_rating_count: None,
+            sdz_google_types: vec![],
+            sdz_user_id: user_id.to_string(),
+        })
         .expect("valid spot")
     }
 
