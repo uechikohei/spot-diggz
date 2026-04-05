@@ -9,3 +9,4 @@ VITE_FIREBASE_PROJECT_ID=sdz-dev
 
 # --- 秘匿値（1Password から注入） ---
 VITE_FIREBASE_API_KEY=op://sdz-dev/ui/FIREBASE_API_KEY
+VITE_GOOGLE_MAPS_API_KEY=op://sdz-dev/ui/GOOGLE_MAPS_API_KEY

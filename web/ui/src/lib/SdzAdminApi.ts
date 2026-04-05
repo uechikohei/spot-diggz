@@ -1,16 +1,23 @@
 const sdzApiUrl = import.meta.env.VITE_SDZ_API_URL || 'http://localhost:8080';
 
-interface SdzSpotPayload {
+export interface SdzSpotPayload {
   name: string;
   description?: string;
   location?: { lat: number; lng: number };
   tags: string[];
   images: string[];
-  spotType: string;
-  instagramUrl?: string;
+  instagramTag?: string;
+  instagramLocationUrl?: string;
+  instagramProfileUrl?: string;
+  googlePlaceId?: string;
+  googleMapsUrl?: string;
+  address?: string;
+  phoneNumber?: string;
   officialUrl?: string;
   businessHours?: string;
-  sections: string[];
+  googleRating?: number;
+  googleRatingCount?: number;
+  googleTypes?: string[];
 }
 
 async function sdzAdminFetch(
@@ -33,10 +40,7 @@ async function sdzAdminFetch(
   return res;
 }
 
-export async function sdzAdminCreateSpot(
-  idToken: string,
-  payload: SdzSpotPayload,
-): Promise<void> {
+export async function sdzAdminCreateSpot(idToken: string, payload: SdzSpotPayload): Promise<void> {
   await sdzAdminFetch('/sdz/admin/spots', idToken, {
     method: 'POST',
     body: JSON.stringify(payload),
@@ -65,10 +69,7 @@ export async function sdzAdminGetUploadUrl(
   return res.json();
 }
 
-export async function sdzAdminUploadImage(
-  uploadUrl: string,
-  file: File,
-): Promise<void> {
+export async function sdzAdminUploadImage(uploadUrl: string, file: File): Promise<void> {
   const res = await fetch(uploadUrl, {
     method: 'PUT',
     headers: { 'Content-Type': file.type },
